@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso – Fisuras Matemáticas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>ACCESO A EDICIÓN</h1>
+    <nav><a href="index.html">Inicio</a></nav>
+  </header>
+  <main>
+    <form id="loginForm">
+      <label>Contraseña <input type="password" id="pwd" required /></label>
+      <button type="submit">Entrar</button>
+    </form>
+    <form id="adminForm" hidden>
+      <label>Nombre del curso <input type="text" id="courseName" /></label>
+      <label>Fecha de inicio <input type="date" id="courseDate" /></label>
+      <label>Precio por sesión <input type="number" id="coursePrice" /></label>
+      <button id="saveCourse" type="button">Guardar</button>
+    </form>
+  </main>
+  <footer>&copy; 2025 Fisuras Matemáticas – Hōrūz</footer>
+  <script src="scripts.js"></script>
+</body>
+</html>

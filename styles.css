@@ -11,15 +11,21 @@
 
 /* ========= Reset / base ===== */
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Comic Sans MS",Segoe UI,sans-serif;background:var(--bg);color:var(--chalk);min-height:100vh;display:flex;flex-direction:column}
+body{font-family:"Comic Sans MS",Segoe UI,sans-serif;color:var(--chalk);min-height:100vh;display:flex;flex-direction:column;
+  background:var(--bg);
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px),radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px);
+  background-position:0 0,25px 25px;background-size:50px 50px;} /* efecto pizarrón */
 main{width:95%;max-width:1100px;margin:auto;padding:2rem 0}
 
 /* ========= Header ========= */
-header{padding:1.8rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed var(--sg)}
+header{padding:1.8rem 2rem;display:flex;flex-direction:column;align-items:center;border-bottom:2px dashed var(--sg);gap:.5rem}
+header nav ul{display:flex;gap:1rem;list-style:none;margin-top:.5rem}
 header h1{font-size:clamp(2rem,8vw,4rem);color:var(--sg);text-shadow:0 0 8px var(--chalk)}
-header nav ul{display:flex;gap:1rem;list-style:none}
 header nav a{text-decoration:none;color:var(--chalk);font-weight:bold}
 header nav a:hover{color:var(--sg)}
+
+.ledPhone{font-family:'SevenSeg',monospace;font-size:clamp(2.8rem,9vw,4rem);background:#000;padding:.5rem 1rem;border-radius:12px;letter-spacing:.48rem;margin-bottom:1rem;text-shadow:0 0 8px currentColor,0 0 14px currentColor;text-align:center}
+.neonEmail{font-family:'Share Tech Mono',monospace;text-shadow:0 0 8px #0ff;color:#0ff;text-align:center;margin-top:1rem}
 
 /* ========= Juego =========== */
 #opMenu{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0}
@@ -28,14 +34,21 @@ header nav a:hover{color:var(--sg)}
 #gameWrapper{position:relative;border:4px solid var(--chalk);border-radius:14px;overflow:hidden}
 canvas{display:block;width:100%;background:var(--bg)}
 #hud{position:absolute;top:12px;left:16px;font-weight:bold;text-shadow:0 0 6px #000}
-#keypad{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,80px);gap:12px}
-#keypad button{width:80px;height:80px;border:none;border-radius:10px;background:var(--sg);color:#000;font-size:1.6rem;font-weight:bold;cursor:pointer}
+
+#juego{position:relative;padding-right:200px;} /* espacio para controles */
+#controls{position:absolute;top:120px;right:0;display:flex;flex-direction:column;align-items:center;gap:1rem}
+#typedDisplay{position:absolute;top:60px;right:0;width:180px;text-align:center;font-size:1.5rem;font-weight:bold;}
+#keypad{display:grid;grid-template-columns:repeat(3,60px);gap:8px}
+#keypad button{width:60px;height:60px;border:none;border-radius:10px;background:var(--sg);color:#000;font-size:1.4rem;font-weight:bold;cursor:pointer}
+#restartBtn{border:none;border-radius:8px;background:var(--pb);color:#000;padding:.4rem 1rem;font-weight:bold;cursor:pointer}
+.hidden{display:none}
 
 /* ========= Cursos ========== */
 .cursos-title{text-align:center;margin:2.8rem 0 1.4rem;font-size:1.5rem;text-shadow:0 0 5px #000}
 .grid{display:grid;gap:2.5rem}
 .grid-3{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
-.card{background:var(--card);border:2px dashed var(--ac);border-radius:18px;padding:1.6rem;box-shadow:0 4px 10px var(--shadow);text-align:center;animation:vibe var(--freq,1s) linear infinite}
+.card{background:var(--card);border:2px dashed var(--tone,var(--ac));border-radius:18px;padding:1.6rem;box-shadow:0 4px 10px var(--tone,var(--shadow));text-align:center;animation:vibe var(--freq,1s) linear infinite;transition:box-shadow .3s,border-color .3s}
+.card:hover{box-shadow:0 0 12px var(--tone,var(--sg));border-color:var(--tone,var(--sg))}
 @keyframes vibe{0%,100%{transform:none}50%{transform:translate(1px,-1px)}}
 .card h3{color:var(--pb);margin-bottom:.5rem}
 .card p{font-size:.9rem;margin:.25rem 0}
@@ -45,8 +58,7 @@ canvas{display:block;width:100%;background:var(--bg)}
 
 /* ========= Contacto ========= */
 @font-face{font-family:'SevenSeg';src:url('https://fonts.cdnfonts.com/s/17464/Digital7-1.woff') format('woff')}
-#ledPhone{font-family:'SevenSeg',monospace;font-size:clamp(2.8rem,9vw,4rem);background:#000;padding:.5rem 1rem;border-radius:12px;letter-spacing:.48rem;margin-bottom:1rem;text-shadow:0 0 8px currentColor,0 0 14px currentColor}
-#ledPhone span{display:inline-block}
+.ledPhone span{display:inline-block}
 
 .drop-zone{border:2px dashed var(--pb);border-radius:12px;padding:2rem;text-align:center;transition:background .3s;color:#ddd}
 .drop-zone.dragover{background:rgba(255,255,255,.15)}
@@ -57,10 +69,10 @@ footer{text-align:center;color:#ccc;padding:1rem;margin-top:auto;font-size:.8rem
 
 
 /* ====== Ajustes nuevos ====== */
-#keypad{position:static;margin:1rem auto;display:grid;grid-template-columns:repeat(3,80px);gap:12px;} /* keypad bajo el juego */
-#typedDisplay{text-align:center;margin:1rem;font-size:1.5rem;font-weight:bold;} /* display de números */
 .card ul{font-size:1rem;} /* temarios con fuente mayor */
 .horarios{list-style:disc;margin:1rem auto;padding-left:1.2rem;font-size:1rem;text-align:left;} /* lista de horarios */
 form label{display:flex;flex-direction:column;margin:.5rem 0;} /* cada etiqueta en columna */
-form input,form textarea{padding:.3rem;border-radius:6px;border:1px solid var(--pb);} /* campos del formulario */
+form input,form textarea,form select{padding:.3rem;border-radius:6px;border:1px solid var(--pb);} /* campos del formulario */
 form button{margin-top:.6rem;border:none;border-radius:8px;background:var(--sg);color:#000;padding:.45rem 1rem;font-weight:bold;cursor:pointer;} /* botones de formularios */
+.msg{border:1px dashed var(--pb);padding:1rem;margin:1rem 0;}
+.msg textarea{width:100%;min-height:60px;margin-top:.5rem;}
