@@ -5,6 +5,15 @@ const $ = q => document.querySelector(q);          // atajo para document.queryS
 const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a; // número entero aleatorio entre a y b
 
 /****************************************************************************
+ * SONIDO AMBIENTAL Y NOTIFICACIONES
+ ****************************************************************************/
+const music=document.getElementById('bgMusic');
+function startMusic(){ if(music) music.play().catch(()=>{}); }
+document.addEventListener('click',startMusic,{once:true});
+function showBubble(msg){ const c=document.getElementById('notify'); if(!c) return; const b=document.createElement('div'); b.className='bubble'; b.textContent=msg; c.appendChild(b); setTimeout(()=>b.remove(),6000); }
+window.addEventListener('load',()=>{ const msgs=JSON.parse(localStorage.getItem('messages')||'[]'); if(msgs.length) showBubble(`Tienes ${msgs.length} contacto(s) pendientes.`); else showBubble('¡Bienvenido! Deja tus datos y archivos para revisión.'); });
+
+/****************************************************************************
  * TELÉFONO LED NEÓN
  ****************************************************************************/
 (()=>{                                             // pinta teléfonos en neón
@@ -75,6 +84,11 @@ if(grid){
   });
 
   grid.addEventListener('click',e=>{                   // escucha clics en el grid
+    const card=e.target.closest('article.card');
+    if(card && !e.target.closest('button') && !e.target.closest('form') && !e.target.closest('.temario') && !e.target.closest('.fechas')){
+      const cf=document.getElementById('contactForm');
+      if(cf){ cf.classList.add('highlight'); location.hash='#contacto'; }
+    }
     if(e.target.classList.contains('temarioBtn'))      // si se presiona Temario
       e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar u ocultar lista
     if(e.target.classList.contains('fechasBtn'))       // mostrar calendario
@@ -111,25 +125,44 @@ if(contactForm){
     alert('Mensaje enviado');
     contactForm.reset();
   });
-  const pending=JSON.parse(localStorage.getItem('messages')||'[]').some(m=>!m.contactado);
-  if(pending) alert('Hay contactos pendientes por llamar');
 }
 
 /****************************************************************************
  * LOGIN Y EDICIÓN
  ****************************************************************************/
 const loginForm=$('#loginForm');                     // formulario de login
-const adminForm=$('#adminForm');                     // formulario de edición
-if(loginForm && adminForm){
+const adminPanel=$('#adminPanel');                   // panel tras autenticación
+if(loginForm && adminPanel){
   loginForm.addEventListener('submit',e=>{           // evento submit del login
     e.preventDefault();
     const pwd=$('#pwd').value.trim();
     if(pwd==='2025'||pwd==='1991'){
       loginForm.hidden=true;
-      adminForm.hidden=false;
+      adminPanel.hidden=false;
+      renderAdminTable();
+      renderFiles();
     }else alert('Contraseña incorrecta');
   });
   $('#saveCourse').addEventListener('click',()=>alert('Datos guardados (simulado)'));
+}
+
+function renderAdminTable(){
+  const table=$('#msgTable'); if(!table) return;
+  const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
+  table.innerHTML='<tr><th>Nombre</th><th>WhatsApp</th><th>Correo</th><th>Curso</th><th>Mensaje</th></tr>';
+  msgs.forEach(m=>{
+    table.insertAdjacentHTML('beforeend',`<tr><td>${m.nombre}</td><td>${m.whatsapp}</td><td>${m.email}</td><td>${m.curso}</td><td>${m.mensaje}</td></tr>`);
+  });
+}
+
+const adminDrop=$('#adminFiles'), adminList=$('#adminFileList');
+function renderFiles(){ if(!adminList) return; const files=JSON.parse(localStorage.getItem('files')||'[]'); adminList.innerHTML=''; files.forEach(f=>{ if(f.type==='application/pdf') adminList.insertAdjacentHTML('beforeend',`<p><a href="${f.data}" target="_blank">${f.name}</a></p>`); else if(f.type.startsWith('image/')) adminList.insertAdjacentHTML('beforeend',`<img src="${f.data}" alt="${f.name}" style="max-width:100px;margin:5px;">`); }); }
+function storeFile(file){ const fr=new FileReader(); fr.onload=()=>{ const files=JSON.parse(localStorage.getItem('files')||'[]'); files.push({name:file.name,type:file.type,data:fr.result}); localStorage.setItem('files',JSON.stringify(files)); renderFiles(); }; fr.readAsDataURL(file); }
+if(adminDrop){
+  ['dragenter','dragover'].forEach(ev=>adminDrop.addEventListener(ev,e=>{e.preventDefault();adminDrop.classList.add('dragover');}));
+  ['dragleave','drop'].forEach(ev=>adminDrop.addEventListener(ev,e=>{e.preventDefault();adminDrop.classList.remove('dragover');}));
+  adminDrop.addEventListener('drop',e=>{[...e.dataTransfer.files].forEach(storeFile);});
+  adminDrop.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.onchange=()=>{[...inp.files].forEach(storeFile);};inp.click();});
 }
 
 /****************************************************************************
@@ -210,6 +243,7 @@ if(canvas){
   $('#difficulty').oninput=e=>difficulty=+e.target.value; // actualiza dificultad
   const typedDisplay=$('#typedDisplay');             // display de lo escrito
   const beep=new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // sonido al acertar
+  const boom=new Audio('https://actions.google.com/sounds/v1/explosions/explosion.ogg'); // sonido al fallar
 
 /* operaciones activas */
 const activeOps=new Set(['+','-','×','÷','√','^']); // conjunto de operaciones
@@ -280,7 +314,7 @@ function updateHUD(){                              // actualiza textos en pantal
 /* bucle */
 function update(dt){                               // lógica de movimiento
   bombs.forEach(b=> b.y+=b.vy*dt);                 // mueve cada bomba
-  bombs=bombs.filter(b=>{ if(b.y-b.r>H){ lives--; return false; } return true; }); // elimina las que tocan suelo
+  bombs=bombs.filter(b=>{ if(b.y-b.r>H){ lives--; boom.cloneNode().play(); return false; } return true; }); // elimina las que tocan suelo
   if(lives<=0){ gameOver=true; bombs=[]; }
   if(!gameOver && performance.now()>nextSpawn){ spawnBomb(); nextSpawn=performance.now()+3500/difficulty; } // spawns
 }
