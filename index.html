@@ -4,15 +4,18 @@
   <meta charset="UTF-8" /> <!-- codificación UTF-8 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- responsive -->
   <title>FISURAS MATEMÁTICAS – Juegos & Cursos</title> <!-- título -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" /> <!-- enlace a CSS -->
 </head>
 <body>
   <header>
+    <div id="ledPhoneTop" class="ledPhone"></div>
     <h1>FISURAS&nbsp;MATEMÁTICAS</h1> <!-- encabezado principal -->
     <nav>
       <ul>
         <li><a href="#inicio">Inicio</a></li> <!-- enlace a sección inicio -->
-        <li><a href="#login">Acceso</a></li> <!-- enlace a login -->
+        <li><a href="login.html">Acceso</a></li> <!-- enlace a login externo -->
+        <li><a href="correos.html">Correos</a></li> <!-- enlace a correos -->
         <li><a href="#contacto">Contacto</a></li> <!-- enlace a contacto -->
       </ul>
     </nav>
@@ -34,10 +37,13 @@
           <div id="hud">Cargando…</div> <!-- marcador -->
         </div>
         <div id="typedDisplay"></div> <!-- muestra lo escrito -->
-        <div id="keypad"></div> <!-- keypad generado por JS -->
+        <div id="controls">
+          <div id="keypad"></div> <!-- keypad generado por JS -->
+          <button id="restartBtn" class="hidden">Reiniciar</button>
+        </div>
       </div>
       <section id="cursos"> <!-- catálogo de cursos -->
-        <h2 class="cursos-title">CATÁLOGO DE CURSOS · SESIONES DE 2H · $600&nbsp;MXN</h2> <!-- título con tarifa -->
+        <h2 class="cursos-title">CATÁLOGO DE CURSOS</h2> <!-- título sin tarifa -->
         <ul class="horarios"> <!-- lista de horarios generales -->
           <li>Lun/Mié/Vie: 13:30-15:30 & 19:00-21:00</li> <!-- horarios lmv -->
           <li>Mar/Jue: 13:30-16:30 & 19:00-22:00</li> <!-- horarios mar/jue -->
@@ -46,32 +52,35 @@
         <div id="cursoGrid" class="grid grid-3"></div> <!-- tarjetas dinámicas -->
       </section>
     </section>
-    <section id="login"> <!-- sección de acceso -->
-      <h2>ACCESO A EDICIÓN</h2> <!-- subtítulo -->
-      <form id="loginForm"> <!-- formulario de login -->
-        <label>Contraseña <input type="password" id="pwd" required /></label> <!-- campo de password -->
-        <button type="submit">Entrar</button> <!-- botón enviar -->
-      </form>
-      <form id="adminForm" hidden> <!-- formulario visible tras login -->
-        <label>Nombre del curso <input type="text" id="courseName" /></label> <!-- editar nombre -->
-        <label>Fecha de inicio <input type="date" id="courseDate" /></label> <!-- editar fecha -->
-        <label>Precio por sesión <input type="number" id="coursePrice" /></label> <!-- editar precio -->
-        <button id="saveCourse" type="button">Guardar</button> <!-- botón guardar -->
-      </form>
-    </section>
+    <!-- sección de login se movió a login.html -->
     <section id="contacto"> <!-- sección de contacto -->
       <h2>CONTACTO</h2> <!-- encabezado contacto -->
       <form id="contactForm"> <!-- formulario de mensaje -->
-        <label>Nombre <input type="text" required /></label> <!-- campo nombre -->
-        <label>WhatsApp <input type="tel" required /></label> <!-- campo whatsapp -->
-        <label>E-mail <input type="email" required /></label> <!-- campo correo -->
-        <label>Mensaje <textarea required></textarea></label> <!-- campo mensaje -->
-        <button type="submit">Enviar</button> <!-- enviar formulario -->
+        <label>Nombre <input type="text" name="nombre" required /></label>
+        <label>WhatsApp <input type="tel" name="whatsapp" required /></label>
+        <label>E-mail <input type="email" name="email" required /></label>
+        <label>Curso de interés
+          <select name="curso" required></select>
+        </label>
+        <label>¿Va a presentar un examen? <input type="text" name="examen" /></label>
+        <label>¿Cómo se enteró de nosotros? <input type="text" name="fuente" /></label>
+        <label>¿Ha tomado el curso antes? <input type="text" name="previo" /></label>
+        <label>¿Prefiere la llamada en la mañana (11am), tarde (4pm) o noche (9pm)?
+          <select name="horario">
+            <option>Mañana 11:00</option>
+            <option>Tarde 16:00</option>
+            <option>Noche 21:00</option>
+          </select>
+        </label>
+        <label>Día para la llamada <input type="date" name="dia" /></label>
+        <label>Mensaje <textarea name="mensaje" required></textarea></label>
+        <p class="nota">Nosotros nos pondremos en contacto contigo, recibe una llamada mía el día de tu conveniencia.</p>
+        <button type="submit">Enviar</button>
       </form>
-      <div id="ledPhone"></div> <!-- número con efecto -->
-      <p>E-mail: <strong>rahim2010@live.com.mx</strong></p> <!-- correo principal -->
-      <div id="dropZone" class="drop-zone">Arrastra aquí archivos o carpetas</div> <!-- zona drag & drop -->
-      <div id="preview"></div> <!-- vista previa archivos -->
+      <div id="ledPhoneBottom" class="ledPhone"></div> <!-- número con efecto -->
+      <p class="neonEmail">E-mail: <strong>rahim2010@live.com.mx</strong></p> <!-- correo principal -->
+      <div id="dropZone" class="drop-zone">Arrastra aquí tus archivos (PDF, imágenes, exámenes). Revisaremos que no sean maliciosos.</div>
+      <div id="preview"></div>
     </section>
   </main>
   <footer>&copy; 2025 Fisuras Matemáticas – Hōrūz</footer> <!-- pie de página -->

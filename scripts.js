@@ -7,143 +7,209 @@ const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a; // número entero aleato
 /****************************************************************************
  * TELÉFONO LED NEÓN
  ****************************************************************************/
-(()=>{
-  const led = $('#ledPhone');                      // referencia al contenedor del teléfono
-  const palette = ['#00eaff','#ff4dff','#ffca28','#4dabf5','#81c784']; // colores neón
-  const chars="(+52) 56 1088 5357".split('');     // número telefónico en arreglo
-  led.innerHTML = chars.map(ch=> ch===' ' ? ch :   // para cada carácter
-      `<span style="color:${palette[rnd(0,palette.length-1)]}">${ch}</span>`).join(''); // span con color aleatorio
+(()=>{                                             // pinta teléfonos en neón
+  document.querySelectorAll('.ledPhone').forEach(led=>{
+    const palette=['#00eaff','#ff4dff','#ffca28','#4dabf5','#81c784'];
+    const chars="(+52) 56 1088 5357".split('');
+    led.innerHTML = chars.map(ch=> ch===' ' ? ch :
+      `<span style="color:${palette[rnd(0,palette.length-1)]}">${ch}</span>`).join('');
+  });
 })();
 
 /****************************************************************************
  * CURSOS Y TIENDA
  ****************************************************************************/
-const cursosData=[                                  // listado de cursos y temas
-  ['ARITMÉTICA',['Naturales','Fracciones','Decimales','Proporciones']],
-  ['ÁLGEBRA',['Ecuaciones','Factorización','Polinomios','Inecuaciones']],
-  ['GEOMETRÍA',['Ángulos','Áreas','Volúmenes','Pitágoras']],
-  ['TRIGONOMETRÍA',['Razones','Identidades','Leyes de senos y cosenos']],
-  ['GEOMETRÍA ANALÍTICA',['Recta','Cónicas','Distancia y pendiente']],
-  ['CÁLCULO DIFERENCIAL',['Límites','Derivadas','Aplicaciones']],
-  ['CÁLCULO INTEGRAL',['Integrales indefinidas','Métodos','Área bajo curva']],
-  ['ÁLGEBRA LINEAL',['Vectores','Matrices','Determinantes']],
-  ['ECUACIONES DIFERENCIALES',['Primer orden','Segundo orden','Modelos']],
-  ['FISURAS MATEMÁTICAS (Nivelación Académica)',['Diagnóstico','Repaso','Técnicas de estudio']],
-  ['AJEDREZ',['Movimientos','Tácticas básicas','Estrategia']]
+const baseTopics = n => Array.from({length:n},(_,i)=>`Tema ${i+1}`); // genera temario largo
+const cursosData=[
+  ['ARITMÉTICA',baseTopics(15),'LMV'],
+  ['ÁLGEBRA',baseTopics(15),'MJ'],
+  ['GEOMETRÍA',baseTopics(15),'LMV'],
+  ['TRIGONOMETRÍA',baseTopics(15),'MJ'],
+  ['GEOMETRÍA ANALÍTICA',baseTopics(15),'LMV'],
+  ['CÁLCULO DIFERENCIAL',baseTopics(15),'MJ'],
+  ['CÁLCULO INTEGRAL',baseTopics(15),'LMV'],
+  ['ÁLGEBRA LINEAL',baseTopics(15),'MJ'],
+  ['ECUACIONES DIFERENCIALES',baseTopics(15),'LMV'],
+  ['FISURAS MATEMÁTICAS (Nivelación Académica)',baseTopics(15),'MJ'],
+  ['AJEDREZ',baseTopics(15),'LMV']
 ];
-const today = new Date('2025-08-02');               // fecha de referencia actual
-const grid = document.getElementById('cursoGrid');   // contenedor de tarjetas
+const scheduleDays={LMV:[1,3,5],MJ:[2,4]};
+const grid=document.getElementById('cursoGrid');
+const today=new Date();
+function countSessions(start,end,days){
+  let c=0,d=new Date(start);
+  while(d<=end){ if(days.includes(d.getDay())) c++; d.setDate(d.getDate()+1); }
+  return c;
+}
+if(grid){
+  cursosData.forEach((c,i)=>{
+    const ini=new Date(); ini.setDate(ini.getDate()+14+i*7); // cursos inician en 2 semanas escalonados
+    const fin=new Date(ini); fin.setDate(fin.getDate()+14);  // duran dos semanas
+    const sesiones=countSessions(ini,fin,scheduleDays[c[2]]);
+    const price=sesiones*2*300;                              // 300 por hora, 2h por sesión
+    const delta=Math.ceil((ini-today)/86400000);
+    let freq=1.2,tone='#81c784';
+    if(delta<=2){freq=0.2;tone='#ff5555';}
+    else if(delta<=7){freq=0.5;tone='#ffca28';}
+    else if(delta<=14){freq=0.8;tone='#ffca28';}
+    const minCal=new Date(); minCal.setDate(minCal.getDate()+14);
+    grid.insertAdjacentHTML('beforeend',`
+      <article class="card" style="--freq:${freq}s;--tone:${tone}">
+        <h3>${c[0]}</h3>
+        <p><strong>Inicio:</strong> ${ini.getDate()}/${ini.getMonth()+1}</p>
+        <p><strong>Fin:</strong> ${fin.getDate()}/${fin.getMonth()+1}</p>
+        <p><strong>Costo:</strong> $${price} MXN</p>
+        <button class="temarioBtn">Temario</button>
+        <ul class="temario" hidden>${c[1].map(t=>`<li>${t}</li>`).join('')}</ul>
+        <button class="fechasBtn">Ver fechas</button>
+        <div class="fechas" hidden><input type="date" min="${minCal.toISOString().slice(0,10)}" /></div>
+        <button class="agendarBtn">Agendar</button>
+        <form class="agendaForm" hidden>
+          <input type="date" required />
+          <input type="text" placeholder="Nombre" required />
+          <input type="tel" placeholder="WhatsApp" required />
+          <input type="email" placeholder="Correo" required />
+          <button type="submit">Apartar</button>
+        </form>
+      </article>`);
+  });
 
-cursosData.forEach((c,i)=>{                         // para cada curso
-  const ini = new Date('2025-08-18');               // fecha base de inicio
-  ini.setDate(ini.getDate()+i*7);                   // cada curso inicia una semana después
-  const ins = new Date(ini); ins.setDate(ins.getDate()-14); // inscripción 2 semanas antes
-  const fin = new Date(ini); fin.setDate(fin.getDate()+14); // fin dos semanas después
-  const price = 600;                                 // precio por sesión de 2h
-  const delta = Math.ceil((ini - today)/86400000);  // días hasta el inicio
-  let freq;                                         // frecuencia de vibración
-  if(delta<=2) freq=0.2;                            // muy cercano = vibración rápida
-  else if(delta<=4) freq=0.5;                       // a 4 días
-  else if(delta<=6) freq=0.8;                       // a 6 días
-  else freq=1.2;                                    // lejos = vibración lenta
-  grid.insertAdjacentHTML('beforeend',`            
-    <article class="card" style="--freq:${freq}s">
-      <h3>${c[0]}</h3>
-      <p><strong>Inscripción:</strong> ${ins.getDate()}/${ins.getMonth()+1}</p>
-      <p><strong>Inicio:</strong> ${ini.getDate()}/${ini.getMonth()+1}</p>
-      <p><strong>Fin:</strong> ${fin.getDate()}/${fin.getMonth()+1}</p>
-      <p><strong>$${price} MXN</strong></p>
-      <button class="temarioBtn">Temario</button>
-      <ul class="temario" hidden>${c[1].map(t=>`<li>${t}</li>`).join('')}</ul>
-      <button class="agendarBtn">Agendar</button>
-      <form class="agendaForm" hidden>
-        <input type="date" required />
-        <input type="text" placeholder="Nombre" required />
-        <input type="tel" placeholder="WhatsApp" required />
-        <input type="email" placeholder="Correo" required />
-        <button type="submit">Apartar</button>
-      </form>
-    </article>`);                                   // inserta tarjeta
-});
+  grid.addEventListener('click',e=>{                   // escucha clics en el grid
+    if(e.target.classList.contains('temarioBtn'))      // si se presiona Temario
+      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar u ocultar lista
+    if(e.target.classList.contains('fechasBtn'))       // mostrar calendario
+      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden;
+    if(e.target.classList.contains('agendarBtn'))      // si se presiona Agendar
+      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar formulario
+  });
 
-grid.addEventListener('click',e=>{                   // escucha clics en el grid
-  if(e.target.classList.contains('temarioBtn'))      // si se presiona Temario
-    e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar u ocultar lista
-  if(e.target.classList.contains('agendarBtn'))      // si se presiona Agendar
-    e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar formulario
-});
-
-grid.addEventListener('submit',e=>{                  // envío de formulario de agenda
-  if(e.target.classList.contains('agendaForm')){     // verifica que sea el formulario correcto
-    e.preventDefault();                              // evita recarga
-    alert('¡Sesión apartada!');                      // mensaje simple
-    e.target.hidden=true;                            // oculta formulario
-  }
-});
+  grid.addEventListener('submit',e=>{                  // envío de formulario de agenda
+    if(e.target.classList.contains('agendaForm')){
+      e.preventDefault();
+      alert('¡Sesión apartada!');
+      e.target.hidden=true;
+    }
+  });
+}
+if($('#contactForm')){                               // llena cursos en formulario de contacto
+  const sel=$('#contactForm select[name=curso]');
+  cursosData.forEach(c=>{ const o=document.createElement('option'); o.value=o.textContent=c[0]; sel.appendChild(o); });
+}
 
 /****************************************************************************
  * FORMULARIO DE CONTACTO
  ****************************************************************************/
-$('#contactForm').addEventListener('submit',e=>{     // manejo de envío
-  e.preventDefault();                                // evita recarga
-  alert('Mensaje enviado');                          // aviso
-  e.target.reset();                                  // limpia campos
-});
+const contactForm=$('#contactForm');
+if(contactForm){
+  contactForm.addEventListener('submit',e=>{         // manejo de envío
+    e.preventDefault();
+    const data=Object.fromEntries(new FormData(contactForm).entries());
+    data.fecha=new Date().toISOString();
+    data.contactado=false; data.notas='';
+    const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
+    msgs.push(data); localStorage.setItem('messages',JSON.stringify(msgs));
+    alert('Mensaje enviado');
+    contactForm.reset();
+  });
+  const pending=JSON.parse(localStorage.getItem('messages')||'[]').some(m=>!m.contactado);
+  if(pending) alert('Hay contactos pendientes por llamar');
+}
 
 /****************************************************************************
  * LOGIN Y EDICIÓN
  ****************************************************************************/
 const loginForm=$('#loginForm');                     // formulario de login
 const adminForm=$('#adminForm');                     // formulario de edición
-loginForm.addEventListener('submit',e=>{             // evento submit del login
-  e.preventDefault();                                // evita recarga
-  const pwd=$('#pwd').value.trim();                  // obtiene contraseña
-  if(pwd==='2025'||pwd==='1991'){                    // contraseñas válidas
-    loginForm.hidden=true;                           // oculta login
-    adminForm.hidden=false;                          // muestra edición
-  }else alert('Contraseña incorrecta');              // aviso de error
-});
-$('#saveCourse').addEventListener('click',()=>{      // botón guardar
-  alert('Datos guardados (simulado)');               // simulación de guardado
-});
+if(loginForm && adminForm){
+  loginForm.addEventListener('submit',e=>{           // evento submit del login
+    e.preventDefault();
+    const pwd=$('#pwd').value.trim();
+    if(pwd==='2025'||pwd==='1991'){
+      loginForm.hidden=true;
+      adminForm.hidden=false;
+    }else alert('Contraseña incorrecta');
+  });
+  $('#saveCourse').addEventListener('click',()=>alert('Datos guardados (simulado)'));
+}
+
+/****************************************************************************
+ * MENSAJERÍA PRIVADA
+ ****************************************************************************/
+const mailLogin=$('#mailLogin'), mailSection=$('#mailSection');
+function renderMessages(){
+  const list=$('#msgList');
+  const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
+  list.innerHTML='';
+  msgs.forEach((m,i)=>{
+    list.insertAdjacentHTML('beforeend',`
+      <div class="msg">
+        <p><strong>${m.nombre}</strong> (${m.email}) - ${m.curso}</p>
+        <p>${m.mensaje}</p>
+        <label><input type="checkbox" data-idx="${i}" class="chkContact" ${m.contactado?'checked':''}/> Contactado</label>
+        <textarea data-idx="${i}" class="note">${m.notas||''}</textarea>
+      </div>`);
+  });
+}
+if(mailLogin){
+  mailLogin.addEventListener('submit',e=>{
+    e.preventDefault();
+    const pwd=$('#mailPwd').value.trim();
+    if(pwd==='2025'||pwd==='1991'){
+      mailLogin.hidden=true; mailSection.hidden=false; renderMessages();
+    }else alert('Contraseña incorrecta');
+  });
+  document.addEventListener('change',e=>{
+    if(e.target.classList.contains('chkContact')||e.target.classList.contains('note')){
+      const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
+      const idx=e.target.dataset.idx;
+      if(e.target.classList.contains('chkContact')) msgs[idx].contactado=e.target.checked;
+      else msgs[idx].notas=e.target.value;
+      localStorage.setItem('messages',JSON.stringify(msgs));
+    }
+  });
+}
 
 /****************************************************************************
  * DRAG & DROP IMÁGENES EN CONTACTO
  ****************************************************************************/
 const drop = $('#dropZone'), preview=$('#preview');  // referencias a zona y vista previa
-['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{ // eventos de arrastre
-  e.preventDefault(); drop.classList.add('dragover');             // evita abrir archivo y agrega estilo
-}));
-['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{    // eventos de salida y suelta
-  e.preventDefault(); drop.classList.remove('dragover');          // quita estilo
-}));
-drop.addEventListener('drop',e=>{                   // al soltar archivo
-  const file=e.dataTransfer.files[0]; if(!file) return; // toma primer archivo
-  const fr = new FileReader();                     // lector de archivos
-  fr.onload = ()=> {                               // cuando termina de leer
-    preview.innerHTML = file.type.startsWith('image') // si es imagen
-      ? `<img src="${fr.result}" style="max-width:100%">`      // muestra imagen
-      : `<pre>${fr.result.slice(0,1200)}…</pre>`;   // o texto
-  };
-  file.type.startsWith('image') ? fr.readAsDataURL(file) : fr.readAsText(file); // lee según tipo
-});
-drop.addEventListener('click',()=>{                 // al hacer clic en zona
-  const inp=document.createElement('input');        // crea input file
-  inp.type='file'; inp.accept='image/*';            // solo imágenes
-  inp.onchange=()=> preview.textContent = `Archivo cargado: ${inp.files[0].name}`; // muestra nombre
-  inp.click();                                      // dispara selector
-});
+if(drop && preview){
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{ // eventos de arrastre
+    e.preventDefault(); drop.classList.add('dragover');
+  }));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{    // eventos de salida y suelta
+    e.preventDefault(); drop.classList.remove('dragover');
+  }));
+  drop.addEventListener('drop',e=>{                   // al soltar archivo
+    const file=e.dataTransfer.files[0]; if(!file) return;
+    const fr = new FileReader();
+    fr.onload = ()=> {
+      preview.innerHTML = file.type.startsWith('image')
+        ? `<img src="${fr.result}" style="max-width:100%">`
+        : `<pre>${fr.result.slice(0,1200)}…</pre>`;
+    };
+    file.type.startsWith('image') ? fr.readAsDataURL(file) : fr.readAsText(file);
+  });
+  drop.addEventListener('click',()=>{                 // al hacer clic en zona
+    const inp=document.createElement('input');
+    inp.type='file'; inp.accept='image/*';
+    inp.onchange=()=> preview.textContent = `Archivo cargado: ${inp.files[0].name}`;
+    inp.click();
+  });
+}
 
 /****************************************************************************
  * JUEGO DE BOMBAS
  ****************************************************************************/
-const canvas = document.getElementById('game'), ctx=canvas.getContext('2d'); // canvas y contexto
-const W=canvas.width, H=canvas.height;            // dimensiones del lienzo
-let bombs=[], score=0, lives=5, lastT=performance.now(), nextSpawn=0; // estado del juego
-let difficulty=1;                                  // nivel de dificultad
-$('#difficulty').oninput=e=>difficulty=+e.target.value; // actualiza dificultad
-const typedDisplay=$('#typedDisplay');             // display de lo escrito
-const beep=new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // sonido al acertar
+const canvas = document.getElementById('game');
+if(canvas){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;            // dimensiones del lienzo
+  let bombs=[], score=0, lives=5, lastT=performance.now(), nextSpawn=0, gameOver=false; // estado del juego
+  let difficulty=1;                                  // nivel de dificultad
+  $('#difficulty').oninput=e=>difficulty=+e.target.value; // actualiza dificultad
+  const typedDisplay=$('#typedDisplay');             // display de lo escrito
+  const beep=new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // sonido al acertar
 
 /* operaciones activas */
 const activeOps=new Set(['+','-','×','÷','√','^']); // conjunto de operaciones
@@ -168,10 +234,11 @@ function randomProblem(){                          // crea un problema aleatorio
 
 /* crea bomba */
 function spawnBomb(){                              // genera una nueva bomba
-  if(bombs.length>=3) return;                      // máximo 3 simultáneas
+  if(gameOver || bombs.length>=3) return;          // máximo 3 simultáneas
   const p = randomProblem();                       // obtiene problema
   const speed=(H-25)/(20000/difficulty);           // velocidad según dificultad
-  bombs.push({x:rnd(60,W-60), y:-25, vy:speed, r:18, ...p}); // añade bomba
+  const shapes=['circle','missile','diamond'];
+  bombs.push({x:rnd(60,W-60), y:-25, vy:speed, r:18, shape:shapes[rnd(0,shapes.length-1)], ...p});
 }
 
 /* keypad dinámico */
@@ -198,6 +265,12 @@ document.addEventListener('keydown',e=>{           // escucha teclado físico
   else if(e.key==='Enter'){ commit(); }            // enviar
 });
 
+$('#restartBtn').addEventListener('click',()=>{     // reinicia el juego
+  bombs=[]; score=0; lives=5; answer=''; gameOver=false;
+  $('#restartBtn').classList.add('hidden');
+  spawnBomb(); lastT=performance.now(); loop(lastT);
+});
+
 /* HUD */
 function updateHUD(){                              // actualiza textos en pantalla
   $('#hud').textContent=`Aciertos ${score}  Errores ${lives}/5`; // puntajes
@@ -208,7 +281,8 @@ function updateHUD(){                              // actualiza textos en pantal
 function update(dt){                               // lógica de movimiento
   bombs.forEach(b=> b.y+=b.vy*dt);                 // mueve cada bomba
   bombs=bombs.filter(b=>{ if(b.y-b.r>H){ lives--; return false; } return true; }); // elimina las que tocan suelo
-  if(performance.now()>nextSpawn){ spawnBomb(); nextSpawn=performance.now()+3500/difficulty; } // spawns
+  if(lives<=0){ gameOver=true; bombs=[]; }
+  if(!gameOver && performance.now()>nextSpawn){ spawnBomb(); nextSpawn=performance.now()+3500/difficulty; } // spawns
 }
 function draw(){                                   // dibuja escena
   ctx.clearRect(0,0,W,H);                          // limpia canvas
@@ -219,22 +293,35 @@ function draw(){                                   // dibuja escena
   }
   ctx.strokeStyle=ctx.fillStyle='white'; ctx.lineWidth=2; // estilo bombas
   bombs.forEach(b=>{                               // dibuja cada bomba
-    ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.stroke(); // cuerpo
-    ctx.beginPath(); ctx.moveTo(b.x,b.y-b.r); ctx.lineTo(b.x,b.y-b.r-8); ctx.stroke(); // mecha
-    ctx.font='16px Comic Sans MS'; ctx.textAlign='center';
+    switch(b.shape){                               // distintos cuerpos
+      case 'circle':
+        ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(b.x,b.y-b.r); ctx.lineTo(b.x,b.y-b.r-8); ctx.stroke();
+        break;
+      case 'missile':
+        ctx.beginPath(); ctx.rect(b.x-10,b.y-20,20,40); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(b.x,b.y-30); ctx.lineTo(b.x-10,b.y-20); ctx.lineTo(b.x+10,b.y-20); ctx.closePath(); ctx.stroke();
+        break;
+      case 'diamond':
+        ctx.beginPath(); ctx.moveTo(b.x,b.y-b.r); ctx.lineTo(b.x+b.r,b.y); ctx.lineTo(b.x,b.y+b.r); ctx.lineTo(b.x-b.r,b.y); ctx.closePath(); ctx.stroke();
+        break;
+    }
+    ctx.font='16px "Share Tech Mono", monospace'; ctx.textAlign='center';
     ctx.fillText(b.q,b.x,b.y+5);                   // pregunta
   });
 }
 function loop(t){                                  // bucle principal
   const dt=t-lastT; lastT=t;                       // delta de tiempo
-  if(lives>0){ update(dt); draw(); requestAnimationFrame(loop); } // continúa
-  else{                                            // game over
-    ctx.fillStyle='rgba(0,0,0,.7)'; ctx.fillRect(0,0,W,H);       // fondo oscuro
-    ctx.fillStyle='white'; ctx.font='32px Comic Sans MS'; ctx.textAlign='center';
-    ctx.fillText('GAME OVER',W/2,H/2);             // mensaje final
+  if(!gameOver){ update(dt); draw(); requestAnimationFrame(loop); }
+  else{
+    ctx.fillStyle='rgba(0,0,0,.8)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#fff'; ctx.font='48px "Share Tech Mono", monospace'; ctx.textAlign='center';
+    ctx.fillText('GAME OVER',W/2,H/2);
   }
   updateHUD();                                     // actualiza HUD
 }
 
 /* inicio */
-spawnBomb(); loop(performance.now());              // comienza el juego
+  spawnBomb();
+  loop(performance.now());              // comienza el juego
+} // fin juego
