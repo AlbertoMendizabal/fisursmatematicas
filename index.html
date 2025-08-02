@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" /> <!-- codificación UTF-8 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- responsive -->
+  <title>FISURAS MATEMÁTICAS – Juegos & Cursos</title> <!-- título -->
+  <link rel="stylesheet" href="styles.css" /> <!-- enlace a CSS -->
+</head>
+<body>
+  <header>
+    <h1>FISURAS&nbsp;MATEMÁTICAS</h1> <!-- encabezado principal -->
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li> <!-- enlace a sección inicio -->
+        <li><a href="#login">Acceso</a></li> <!-- enlace a login -->
+        <li><a href="#contacto">Contacto</a></li> <!-- enlace a contacto -->
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="inicio"> <!-- sección que agrupa juego y cursos -->
+      <div id="juego"> <!-- contenedor del juego -->
+        <nav id="opMenu"> <!-- menú para operaciones y dificultad -->
+          <label><input type="checkbox" data-op="+" checked /> SUMAS</label> <!-- opción suma -->
+          <label><input type="checkbox" data-op="-" checked /> RESTAS</label> <!-- opción resta -->
+          <label><input type="checkbox" data-op="×" checked /> MULTIPLICACIONES</label> <!-- opción multiplicación -->
+          <label><input type="checkbox" data-op="÷" checked /> FRACCIONES</label> <!-- opción fracciones -->
+          <label><input type="checkbox" data-op="√" checked /> RAÍCES</label> <!-- opción raíces -->
+          <label><input type="checkbox" data-op="^" checked /> POTENCIAS</label> <!-- opción potencias -->
+          <label>DIFICULTAD <input type="range" id="difficulty" min="1" max="5" value="1" /></label> <!-- control de dificultad -->
+        </nav>
+        <div id="gameWrapper"> <!-- marco del canvas -->
+          <canvas id="game" width="1000" height="600"></canvas> <!-- canvas para animación -->
+          <div id="hud">Cargando…</div> <!-- marcador -->
+        </div>
+        <div id="typedDisplay"></div> <!-- muestra lo escrito -->
+        <div id="keypad"></div> <!-- keypad generado por JS -->
+      </div>
+      <section id="cursos"> <!-- catálogo de cursos -->
+        <h2 class="cursos-title">CATÁLOGO DE CURSOS · SESIONES DE 2H · $600&nbsp;MXN</h2> <!-- título con tarifa -->
+        <ul class="horarios"> <!-- lista de horarios generales -->
+          <li>Lun/Mié/Vie: 13:30-15:30 & 19:00-21:00</li> <!-- horarios lmv -->
+          <li>Mar/Jue: 13:30-16:30 & 19:00-22:00</li> <!-- horarios mar/jue -->
+          <li>Sáb: 08:00-12:00 (receso 10:00-10:30)</li> <!-- horario sábado -->
+        </ul>
+        <div id="cursoGrid" class="grid grid-3"></div> <!-- tarjetas dinámicas -->
+      </section>
+    </section>
+    <section id="login"> <!-- sección de acceso -->
+      <h2>ACCESO A EDICIÓN</h2> <!-- subtítulo -->
+      <form id="loginForm"> <!-- formulario de login -->
+        <label>Contraseña <input type="password" id="pwd" required /></label> <!-- campo de password -->
+        <button type="submit">Entrar</button> <!-- botón enviar -->
+      </form>
+      <form id="adminForm" hidden> <!-- formulario visible tras login -->
+        <label>Nombre del curso <input type="text" id="courseName" /></label> <!-- editar nombre -->
+        <label>Fecha de inicio <input type="date" id="courseDate" /></label> <!-- editar fecha -->
+        <label>Precio por sesión <input type="number" id="coursePrice" /></label> <!-- editar precio -->
+        <button id="saveCourse" type="button">Guardar</button> <!-- botón guardar -->
+      </form>
+    </section>
+    <section id="contacto"> <!-- sección de contacto -->
+      <h2>CONTACTO</h2> <!-- encabezado contacto -->
+      <form id="contactForm"> <!-- formulario de mensaje -->
+        <label>Nombre <input type="text" required /></label> <!-- campo nombre -->
+        <label>WhatsApp <input type="tel" required /></label> <!-- campo whatsapp -->
+        <label>E-mail <input type="email" required /></label> <!-- campo correo -->
+        <label>Mensaje <textarea required></textarea></label> <!-- campo mensaje -->
+        <button type="submit">Enviar</button> <!-- enviar formulario -->
+      </form>
+      <div id="ledPhone"></div> <!-- número con efecto -->
+      <p>E-mail: <strong>rahim2010@live.com.mx</strong></p> <!-- correo principal -->
+      <div id="dropZone" class="drop-zone">Arrastra aquí archivos o carpetas</div> <!-- zona drag & drop -->
+      <div id="preview"></div> <!-- vista previa archivos -->
+    </section>
+  </main>
+  <footer>&copy; 2025 Fisuras Matemáticas – Hōrūz</footer> <!-- pie de página -->
+  <script src="scripts.js"></script> <!-- enlace JS -->
+</body>
+</html>
