@@ -14,7 +14,7 @@
 body{font-family:"Comic Sans MS",Segoe UI,sans-serif;color:var(--chalk);min-height:100vh;display:flex;flex-direction:column;
   background:var(--bg);
   background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px),radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px);
-  background-position:0 0,25px 25px;background-size:50px 50px;} /* efecto pizarrón */
+  background-position:0 0,25px 25px;background-size:50px 50px;font-size:1.1rem;line-height:1.6;} /* efecto pizarrón */
 main{width:95%;max-width:1100px;margin:auto;padding:2rem 0}
 
 /* ========= Header ========= */
@@ -64,6 +64,9 @@ canvas{display:block;width:100%;background:var(--bg)}
 .drop-zone.dragover{background:rgba(255,255,255,.15)}
 #preview{max-width:550px;margin:1rem auto;font-size:.85rem;line-height:1.4;color:#ddd}
 
+.sheet{width:100%;border-collapse:collapse;margin-top:1rem;}
+.sheet th,.sheet td{border:1px solid var(--pb);padding:.5rem;text-align:left;}
+
 /* ========= Footer ========= */
 footer{text-align:center;color:#ccc;padding:1rem;margin-top:auto;font-size:.8rem}
 
@@ -76,3 +79,18 @@ form input,form textarea,form select{padding:.3rem;border-radius:6px;border:1px 
 form button{margin-top:.6rem;border:none;border-radius:8px;background:var(--sg);color:#000;padding:.45rem 1rem;font-weight:bold;cursor:pointer;} /* botones de formularios */
 .msg{border:1px dashed var(--pb);padding:1rem;margin:1rem 0;}
 .msg textarea{width:100%;min-height:60px;margin-top:.5rem;}
+
+/* burbuja de notificación */
+#notify{position:fixed;bottom:20px;right:20px;z-index:1000;}
+.bubble{background:rgba(0,0,0,.8);border:2px solid var(--sg);color:var(--chalk);padding:1rem;border-radius:12px;max-width:260px;
+        box-shadow:0 0 10px var(--sg);margin-top:.5rem;}
+
+/* resalta formulario de contacto */
+.highlight{border:4px solid #ff0;box-shadow:0 0 15px #ff0;}
+
+/* disposición responsive del juego */
+@media(max-width:700px){
+  #juego{padding-right:0;display:flex;flex-direction:column;align-items:center;}
+  #controls{position:static;order:2;margin-top:1rem;}
+  #typedDisplay{position:static;order:1;margin-top:.5rem;}
+}

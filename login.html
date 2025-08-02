@@ -17,12 +17,17 @@
       <label>Contraseña <input type="password" id="pwd" required /></label>
       <button type="submit">Entrar</button>
     </form>
-    <form id="adminForm" hidden>
-      <label>Nombre del curso <input type="text" id="courseName" /></label>
-      <label>Fecha de inicio <input type="date" id="courseDate" /></label>
-      <label>Precio por sesión <input type="number" id="coursePrice" /></label>
-      <button id="saveCourse" type="button">Guardar</button>
-    </form>
+    <section id="adminPanel" hidden>
+      <form id="adminForm">
+        <label>Nombre del curso <input type="text" id="courseName" /></label>
+        <label>Fecha de inicio <input type="date" id="courseDate" /></label>
+        <label>Precio por sesión <input type="number" id="coursePrice" /></label>
+        <button id="saveCourse" type="button">Guardar</button>
+      </form>
+      <table id="msgTable" class="sheet"></table>
+      <div id="adminFiles" class="drop-zone">Sube o arrastra archivos (PDF o imágenes)</div>
+      <div id="adminFileList"></div>
+    </section>
   </main>
   <footer>&copy; 2025 Fisuras Matemáticas – Hōrūz</footer>
   <script src="scripts.js"></script>
