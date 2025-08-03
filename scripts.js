@@ -4,14 +4,74 @@
 const $ = q => document.querySelector(q);          // atajo para document.querySelector
 const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a; // número entero aleatorio entre a y b
 
+function loadRegs(){
+  let regs=JSON.parse(localStorage.getItem('registros'));
+  if(!regs){
+    regs=[
+      {nombre:'Ana Torres',telefono:'5512345678',correo:'ana@example.com'},
+      {nombre:'Luis Pérez',telefono:'5598765432',correo:'luis@example.com'}
+    ];
+    localStorage.setItem('registros',JSON.stringify(regs));
+  }
+  return regs;
+}
+
 /****************************************************************************
  * SONIDO AMBIENTAL Y NOTIFICACIONES
  ****************************************************************************/
 const music=document.getElementById('bgMusic');
 function startMusic(){ if(music) music.play().catch(()=>{}); }
 document.addEventListener('click',startMusic,{once:true});
-function showBubble(msg){ const c=document.getElementById('notify'); if(!c) return; const b=document.createElement('div'); b.className='bubble'; b.textContent=msg; c.appendChild(b); setTimeout(()=>b.remove(),6000); }
-window.addEventListener('load',()=>{ const msgs=JSON.parse(localStorage.getItem('messages')||'[]'); if(msgs.length) showBubble(`Tienes ${msgs.length} contacto(s) pendientes.`); else showBubble('¡Bienvenido! Deja tus datos y archivos para revisión.'); });
+function showCountdownBubble(){
+  const c=document.getElementById('notify');
+  if(!c) return;
+  const data=loadRegs();
+  const b=document.createElement('div');
+  b.className='bubble';
+  let t=20;
+  b.innerHTML=`<strong>¡Bienvenido!</strong><br>Tienes ${data.length} registro(s).<span class="timer">${t}s</span>`;
+  c.appendChild(b);
+  const iv=setInterval(()=>{
+    t--; b.querySelector('.timer').textContent=t+'s';
+    if(t<=0){clearInterval(iv); b.remove();}
+  },1000);
+}
+window.addEventListener('load',showCountdownBubble);
+
+/****************************************************************************
+ * REGISTRO RÁPIDO A HOJA DE CÁLCULO
+ ****************************************************************************/
+const regForm=$('#registroForm');
+const dataTable=$('#dataTable');
+if(regForm && dataTable){
+  function renderRegs(){
+    const regs=loadRegs();
+    dataTable.innerHTML='<tr><th>Nombre</th><th>Teléfono</th><th>Correo</th></tr>';
+    regs.forEach(r=>dataTable.insertAdjacentHTML('beforeend',`<tr><td>${r.nombre}</td><td>${r.telefono}</td><td>${r.correo}</td></tr>`));
+  }
+  function exportRegs(){
+    const wb=XLSX.utils.book_new();
+    const ws=XLSX.utils.json_to_sheet(loadRegs());
+    XLSX.utils.book_append_sheet(wb,ws,'Registros');
+    XLSX.writeFile(wb,'registros.xlsx');
+  }
+  renderRegs();
+  exportRegs();
+  regForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const f=new FormData(regForm);
+    const nombre=f.get('nombre').trim();
+    const telefono=f.get('telefono').trim();
+    const correo=f.get('correo').trim();
+    if(!/^\d{10}$/.test(telefono)){ alert('El teléfono debe tener 10 dígitos'); return; }
+    const regs=loadRegs();
+    regs.push({nombre,telefono,correo});
+    localStorage.setItem('registros',JSON.stringify(regs));
+    regForm.reset();
+    renderRegs();
+    exportRegs();
+  });
+}
 
 /****************************************************************************
  * TELÉFONO LED NEÓN

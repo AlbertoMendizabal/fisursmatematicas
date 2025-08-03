@@ -20,6 +20,18 @@
     </nav>
   </header>
   <main>
+    <section id="registro">
+      <h2>REGISTRO RÁPIDO</h2>
+      <form id="registroForm">
+        <label>Nombre <input type="text" name="nombre" required /></label>
+        <label>Teléfono 10 dígitos <input type="tel" name="telefono" pattern="\d{10}" required /></label>
+        <label>Correo electrónico <input type="email" name="correo" required /></label>
+        <button type="submit">Guardar</button>
+      </form>
+      <div style="overflow-x:auto;">
+        <table id="dataTable" class="sheet"></table>
+      </div>
+    </section>
     <section id="inicio"> <!-- sección que agrupa juego y cursos -->
       <div id="juego"> <!-- contenedor del juego -->
         <nav id="opMenu"> <!-- menú para operaciones y dificultad -->
@@ -85,6 +97,7 @@
   <footer>&copy; 2025 Fisuras Matemáticas – Hōrūz</footer> <!-- pie de página -->
   <audio id="bgMusic" src="https://actions.google.com/sounds/v1/ambiences/arcade_game.ogg" loop></audio>
   <div id="notify"></div>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="scripts.js"></script> <!-- enlace JS -->
 </body>
 </html>
