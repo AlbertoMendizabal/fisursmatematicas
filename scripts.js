@@ -25,11 +25,13 @@ document.addEventListener('click',startMusic,{once:true});
 function showCountdownBubble(){
   const c=document.getElementById('notify');
   if(!c) return;
-  const data=loadRegs();
+  const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
+  if(msgs.length===0){c.innerHTML='';return;}
+  c.innerHTML='';
   const b=document.createElement('div');
   b.className='bubble';
   let t=20;
-  b.innerHTML=`<strong>¡Bienvenido!</strong><br>Tienes ${data.length} registro(s).<span class="timer">${t}s</span>`;
+  b.innerHTML=`<strong>Tienes ${msgs.length} mensaje(s) pendientes.</strong><span class="timer">${t}s</span>`;
   c.appendChild(b);
   const iv=setInterval(()=>{
     t--; b.querySelector('.timer').textContent=t+'s';
@@ -90,17 +92,10 @@ if(regForm && dataTable){
  ****************************************************************************/
 const baseTopics = n => Array.from({length:n},(_,i)=>`Tema ${i+1}`); // genera temario largo
 const cursosData=[
-  ['ARITMÉTICA',baseTopics(15),'LMV'],
-  ['ÁLGEBRA',baseTopics(15),'MJ'],
-  ['GEOMETRÍA',baseTopics(15),'LMV'],
-  ['TRIGONOMETRÍA',baseTopics(15),'MJ'],
-  ['GEOMETRÍA ANALÍTICA',baseTopics(15),'LMV'],
-  ['CÁLCULO DIFERENCIAL',baseTopics(15),'MJ'],
-  ['CÁLCULO INTEGRAL',baseTopics(15),'LMV'],
-  ['ÁLGEBRA LINEAL',baseTopics(15),'MJ'],
-  ['ECUACIONES DIFERENCIALES',baseTopics(15),'LMV'],
-  ['FISURAS MATEMÁTICAS (Nivelación Académica)',baseTopics(15),'MJ'],
-  ['AJEDREZ',baseTopics(15),'LMV']
+  ['ARITMÉTICA',baseTopics(20),'LMV','🧮'],
+  ['ÁLGEBRA',baseTopics(20),'MJ','∑'],
+  ['GEOMETRÍA',baseTopics(20),'LMV','📐'],
+  ['TRIGONOMETRÍA',baseTopics(20),'MJ','📈']
 ];
 const scheduleDays={LMV:[1,3,5],MJ:[2,4]};
 const grid=document.getElementById('cursoGrid');
@@ -121,47 +116,51 @@ if(grid){
     if(delta<=2){freq=0.2;tone='#ff5555';}
     else if(delta<=7){freq=0.5;tone='#ffca28';}
     else if(delta<=14){freq=0.8;tone='#ffca28';}
-    const minCal=new Date(); minCal.setDate(minCal.getDate()+14);
     grid.insertAdjacentHTML('beforeend',`
       <article class="card" style="--freq:${freq}s;--tone:${tone}">
-        <h3>${c[0]}</h3>
+        <h3><span class="gold">${c[3]}</span>${c[0]}</h3>
         <p><strong>Inicio:</strong> ${ini.getDate()}/${ini.getMonth()+1}</p>
         <p><strong>Fin:</strong> ${fin.getDate()}/${fin.getMonth()+1}</p>
         <p><strong>Costo:</strong> $${price} MXN</p>
         <button class="temarioBtn">Temario</button>
         <ul class="temario" hidden>${c[1].map(t=>`<li>${t}</li>`).join('')}</ul>
-        <button class="fechasBtn">Ver fechas</button>
-        <div class="fechas" hidden><input type="date" min="${minCal.toISOString().slice(0,10)}" /></div>
-        <button class="agendarBtn">Agendar</button>
+        <button class="agendarBtn">Agendar llamada</button>
         <form class="agendaForm" hidden>
-          <input type="date" required />
-          <input type="text" placeholder="Nombre" required />
-          <input type="tel" placeholder="WhatsApp" required />
-          <input type="email" placeholder="Correo" required />
-          <button type="submit">Apartar</button>
+          <input type="date" name="fecha" required />
+          <input type="text" name="nombre" placeholder="Nombre" required />
+          <input type="tel" name="whatsapp" placeholder="WhatsApp" required />
+          <input type="email" name="correo" placeholder="Correo" required />
+          <button type="submit">Guardar</button>
         </form>
       </article>`);
   });
 
   grid.addEventListener('click',e=>{                   // escucha clics en el grid
     const card=e.target.closest('article.card');
-    if(card && !e.target.closest('button') && !e.target.closest('form') && !e.target.closest('.temario') && !e.target.closest('.fechas')){
+    if(card && !e.target.closest('button') && !e.target.closest('form') && !e.target.closest('.temario')){
       const cf=document.getElementById('contactForm');
       if(cf){ cf.classList.add('highlight'); location.hash='#contacto'; }
     }
-    if(e.target.classList.contains('temarioBtn'))      // si se presiona Temario
-      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar u ocultar lista
-    if(e.target.classList.contains('fechasBtn'))       // mostrar calendario
-      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden;
     if(e.target.classList.contains('agendarBtn'))      // si se presiona Agendar
       e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar formulario
+  });
+
+  grid.addEventListener('dblclick',e=>{                 // doble clic en temario
+    if(e.target.classList.contains('temarioBtn'))
+      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden;
   });
 
   grid.addEventListener('submit',e=>{                  // envío de formulario de agenda
     if(e.target.classList.contains('agendaForm')){
       e.preventDefault();
+      const card=e.target.closest('article.card');
+      const data=Object.fromEntries(new FormData(e.target).entries());
+      const title=card.querySelector('h3').textContent.trim();
+      data.curso=title.replace(/^[^A-Za-zÁÉÍÓÚÑ]+/,'');
+      const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
+      msgs.push(data); localStorage.setItem('messages',JSON.stringify(msgs));
       alert('¡Sesión apartada!');
-      e.target.hidden=true;
+      e.target.hidden=true; showCountdownBubble();
     }
   });
 }
@@ -184,6 +183,7 @@ if(contactForm){
     msgs.push(data); localStorage.setItem('messages',JSON.stringify(msgs));
     alert('Mensaje enviado');
     contactForm.reset();
+    showCountdownBubble();
   });
 }
 
@@ -299,8 +299,9 @@ if(canvas){
   const ctx=canvas.getContext('2d');
   const W=canvas.width, H=canvas.height;            // dimensiones del lienzo
   let bombs=[], score=0, lives=5, lastT=performance.now(), nextSpawn=0, gameOver=false; // estado del juego
-  let difficulty=1;                                  // nivel de dificultad
+  let difficulty=1, fallSpeed=3;                     // dificultad y velocidad
   $('#difficulty').oninput=e=>difficulty=+e.target.value; // actualiza dificultad
+  $('#speed').oninput=e=>fallSpeed=+e.target.value;       // actualiza velocidad
   const typedDisplay=$('#typedDisplay');             // display de lo escrito
   const beep=new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // sonido al acertar
   const boom=new Audio('https://actions.google.com/sounds/v1/explosions/explosion.ogg'); // sonido al fallar
@@ -314,23 +315,24 @@ document.querySelectorAll('#opMenu input[type=checkbox]').forEach(chk=>{ // cheq
 /* genera problema */
 function randomProblem(){                          // crea un problema aleatorio
   const op=[...activeOps][rnd(0,activeOps.size-1)]; // elige operación activa
-  let a,b,q,ans;                                   // operandos y respuesta
+  let a,b,q,ans,limit=20*difficulty;               // operandos y respuesta
   switch(op){                                      // según la operación
-    case '+': a=rnd(1,99); b=rnd(1,99-a); ans=a+b; q=`${a}+${b}`; break; // suma
-    case '-': b=rnd(1,99); a=rnd(b,99);   ans=a-b; q=`${a}-${b}`; break; // resta
-    case '×': a=rnd(2,10); b=rnd(2,10);   ans=a*b; q=`${a}×${b}`; break; // multiplicación
-    case '÷': b=rnd(2,10); ans=rnd(2,10); a=b*ans; q=`${a}÷${b}`; break; // división exacta
-    case '√': ans=rnd(2,12); a=ans*ans;   q=`√${a}`;             break; // raíz cuadrada
-    case '^': a=rnd(2,9);  ans=a*a;       q=`${a}^2`;            break; // potencia al cuadrado
+    case '+': a=rnd(1,limit); b=rnd(1,limit); ans=a+b; q=`${a}+${b}`; break; // suma
+    case '-': a=rnd(1,limit); b=rnd(1,a);   ans=a-b; q=`${a}-${b}`; break; // resta
+    case '×': a=rnd(2,10*difficulty); b=rnd(2,10*difficulty); ans=a*b; q=`${a}×${b}`; break; // multiplicación
+    case '÷': b=rnd(2,10*difficulty); ans=rnd(2,10*difficulty); a=b*ans; q=`${a}÷${b}`; break; // división exacta
+    case '√': ans=rnd(2,12*difficulty); a=ans*ans; q=`√${a}`; break; // raíz cuadrada
+    case '^': a=rnd(2,9); b=rnd(2,Math.min(4,difficulty+1)); ans=a**b; q=`${a}^${b}`; break; // potencias
   }
-  return {q,ans};                                  // devuelve pregunta y respuesta
+  return {q,ans};
 }
 
 /* crea bomba */
 function spawnBomb(){                              // genera una nueva bomba
   if(gameOver || bombs.length>=3) return;          // máximo 3 simultáneas
   const p = randomProblem();                       // obtiene problema
-  const speed=(H-25)/(20000/difficulty);           // velocidad según dificultad
+  const base=(H-25)/20000;                         // velocidad base
+  const speed=base*fallSpeed;                      // ajusta por slider
   const shapes=['circle','missile','diamond'];
   bombs.push({x:rnd(60,W-60), y:-25, vy:speed, r:18, shape:shapes[rnd(0,shapes.length-1)], ...p});
 }

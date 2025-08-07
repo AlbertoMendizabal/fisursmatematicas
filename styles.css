@@ -1,17 +1,17 @@
 /* ========= Variables ======== */
 :root{
-  --pb:#4dabf5;           /* primario azul  */
-  --sg:#ffca28;           /* secundario oro */
-  --ac:#81c784;           /* acento verde   */
-  --bg:#064019;           /* pizarrón       */
-  --chalk:#fff;
+  --bg:#0f3b2f;
+  --chalk:#f5e7c8;
+  --sg:#d4af37;           /* dorado */
+  --pb:#2e8b57;           /* verde botones */
+  --ac:#2e8b57;
   --card:rgba(255,255,255,.08);
   --shadow:rgba(0,0,0,.25);
 }
 
 /* ========= Reset / base ===== */
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Comic Sans MS",Segoe UI,sans-serif;color:var(--chalk);min-height:100vh;display:flex;flex-direction:column;
+body{font-family:"Cinzel",serif;color:var(--chalk);min-height:100vh;display:flex;flex-direction:column;
   background:var(--bg);
   background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px),radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px);
   background-position:0 0,25px 25px;background-size:50px 50px;font-size:1.1rem;line-height:1.6;} /* efecto pizarrón */
@@ -53,8 +53,9 @@ canvas{display:block;width:100%;background:var(--bg)}
 .card h3{color:var(--pb);margin-bottom:.5rem}
 .card p{font-size:.9rem;margin:.25rem 0}
 .card button.temarioBtn{margin-top:.6rem;border:none;border-radius:8px;background:var(--sg);color:#000;padding:.35rem .9rem;font-weight:bold;cursor:pointer}
+.card button.agendarBtn{margin-top:.6rem;border:none;border-radius:8px;background:var(--pb);color:#000;padding:.35rem .9rem;font-weight:bold;cursor:pointer}
 .card ul{list-style:circle;margin-top:.4rem;text-align:left;padding-left:1.1rem;font-size:.85rem}
-.gold{color:#ffd700;font-size:1.2rem;margin-right:4px}
+.gold{color:var(--sg);font-size:1.2rem;margin-right:4px}
 
 /* ========= Contacto ========= */
 @font-face{font-family:'SevenSeg';src:url('https://fonts.cdnfonts.com/s/17464/Digital7-1.woff') format('woff')}

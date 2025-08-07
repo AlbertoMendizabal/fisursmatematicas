@@ -4,7 +4,7 @@
   <meta charset="UTF-8" /> <!-- codificación UTF-8 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- responsive -->
   <title>FIGURAS MATEMÁTICAS – Juegos & Cursos</title> <!-- título -->
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cinzel&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" /> <!-- enlace a CSS -->
 </head>
 <body>
@@ -41,11 +41,12 @@
           <label><input type="checkbox" data-op="÷" checked /> FRACCIONES</label> <!-- opción fracciones -->
           <label><input type="checkbox" data-op="√" checked /> RAÍCES</label> <!-- opción raíces -->
           <label><input type="checkbox" data-op="^" checked /> POTENCIAS</label> <!-- opción potencias -->
-          <label>DIFICULTAD <input type="range" id="difficulty" min="1" max="5" value="1" /></label> <!-- control de dificultad -->
+          <label>DIFICULTAD <input type="range" id="difficulty" min="1" max="5" value="1" /></label>
+          <label>VELOCIDAD <input type="range" id="speed" min="1" max="5" value="3" /></label>
         </nav>
         <div id="gameWrapper"> <!-- marco del canvas -->
           <canvas id="game" width="1000" height="600"></canvas> <!-- canvas para animación -->
-          <div id="hud">Cargando…</div> <!-- marcador -->
+          <div id="hud">Aciertos 0  Errores 5/5</div>
         </div>
         <div id="typedDisplay"></div> <!-- muestra lo escrito -->
         <div id="controls">
