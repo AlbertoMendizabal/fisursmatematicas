@@ -31,3 +31,6 @@ form label{display:block;margin-top:1rem}
 form input,form textarea{width:100%;padding:.5rem;margin-top:.25rem;border-radius:6px;border:1px solid var(--gold)}
 form button{margin-top:1rem;background:var(--gold);color:#000;border:none;padding:.5rem 1rem;border-radius:8px;cursor:pointer}
 footer{text-align:center;padding:1rem;font-size:.9rem;color:var(--cream)}
+.whatsapp{display:block;font-weight:bold;color:#25d366;margin-top:.5rem}
+.badge{display:none;background:red;color:#fff;border-radius:50%;padding:0 .4rem;font-size:.8rem;vertical-align:top;margin-left:.2rem}
+.toast{position:fixed;bottom:1rem;right:1rem;background:#333;color:#fff;padding:.5rem 1rem;border-radius:4px}

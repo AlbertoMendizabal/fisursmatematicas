@@ -11,6 +11,18 @@ if(isset($_GET['logout'])){
 }
 $csv=__DIR__.'/data/contactos.csv';
 $rows=file_exists($csv)?array_map('str_getcsv',file($csv)):[[]];
+$enrollFile=__DIR__.'/data/enrollments.json';
+$callbackFile=__DIR__.'/data/callbacks.json';
+$enrolls=file_exists($enrollFile)?json_decode(file_get_contents($enrollFile),true):[];
+$callbacks=file_exists($callbackFile)?json_decode(file_get_contents($callbackFile),true):[];
+$notifyFile=__DIR__.'/data/notifications.json';
+$notify=file_exists($notifyFile)?json_decode(file_get_contents($notifyFile),true):['enrollments'=>0,'callbacks'=>0];
+$hasNew=false;
+if(isset($_SESSION['auth'])){
+  $hasNew=(($notify['enrollments']+$notify['callbacks'])>0);
+  if($hasNew) file_put_contents($notifyFile,json_encode(['enrollments'=>0,'callbacks'=>0]));
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,6 +36,7 @@ $rows=file_exists($csv)?array_map('str_getcsv',file($csv)):[[]];
 <header class="sticky">
   <div class="container">
     <h1>Mensajes</h1>
+    <a href="https://wa.me/525610885357" class="whatsapp">WhatsApp: +52 56 1088 5357</a>
     <?php if(isset($_SESSION['auth'])): ?>
     <nav><a href="index.html">Inicio</a> <a href="?logout=1">Salir</a></nav>
     <?php endif; ?>
@@ -69,7 +82,34 @@ $rows=file_exists($csv)?array_map('str_getcsv',file($csv)):[[]];
     </table>
   </div>
   <p><a href="data/contactos.csv" download>Descargar CSV</a></p>
+  <h2>Inscripciones</h2>
+  <table class="sheet">
+    <thead><tr><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Grupo</th><th>Precio</th><th>Descuento</th></tr></thead>
+    <tbody>
+      <?php foreach($enrolls as $e): ?>
+      <tr><td><?=htmlspecialchars($e['name'])?></td><td><?=htmlspecialchars($e['email'])?></td><td><?=htmlspecialchars($e['phone'])?></td><td><?=htmlspecialchars($e['group_id'])?></td><td><?=htmlspecialchars($e['price'])?></td><td><?=htmlspecialchars($e['discount'])?></td></tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+
+  <h2>Agendas de llamada</h2>
+  <table class="sheet">
+    <thead><tr><th>Nombre</th><th>Contacto</th><th>Curso</th><th>Fecha</th><th>Comentario</th></tr></thead>
+    <tbody>
+      <?php foreach($callbacks as $c): ?>
+      <tr><td><?=htmlspecialchars($c['name'])?></td><td><?=htmlspecialchars($c['contact'])?></td><td><?=htmlspecialchars($c['course_id'])?></td><td><?=htmlspecialchars($c['datetime'])?></td><td><?=htmlspecialchars($c['comment'])?></td></tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  <?php if($hasNew): ?>
+  <div id="toast" class="toast" aria-live="polite">Nuevas solicitudes</div>
+  <script>setTimeout(()=>document.getElementById('toast').style.display='none',4000);</script>
+  <?php endif; ?>
+
 <?php endif; ?>
 </main>
+<footer class="container">
+  <a href="https://wa.me/525610885357" class="whatsapp">WhatsApp: +52 56 1088 5357</a>
+</footer>
 </body>
 </html>

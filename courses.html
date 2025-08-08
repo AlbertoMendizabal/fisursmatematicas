@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursos</title>
+<link rel="stylesheet" href="styles.min.css">
+<link rel="stylesheet" href="courses.min.css">
+</head>
+<body>
+<header class="sticky">
+  <div class="container">
+    <h1>Cursos</h1>
+    <nav>
+      <a href="index.html#inicio">Juego</a>
+      <a href="courses.html">Cursos</a>
+      <a href="admin.php">Acceso <span id="badge" class="badge" aria-label="nuevas notificaciones"></span></a>
+      <a href="index.html#contacto">Contacto</a>
+    </nav>
+    <a href="https://wa.me/525610885357" class="whatsapp">WhatsApp: +52 56 1088 5357</a>
+  </div>
+</header>
+<main class="container">
+  <section id="courses"></section>
+</main>
+<div id="overlay" class="overlay" hidden></div>
+<div id="enrollModal" class="modal" hidden role="dialog" aria-modal="true">
+  <form id="enrollForm">
+    <input type="hidden" name="course_id">
+    <label>Nombre
+      <input name="name" required maxlength="100">
+    </label>
+    <label>Email
+      <input type="email" name="email" required maxlength="100">
+    </label>
+    <label>Teléfono
+      <input name="phone" required pattern="\d{10,15}" maxlength="15">
+    </label>
+    <label>Grupo
+      <select name="group_id" required></select>
+    </label>
+    <label>
+      <input type="checkbox" name="terms" required> Acepto términos
+    </label>
+    <button type="submit">Enviar</button>
+    <button type="button" class="close-modal">Cancelar</button>
+  </form>
+</div>
+<div id="callModal" class="modal" hidden role="dialog" aria-modal="true">
+  <form id="callbackForm">
+    <input type="hidden" name="course_id">
+    <label>Nombre
+      <input name="name" required maxlength="100">
+    </label>
+    <label>Teléfono o Email
+      <input name="contact" required maxlength="100">
+    </label>
+    <label>Fecha y hora
+      <input type="datetime-local" name="datetime" required>
+    </label>
+    <label>Comentario
+      <textarea name="comment" maxlength="500"></textarea>
+    </label>
+    <button type="submit">Enviar</button>
+    <button type="button" class="close-modal">Cancelar</button>
+  </form>
+</div>
+<div id="toast" class="toast" hidden aria-live="polite"></div>
+<footer class="container">
+  <a href="https://wa.me/525610885357" class="whatsapp">WhatsApp: +52 56 1088 5357</a>
+  <p>&copy; 2025 Fisuras Matemáticas</p>
+</footer>
+<script src="notify.min.js"></script>
+<script src="courses.min.js"></script>
+</body>
+</html>
