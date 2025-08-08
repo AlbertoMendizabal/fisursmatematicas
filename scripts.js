@@ -1,299 +1,70 @@
-/****************************************************************************
- * UTILIDADES Y CONSTANTES
- ****************************************************************************/
-const $ = q => document.querySelector(q);          // atajo para document.querySelector
-const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a; // número entero aleatorio entre a y b
+// utilidades
+const $ = q => document.querySelector(q);
+const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-function loadRegs(){
-  let regs=JSON.parse(localStorage.getItem('registros'));
-  if(!regs){
-    regs=[
-      {nombre:'Ana Torres',telefono:'5512345678',correo:'ana@example.com'},
-      {nombre:'Luis Pérez',telefono:'5598765432',correo:'luis@example.com'}
-    ];
-    localStorage.setItem('registros',JSON.stringify(regs));
-  }
-  return regs;
-}
+// navegación por pestañas
+const tabs=document.querySelectorAll('[role="tab"]');
+const panels=document.querySelectorAll('[role="tabpanel"]');
+tabs.forEach(t=>{
+  t.addEventListener('click',()=>{
+    tabs.forEach(tb=>tb.setAttribute('aria-selected','false'));
+    panels.forEach(p=>p.hidden=true);
+    t.setAttribute('aria-selected','true');
+    document.getElementById(t.getAttribute('aria-controls')).hidden=false;
+  });
+});
 
-/****************************************************************************
- * SONIDO AMBIENTAL Y NOTIFICACIONES
- ****************************************************************************/
-const music=document.getElementById('bgMusic');
-function startMusic(){ if(music) music.play().catch(()=>{}); }
-document.addEventListener('click',startMusic,{once:true});
-function showCountdownBubble(){
-  const c=document.getElementById('notify');
-  if(!c) return;
-  const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
-  if(msgs.length===0){c.innerHTML='';return;}
-  c.innerHTML='';
-  const b=document.createElement('div');
-  b.className='bubble';
-  let t=20;
-  b.innerHTML=`<strong>Tienes ${msgs.length} mensaje(s) pendientes.</strong><span class="timer">${t}s</span>`;
-  c.appendChild(b);
-  const iv=setInterval(()=>{
-    t--; b.querySelector('.timer').textContent=t+'s';
-    if(t<=0){clearInterval(iv); b.remove();}
-  },1000);
-}
-window.addEventListener('load',showCountdownBubble);
-
-/****************************************************************************
- * REGISTRO RÁPIDO A HOJA DE CÁLCULO
- ****************************************************************************/
-const regForm=$('#registroForm');
-const dataTable=$('#dataTable');
-if(regForm && dataTable){
-  function renderRegs(){
-    const regs=loadRegs();
-    dataTable.innerHTML='<tr><th>Nombre</th><th>Teléfono</th><th>Correo</th></tr>';
-    regs.forEach(r=>dataTable.insertAdjacentHTML('beforeend',`<tr><td>${r.nombre}</td><td>${r.telefono}</td><td>${r.correo}</td></tr>`));
-  }
-  function exportRegs(){
-    const wb=XLSX.utils.book_new();
-    const ws=XLSX.utils.json_to_sheet(loadRegs());
-    XLSX.utils.book_append_sheet(wb,ws,'Registros');
-    XLSX.writeFile(wb,'registros.xlsx');
-  }
-  renderRegs();
-  exportRegs();
-  regForm.addEventListener('submit',e=>{
-    e.preventDefault();
-    const f=new FormData(regForm);
-    const nombre=f.get('nombre').trim();
-    const telefono=f.get('telefono').trim();
-    const correo=f.get('correo').trim();
-    if(!/^\d{10}$/.test(telefono)){ alert('El teléfono debe tener 10 dígitos'); return; }
-    const regs=loadRegs();
-    regs.push({nombre,telefono,correo});
-    localStorage.setItem('registros',JSON.stringify(regs));
-    regForm.reset();
-    renderRegs();
-    exportRegs();
+// catálogo de cursos simple
+autoRenderCursos();
+function autoRenderCursos(){
+  const cursos=["Aritmética","Álgebra","Geometría","Trigonometría","Cálculo diferencial","Cálculo integral","Probabilidad","Estadística"];
+  const grid=document.getElementById('cursoGrid');
+  if(!grid) return;
+  cursos.forEach(c=>{
+    const art=document.createElement('article');
+    art.className='curso-card';
+    art.innerHTML=`<h3>${c}</h3><p>Clases personalizadas</p>`;
+    grid.appendChild(art);
   });
 }
 
-/****************************************************************************
- * TELÉFONO LED NEÓN
- ****************************************************************************/
-(()=>{                                             // pinta teléfonos en neón
-  document.querySelectorAll('.ledPhone').forEach(led=>{
-    const palette=['#00eaff','#ff4dff','#ffca28','#4dabf5','#81c784'];
-    const chars="(+52) 56 1088 5357".split('');
-    led.innerHTML = chars.map(ch=> ch===' ' ? ch :
-      `<span style="color:${palette[rnd(0,palette.length-1)]}">${ch}</span>`).join('');
-  });
-})();
-
-/****************************************************************************
- * CURSOS Y TIENDA
- ****************************************************************************/
-const baseTopics = n => Array.from({length:n},(_,i)=>`Tema ${i+1}`); // genera temario largo
-const cursosData=[
-  ['ARITMÉTICA',baseTopics(20),'LMV','🧮'],
-  ['ÁLGEBRA',baseTopics(20),'MJ','∑'],
-  ['GEOMETRÍA',baseTopics(20),'LMV','📐'],
-  ['TRIGONOMETRÍA',baseTopics(20),'MJ','📈']
-];
-const scheduleDays={LMV:[1,3,5],MJ:[2,4]};
-const grid=document.getElementById('cursoGrid');
-const today=new Date();
-function countSessions(start,end,days){
-  let c=0,d=new Date(start);
-  while(d<=end){ if(days.includes(d.getDay())) c++; d.setDate(d.getDate()+1); }
-  return c;
-}
-if(grid){
-  cursosData.forEach((c,i)=>{
-    const ini=new Date(); ini.setDate(ini.getDate()+14+i*7); // cursos inician en 2 semanas escalonados
-    const fin=new Date(ini); fin.setDate(fin.getDate()+14);  // duran dos semanas
-    const sesiones=countSessions(ini,fin,scheduleDays[c[2]]);
-    const price=sesiones*2*300;                              // 300 por hora, 2h por sesión
-    const delta=Math.ceil((ini-today)/86400000);
-    let freq=1.2,tone='#81c784';
-    if(delta<=2){freq=0.2;tone='#ff5555';}
-    else if(delta<=7){freq=0.5;tone='#ffca28';}
-    else if(delta<=14){freq=0.8;tone='#ffca28';}
-    grid.insertAdjacentHTML('beforeend',`
-      <article class="card" style="--freq:${freq}s;--tone:${tone}">
-        <h3><span class="gold">${c[3]}</span>${c[0]}</h3>
-        <p><strong>Inicio:</strong> ${ini.getDate()}/${ini.getMonth()+1}</p>
-        <p><strong>Fin:</strong> ${fin.getDate()}/${fin.getMonth()+1}</p>
-        <p><strong>Costo:</strong> $${price} MXN</p>
-        <button class="temarioBtn">Temario</button>
-        <ul class="temario" hidden>${c[1].map(t=>`<li>${t}</li>`).join('')}</ul>
-        <button class="agendarBtn">Agendar llamada</button>
-        <form class="agendaForm" hidden>
-          <input type="date" name="fecha" required />
-          <input type="text" name="nombre" placeholder="Nombre" required />
-          <input type="tel" name="whatsapp" placeholder="WhatsApp" required />
-          <input type="email" name="correo" placeholder="Correo" required />
-          <button type="submit">Guardar</button>
-        </form>
-      </article>`);
-  });
-
-  grid.addEventListener('click',e=>{                   // escucha clics en el grid
-    const card=e.target.closest('article.card');
-    if(card && !e.target.closest('button') && !e.target.closest('form') && !e.target.closest('.temario')){
-      const cf=document.getElementById('contactForm');
-      if(cf){ cf.classList.add('highlight'); location.hash='#contacto'; }
-    }
-    if(e.target.classList.contains('agendarBtn'))      // si se presiona Agendar
-      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden; // mostrar formulario
-  });
-
-  grid.addEventListener('dblclick',e=>{                 // doble clic en temario
-    if(e.target.classList.contains('temarioBtn'))
-      e.target.nextElementSibling.hidden = !e.target.nextElementSibling.hidden;
-  });
-
-  grid.addEventListener('submit',e=>{                  // envío de formulario de agenda
-    if(e.target.classList.contains('agendaForm')){
-      e.preventDefault();
-      const card=e.target.closest('article.card');
-      const data=Object.fromEntries(new FormData(e.target).entries());
-      const title=card.querySelector('h3').textContent.trim();
-      data.curso=title.replace(/^[^A-Za-zÁÉÍÓÚÑ]+/,'');
-      const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
-      msgs.push(data); localStorage.setItem('messages',JSON.stringify(msgs));
-      alert('¡Sesión apartada!');
-      e.target.hidden=true; showCountdownBubble();
-    }
+// formulario de contacto
+const form=document.getElementById('contactForm');
+const drop=document.getElementById('dropZone');
+const fileBtn=document.getElementById('fileBtn');
+const fileInput=document.createElement('input');
+fileInput.type='file';fileInput.multiple=true;
+const fileList=document.getElementById('fileList');
+let files=[];
+function updateFileList(){
+  fileList.innerHTML='';
+  files.forEach(f=>{
+    const li=document.createElement('li');
+    li.textContent=f.name;
+    fileList.appendChild(li);
   });
 }
-if($('#contactForm')){                               // llena cursos en formulario de contacto
-  const sel=$('#contactForm select[name=curso]');
-  cursosData.forEach(c=>{ const o=document.createElement('option'); o.value=o.textContent=c[0]; sel.appendChild(o); });
-}
+fileBtn?.addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',()=>{files=[...fileInput.files];updateFileList();});
+['dragenter','dragover'].forEach(ev=>drop?.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop?.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+drop?.addEventListener('drop',e=>{files=[...e.dataTransfer.files];updateFileList();});
+form?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const status=document.getElementById('formStatus');
+  const fd=new FormData(form);
+  if(files.length) files.forEach(f=>fd.append('archivos[]',f));
+  status.textContent='enviando…';
+  fetch('save.php',{method:'POST',body:fd}).then(r=>r.json()).then(r=>{
+    status.textContent=r.ok?'recibido':(r.error||'error al enviar');
+    if(r.ok){form.reset();files=[];updateFileList();}
+  }).catch(()=>status.textContent='error al enviar');
+});
 
-/****************************************************************************
- * FORMULARIO DE CONTACTO
- ****************************************************************************/
-const contactForm=$('#contactForm');
-if(contactForm){
-  contactForm.addEventListener('submit',e=>{         // manejo de envío
-    e.preventDefault();
-    const data=Object.fromEntries(new FormData(contactForm).entries());
-    data.fecha=new Date().toISOString();
-    data.contactado=false; data.notas='';
-    const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
-    msgs.push(data); localStorage.setItem('messages',JSON.stringify(msgs));
-    alert('Mensaje enviado');
-    contactForm.reset();
-    showCountdownBubble();
-  });
-}
-
-/****************************************************************************
- * LOGIN Y EDICIÓN
- ****************************************************************************/
-const loginForm=$('#loginForm');                     // formulario de login
-const adminPanel=$('#adminPanel');                   // panel tras autenticación
-if(loginForm && adminPanel){
-  loginForm.addEventListener('submit',e=>{           // evento submit del login
-    e.preventDefault();
-    const pwd=$('#pwd').value.trim();
-    if(pwd==='2025'||pwd==='1991'){
-      loginForm.hidden=true;
-      adminPanel.hidden=false;
-      renderAdminTable();
-      renderFiles();
-    }else alert('Contraseña incorrecta');
-  });
-  $('#saveCourse').addEventListener('click',()=>alert('Datos guardados (simulado)'));
-}
-
-function renderAdminTable(){
-  const table=$('#msgTable'); if(!table) return;
-  const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
-  table.innerHTML='<tr><th>Nombre</th><th>WhatsApp</th><th>Correo</th><th>Curso</th><th>Mensaje</th></tr>';
-  msgs.forEach(m=>{
-    table.insertAdjacentHTML('beforeend',`<tr><td>${m.nombre}</td><td>${m.whatsapp}</td><td>${m.email}</td><td>${m.curso}</td><td>${m.mensaje}</td></tr>`);
-  });
-}
-
-const adminDrop=$('#adminFiles'), adminList=$('#adminFileList');
-function renderFiles(){ if(!adminList) return; const files=JSON.parse(localStorage.getItem('files')||'[]'); adminList.innerHTML=''; files.forEach(f=>{ if(f.type==='application/pdf') adminList.insertAdjacentHTML('beforeend',`<p><a href="${f.data}" target="_blank">${f.name}</a></p>`); else if(f.type.startsWith('image/')) adminList.insertAdjacentHTML('beforeend',`<img src="${f.data}" alt="${f.name}" style="max-width:100px;margin:5px;">`); }); }
-function storeFile(file){ const fr=new FileReader(); fr.onload=()=>{ const files=JSON.parse(localStorage.getItem('files')||'[]'); files.push({name:file.name,type:file.type,data:fr.result}); localStorage.setItem('files',JSON.stringify(files)); renderFiles(); }; fr.readAsDataURL(file); }
-if(adminDrop){
-  ['dragenter','dragover'].forEach(ev=>adminDrop.addEventListener(ev,e=>{e.preventDefault();adminDrop.classList.add('dragover');}));
-  ['dragleave','drop'].forEach(ev=>adminDrop.addEventListener(ev,e=>{e.preventDefault();adminDrop.classList.remove('dragover');}));
-  adminDrop.addEventListener('drop',e=>{[...e.dataTransfer.files].forEach(storeFile);});
-  adminDrop.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.onchange=()=>{[...inp.files].forEach(storeFile);};inp.click();});
-}
-
-/****************************************************************************
- * MENSAJERÍA PRIVADA
- ****************************************************************************/
-const mailLogin=$('#mailLogin'), mailSection=$('#mailSection');
-function renderMessages(){
-  const list=$('#msgList');
-  const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
-  list.innerHTML='';
-  msgs.forEach((m,i)=>{
-    list.insertAdjacentHTML('beforeend',`
-      <div class="msg">
-        <p><strong>${m.nombre}</strong> (${m.email}) - ${m.curso}</p>
-        <p>${m.mensaje}</p>
-        <label><input type="checkbox" data-idx="${i}" class="chkContact" ${m.contactado?'checked':''}/> Contactado</label>
-        <textarea data-idx="${i}" class="note">${m.notas||''}</textarea>
-      </div>`);
-  });
-}
-if(mailLogin){
-  mailLogin.addEventListener('submit',e=>{
-    e.preventDefault();
-    const pwd=$('#mailPwd').value.trim();
-    if(pwd==='2025'||pwd==='1991'){
-      mailLogin.hidden=true; mailSection.hidden=false; renderMessages();
-    }else alert('Contraseña incorrecta');
-  });
-  document.addEventListener('change',e=>{
-    if(e.target.classList.contains('chkContact')||e.target.classList.contains('note')){
-      const msgs=JSON.parse(localStorage.getItem('messages')||'[]');
-      const idx=e.target.dataset.idx;
-      if(e.target.classList.contains('chkContact')) msgs[idx].contactado=e.target.checked;
-      else msgs[idx].notas=e.target.value;
-      localStorage.setItem('messages',JSON.stringify(msgs));
-    }
-  });
-}
-
-/****************************************************************************
- * DRAG & DROP IMÁGENES EN CONTACTO
- ****************************************************************************/
-const drop = $('#dropZone'), preview=$('#preview');  // referencias a zona y vista previa
-if(drop && preview){
-  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{ // eventos de arrastre
-    e.preventDefault(); drop.classList.add('dragover');
-  }));
-  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{    // eventos de salida y suelta
-    e.preventDefault(); drop.classList.remove('dragover');
-  }));
-  drop.addEventListener('drop',e=>{                   // al soltar archivo
-    const file=e.dataTransfer.files[0]; if(!file) return;
-    const fr = new FileReader();
-    fr.onload = ()=> {
-      preview.innerHTML = file.type.startsWith('image')
-        ? `<img src="${fr.result}" style="max-width:100%">`
-        : `<pre>${fr.result.slice(0,1200)}…</pre>`;
-    };
-    file.type.startsWith('image') ? fr.readAsDataURL(file) : fr.readAsText(file);
-  });
-  drop.addEventListener('click',()=>{                 // al hacer clic en zona
-    const inp=document.createElement('input');
-    inp.type='file'; inp.accept='image/*';
-    inp.onchange=()=> preview.textContent = `Archivo cargado: ${inp.files[0].name}`;
-    inp.click();
-  });
-}
-
+// código del juego
 /****************************************************************************
  * JUEGO DE BOMBAS
- ****************************************************************************/
+****************************************************************************/
 const canvas = document.getElementById('game');
 if(canvas){
   const ctx=canvas.getContext('2d');

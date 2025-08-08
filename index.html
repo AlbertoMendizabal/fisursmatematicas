@@ -1,104 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" /> <!-- codificación UTF-8 -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- responsive -->
-  <title>FIGURAS MATEMÁTICAS – Juegos & Cursos</title> <!-- título -->
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cinzel&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" /> <!-- enlace a CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FISURAS MATEMÁTICAS</title>
+  <link rel="stylesheet" href="styles.min.css">
 </head>
 <body>
-  <header>
-    <div id="ledPhoneTop" class="ledPhone"></div>
-    <h1>FIGURAS&nbsp;MATEMÁTICAS</h1> <!-- encabezado principal -->
-    <nav>
-      <ul>
-        <li><a href="#inicio">Inicio</a></li> <!-- enlace a sección inicio -->
-        <li><a href="login.html">Acceso</a></li> <!-- enlace a login externo -->
-        <li><a href="#contacto">Contacto</a></li> <!-- enlace a contacto -->
-      </ul>
-    </nav>
+  <!-- Encabezado principal con navegación -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">FISURAS MATEMÁTICAS</h1>
+      <nav class="site-nav" role="tablist">
+        <button role="tab" aria-controls="inicio" aria-selected="true">Inicio</button>
+        <button role="tab" aria-controls="conoceme" aria-selected="false">Conóceme</button>
+        <button role="tab" aria-controls="contacto" aria-selected="false">Contacto</button>
+        <a role="tab" href="admin.php">Mensajería</a>
+      </nav>
+    </div>
   </header>
-  <main>
-    <section id="registro">
-      <h2>REGISTRO RÁPIDO</h2>
-      <form id="registroForm">
-        <label>Nombre <input type="text" name="nombre" required /></label>
-        <label>Teléfono 10 dígitos <input type="tel" name="telefono" pattern="\d{10}" required /></label>
-        <label>Correo electrónico <input type="email" name="correo" required /></label>
-        <button type="submit">Guardar</button>
-      </form>
-      <div style="overflow-x:auto;">
-        <table id="dataTable" class="sheet"></table>
-      </div>
-    </section>
-    <section id="inicio"> <!-- sección que agrupa juego y cursos -->
-      <div id="juego"> <!-- contenedor del juego -->
-        <nav id="opMenu"> <!-- menú para operaciones y dificultad -->
-          <label><input type="checkbox" data-op="+" checked /> SUMAS</label> <!-- opción suma -->
-          <label><input type="checkbox" data-op="-" checked /> RESTAS</label> <!-- opción resta -->
-          <label><input type="checkbox" data-op="×" checked /> MULTIPLICACIONES</label> <!-- opción multiplicación -->
-          <label><input type="checkbox" data-op="÷" checked /> FRACCIONES</label> <!-- opción fracciones -->
-          <label><input type="checkbox" data-op="√" checked /> RAÍCES</label> <!-- opción raíces -->
-          <label><input type="checkbox" data-op="^" checked /> POTENCIAS</label> <!-- opción potencias -->
-          <label>DIFICULTAD <input type="range" id="difficulty" min="1" max="5" value="1" /></label>
-          <label>VELOCIDAD <input type="range" id="speed" min="1" max="5" value="3" /></label>
-        </nav>
-        <div id="gameWrapper"> <!-- marco del canvas -->
-          <canvas id="game" width="1000" height="600"></canvas> <!-- canvas para animación -->
-          <div id="hud">Aciertos 0  Errores 5/5</div>
+
+  <main class="container">
+    <!-- Sección inicio con formulario, juego y cursos -->
+    <section id="inicio" role="tabpanel">
+      <h2>Contáctame</h2>
+      <form id="contactForm" enctype="multipart/form-data">
+        <input type="hidden" name="website" id="website">
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" required>
         </div>
-        <div id="typedDisplay"></div> <!-- muestra lo escrito -->
-        <div id="controls">
-          <div id="keypad"></div> <!-- keypad generado por JS -->
-          <button id="restartBtn" class="hidden">Reiniciar</button>
+        <div class="field">
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" name="telefono" pattern="\d{10}" required>
         </div>
-      </div>
-      <section id="cursos"> <!-- catálogo de cursos -->
-        <h2 class="cursos-title">CATÁLOGO DE CURSOS</h2> <!-- título sin tarifa -->
-        <ul class="horarios"> <!-- lista de horarios generales -->
-          <li>Lun/Mié/Vie: 13:30-15:30 & 19:00-21:00</li> <!-- horarios lmv -->
-          <li>Mar/Jue: 13:30-16:30 & 19:00-22:00</li> <!-- horarios mar/jue -->
-          <li>Sáb: 08:00-12:00 (receso 10:00-10:30)</li> <!-- horario sábado -->
-        </ul>
-        <div id="cursoGrid" class="grid grid-3"></div> <!-- tarjetas dinámicas -->
-      </section>
-    </section>
-    <!-- sección de login se movió a login.html -->
-    <section id="contacto"> <!-- sección de contacto -->
-      <h2>CONTACTO</h2> <!-- encabezado contacto -->
-      <form id="contactForm"> <!-- formulario de mensaje -->
-        <label>Nombre <input type="text" name="nombre" required /></label>
-        <label>WhatsApp <input type="tel" name="whatsapp" required /></label>
-        <label>E-mail <input type="email" name="email" required /></label>
-        <label>Curso de interés
-          <select name="curso" required></select>
-        </label>
-        <label>¿Va a presentar un examen? <input type="text" name="examen" /></label>
-        <label>¿Cómo se enteró de nosotros? <input type="text" name="fuente" /></label>
-        <label>¿Ha tomado el curso antes? <input type="text" name="previo" /></label>
-        <label>¿Prefiere la llamada en la mañana (11am), tarde (4pm) o noche (9pm)?
-          <select name="horario">
-            <option>Mañana 11:00</option>
-            <option>Tarde 16:00</option>
-            <option>Noche 21:00</option>
-          </select>
-        </label>
-        <label>Día para la llamada <input type="date" name="dia" /></label>
-        <label>Mensaje <textarea name="mensaje" required></textarea></label>
-        <p class="nota">Nosotros nos pondremos en contacto contigo, recibe una llamada mía el día de tu conveniencia.</p>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+        </div>
+        <div class="field">
+          <label for="curso">Curso de interés</label>
+          <input id="curso" name="curso" list="cursos">
+          <datalist id="cursos">
+            <option value="aritmética">
+            <option value="álgebra">
+            <option value="geometría">
+            <option value="trigonometría">
+            <option value="cálculo diferencial">
+            <option value="cálculo integral">
+            <option value="probabilidad">
+            <option value="estadística">
+          </datalist>
+        </div>
+        <div class="field">
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" required></textarea>
+        </div>
+        <div class="field">
+          <label>Archivos</label>
+          <div id="dropZone" class="drop-zone">Arrastra aquí tus archivos
+            <button type="button" id="fileBtn">Buscar archivos</button>
+          </div>
+          <ul id="fileList" class="file-list"></ul>
+        </div>
+        <div id="formStatus" aria-live="polite"></div>
         <button type="submit">Enviar</button>
       </form>
-      <div id="ledPhoneBottom" class="ledPhone"></div> <!-- número con efecto -->
-      <p class="neonEmail">E-mail: <strong>rahim2010@live.com.mx</strong></p> <!-- correo principal -->
-      <div id="dropZone" class="drop-zone">Arrastra aquí tus archivos (PDF, imágenes, exámenes). Revisaremos que no sean maliciosos.</div>
-      <div id="preview"></div>
+
+      <!-- Juego existente -->
+      <section id="juego">
+        <nav id="opMenu">
+          <label><input type="checkbox" data-op="+" checked> SUMAS</label>
+          <label><input type="checkbox" data-op="-" checked> RESTAS</label>
+          <label><input type="checkbox" data-op="×" checked> MULTIPLICACIONES</label>
+          <label><input type="checkbox" data-op="÷" checked> FRACCIONES</label>
+          <label><input type="checkbox" data-op="√" checked> RAÍCES</label>
+          <label><input type="checkbox" data-op="^" checked> POTENCIAS</label>
+          <label>DIFICULTAD <input type="range" id="difficulty" min="1" max="5" value="1"></label>
+          <label>VELOCIDAD <input type="range" id="speed" min="1" max="5" value="3"></label>
+        </nav>
+        <div id="gameWrapper">
+          <canvas id="game" width="1000" height="600"></canvas>
+          <div id="hud">Aciertos 0  Errores 5/5</div>
+        </div>
+        <div id="typedDisplay"></div>
+        <div id="controls">
+          <div id="keypad"></div>
+          <button id="restartBtn" class="hidden">Reiniciar</button>
+        </div>
+      </section>
+
+      <section id="cursos">
+        <h2>Catálogo de cursos</h2>
+        <div id="cursoGrid" class="curso-grid"></div>
+      </section>
+    </section>
+
+    <!-- Sección conoceme -->
+    <section id="conoceme" role="tabpanel" hidden>
+      <h2>Conóceme</h2>
+      <p>Soy Horus, también conocido como Alberto. Profesor de matemáticas en línea, paciente y exigente, con más de 14 años de experiencia en el IPN. Ofrezco clases 100% online con enfoque personalizado y formación de élite en aritmética, álgebra, geometría, trigonometría, cálculo, probabilidad, estadística y física.</p>
+    </section>
+
+    <!-- Sección contacto -->
+    <section id="contacto" role="tabpanel" hidden>
+      <h2>Contacto directo</h2>
+      <p class="whatsapp" aria-label="WhatsApp +52 56 1088 5357">(+52) 56 1088 5357</p>
     </section>
   </main>
-  <footer>&copy; 2025 Fisuras Matemáticas – Hōrūz</footer> <!-- pie de página -->
-  <audio id="bgMusic" src="https://actions.google.com/sounds/v1/ambiences/arcade_game.ogg" loop></audio>
-  <div id="notify"></div>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="scripts.js"></script> <!-- enlace JS -->
+
+  <script src="scripts.min.js"></script>
 </body>
 </html>
