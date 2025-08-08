@@ -421,3 +421,32 @@ function loop(t){                                  // bucle principal
   spawnBomb();
   loop(performance.now());              // comienza el juego
 } // fin juego
+/* CONTACTO */
+const cForm=document.getElementById('contactForm');
+if(cForm){
+  const dropZone=document.getElementById('dropZone');
+  const fileInput=document.getElementById('fileInput');
+  const fileBtn=document.getElementById('fileBtn');
+  const fileList=document.getElementById('fileList');
+  const status=document.getElementById('formStatus');
+  const files=[];
+  function updateList(){
+    fileList.innerHTML='';
+    files.forEach(f=>{const li=document.createElement('li');li.textContent=f.name;fileList.appendChild(li);});
+  }
+  fileBtn.addEventListener('click',()=>fileInput.click());
+  fileInput.addEventListener('change',e=>{files.push(...e.target.files);updateList();});
+  dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover');});
+  dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');files.push(...e.dataTransfer.files);updateList();});
+  cForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    status.textContent='Enviando...';
+    const fd=new FormData(cForm);
+    files.forEach(f=>fd.append('archivos[]',f));
+    fetch('save.php',{method:'POST',body:fd})
+      .then(r=>r.json())
+      .then(d=>{status.textContent=d.ok?'Recibido':'Error al enviar';if(d.ok){cForm.reset();files.length=0;updateList();}})
+      .catch(()=>status.textContent='Error al enviar');
+  });
+}
