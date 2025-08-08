@@ -1,98 +1,33 @@
-/* ========= Variables ======== */
-:root{
-  --bg:#0f3b2f;
-  --chalk:#f5e7c8;
-  --sg:#d4af37;           /* dorado */
-  --pb:#2e8b57;           /* verde botones */
-  --ac:#2e8b57;
-  --card:rgba(255,255,255,.08);
-  --shadow:rgba(0,0,0,.25);
-}
-
-/* ========= Reset / base ===== */
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Cinzel",serif;color:var(--chalk);min-height:100vh;display:flex;flex-direction:column;
-  background:var(--bg);
-  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px),radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px);
-  background-position:0 0,25px 25px;background-size:50px 50px;font-size:1.1rem;line-height:1.6;} /* efecto pizarrón */
-main{width:95%;max-width:1100px;margin:auto;padding:2rem 0}
-
-/* ========= Header ========= */
-header{padding:1.8rem 2rem;display:flex;flex-direction:column;align-items:center;border-bottom:2px dashed var(--sg);gap:.5rem}
-header nav ul{display:flex;gap:1rem;list-style:none;margin-top:.5rem}
-header h1{font-size:clamp(2rem,8vw,4rem);color:var(--sg);text-shadow:0 0 8px var(--chalk)}
-header nav a{text-decoration:none;color:var(--chalk);font-weight:bold}
-header nav a:hover{color:var(--sg)}
-
-.ledPhone{font-family:'SevenSeg',monospace;font-size:clamp(2.8rem,9vw,4rem);background:#000;padding:.5rem 1rem;border-radius:12px;letter-spacing:.48rem;margin-bottom:1rem;text-shadow:0 0 8px currentColor,0 0 14px currentColor;text-align:center}
-.neonEmail{font-family:'Share Tech Mono',monospace;text-shadow:0 0 8px #0ff;color:#0ff;text-align:center;margin-top:1rem}
-
-/* ========= Juego =========== */
-#opMenu{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0}
-#opMenu label{border:2px dashed var(--ac);padding:.45rem 1rem;border-radius:9px;cursor:pointer}
-
-#gameWrapper{position:relative;border:4px solid var(--chalk);border-radius:14px;overflow:hidden}
-canvas{display:block;width:100%;background:var(--bg)}
-#hud{position:absolute;top:12px;left:16px;font-weight:bold;text-shadow:0 0 6px #000}
-
-#juego{position:relative;padding-right:200px;} /* espacio para controles */
-#controls{position:absolute;top:120px;right:0;display:flex;flex-direction:column;align-items:center;gap:1rem}
-#typedDisplay{position:absolute;top:60px;right:0;width:180px;text-align:center;font-size:1.5rem;font-weight:bold;}
-#keypad{display:grid;grid-template-columns:repeat(3,60px);gap:8px}
-#keypad button{width:60px;height:60px;border:none;border-radius:10px;background:var(--sg);color:#000;font-size:1.4rem;font-weight:bold;cursor:pointer}
-#restartBtn{border:none;border-radius:8px;background:var(--pb);color:#000;padding:.4rem 1rem;font-weight:bold;cursor:pointer}
+:root{--bg:#0f3b2f;--cream:#f5e7c8;--gold:#d4af37;--text:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.5}
+a{color:var(--gold)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+header{position:sticky;top:0;background:var(--bg);z-index:10}
+header .container{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:clamp(.5rem,2vw,1rem)}
+h1{text-align:center;font-size:clamp(28px,5vw,56px);color:var(--gold);text-shadow:0 0 5px var(--gold)}
+nav a{margin:0 .5rem;text-decoration:none;color:var(--text)}
+nav a:hover{color:var(--gold)}
+.container{max-width:1100px;margin:0 auto;padding:clamp(1rem,3vw,2rem)}
+#cursoGrid{display:grid;gap:clamp(1rem,3vw,2rem);grid-template-columns:1fr}
+@media(min-width:600px){#cursoGrid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){#cursoGrid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--cream);color:#000;padding:1rem;border-radius:12px}
+#opMenu{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:1rem 0}
+#opMenu label{padding:.25rem .5rem;border:1px solid var(--gold);border-radius:6px}
+#gameWrapper{position:relative;border:2px solid var(--gold);border-radius:12px;overflow:hidden}
+canvas{display:block;width:100%;height:auto;background:var(--bg)}
+#hud{position:absolute;top:8px;left:8px;font-weight:bold}
+#typedDisplay{margin-top:.5rem;font-size:1.5rem;text-align:center;font-weight:bold}
+#controls{display:flex;flex-direction:column;align-items:center;margin-top:1rem;gap:.5rem}
+#keypad{display:grid;grid-template-columns:repeat(3,60px);gap:.5rem}
+#keypad button{width:60px;height:60px;border:none;background:var(--gold);color:#000;border-radius:8px;font-size:1.2rem;cursor:pointer}
 .hidden{display:none}
-
-/* ========= Cursos ========== */
-.cursos-title{text-align:center;margin:2.8rem 0 1.4rem;font-size:1.5rem;text-shadow:0 0 5px #000}
-.grid{display:grid;gap:2.5rem}
-.grid-3{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
-.card{background:var(--card);border:2px dashed var(--tone,var(--ac));border-radius:18px;padding:1.6rem;box-shadow:0 4px 10px var(--tone,var(--shadow));text-align:center;animation:vibe var(--freq,1s) linear infinite;transition:box-shadow .3s,border-color .3s}
-.card:hover{box-shadow:0 0 12px var(--tone,var(--sg));border-color:var(--tone,var(--sg))}
-@keyframes vibe{0%,100%{transform:none}50%{transform:translate(1px,-1px)}}
-.card h3{color:var(--pb);margin-bottom:.5rem}
-.card p{font-size:.9rem;margin:.25rem 0}
-.card button.temarioBtn{margin-top:.6rem;border:none;border-radius:8px;background:var(--sg);color:#000;padding:.35rem .9rem;font-weight:bold;cursor:pointer}
-.card button.agendarBtn{margin-top:.6rem;border:none;border-radius:8px;background:var(--pb);color:#000;padding:.35rem .9rem;font-weight:bold;cursor:pointer}
-.card ul{list-style:circle;margin-top:.4rem;text-align:left;padding-left:1.1rem;font-size:.85rem}
-.gold{color:var(--sg);font-size:1.2rem;margin-right:4px}
-
-/* ========= Contacto ========= */
-@font-face{font-family:'SevenSeg';src:url('https://fonts.cdnfonts.com/s/17464/Digital7-1.woff') format('woff')}
-.ledPhone span{display:inline-block}
-
-.drop-zone{border:2px dashed var(--pb);border-radius:12px;padding:2rem;text-align:center;transition:background .3s;color:#ddd}
-.drop-zone.dragover{background:rgba(255,255,255,.15)}
-#preview{max-width:550px;margin:1rem auto;font-size:.85rem;line-height:1.4;color:#ddd}
-
-.sheet{width:100%;border-collapse:collapse;margin-top:1rem;}
-.sheet th,.sheet td{border:1px solid var(--pb);padding:.5rem;text-align:left;}
-
-/* ========= Footer ========= */
-footer{text-align:center;color:#ccc;padding:1rem;margin-top:auto;font-size:.8rem}
-
-
-/* ====== Ajustes nuevos ====== */
-.card ul{font-size:1rem;} /* temarios con fuente mayor */
-.horarios{list-style:disc;margin:1rem auto;padding-left:1.2rem;font-size:1rem;text-align:left;} /* lista de horarios */
-form label{display:flex;flex-direction:column;margin:.5rem 0;} /* cada etiqueta en columna */
-form input,form textarea,form select{padding:.3rem;border-radius:6px;border:1px solid var(--pb);} /* campos del formulario */
-form button{margin-top:.6rem;border:none;border-radius:8px;background:var(--sg);color:#000;padding:.45rem 1rem;font-weight:bold;cursor:pointer;} /* botones de formularios */
-.msg{border:1px dashed var(--pb);padding:1rem;margin:1rem 0;}
-.msg textarea{width:100%;min-height:60px;margin-top:.5rem;}
-
-/* burbuja de notificación */
-#notify{position:fixed;top:20px;right:20px;z-index:1000;}
-.bubble{background:rgba(0,0,0,.8);border:2px solid var(--sg);color:var(--chalk);padding:1rem;border-radius:12px;max-width:260px;
-        box-shadow:0 0 10px var(--sg);margin-top:.5rem;position:relative;}
-.bubble .timer{position:absolute;bottom:6px;right:8px;font-size:.85rem;color:var(--sg);font-weight:bold;}
-
-/* resalta formulario de contacto */
-.highlight{border:4px solid #ff0;box-shadow:0 0 15px #ff0;}
-
-/* disposición responsive del juego */
-@media(max-width:700px){
-  #juego{padding-right:0;display:flex;flex-direction:column;align-items:center;}
-  #controls{position:static;order:2;margin-top:1rem;}
-  #typedDisplay{position:static;order:1;margin-top:.5rem;}
-}
+.horarios{list-style:disc;margin:1rem 0;padding-left:1.2rem;color:var(--cream)}
+.drop-zone{border:2px dashed var(--gold);padding:1rem;text-align:center;border-radius:12px;margin-top:1rem}
+.drop-zone.dragover{background:rgba(212,175,55,.2)}
+#fileList{margin-top:.5rem;font-size:.9rem;text-align:left;color:var(--cream)}
+form label{display:block;margin-top:1rem}
+form input,form textarea{width:100%;padding:.5rem;margin-top:.25rem;border-radius:6px;border:1px solid var(--gold)}
+form button{margin-top:1rem;background:var(--gold);color:#000;border:none;padding:.5rem 1rem;border-radius:8px;cursor:pointer}
+footer{text-align:center;padding:1rem;font-size:.9rem;color:var(--cream)}
