@@ -16,6 +16,7 @@ const sortSelect = document.getElementById("sortSelect");
 const notificationToast = document.getElementById("notificationToast");
 const notificationMessage = document.getElementById("notificationMessage");
 const closeNotification = document.getElementById("closeNotification");
+const staticWhatsAppLinks = document.querySelectorAll("[data-whatsapp-message]");
 
 const adminModal = document.getElementById("adminModal");
 const openAdmin = document.getElementById("openAdmin");
@@ -91,6 +92,15 @@ const currencyFormatter = new Intl.NumberFormat("es-MX", {
 
 const createWhatsAppUrl = (message) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+const setupStaticWhatsAppLinks = () => {
+  staticWhatsAppLinks.forEach((link) => {
+    const message = link.dataset.whatsappMessage;
+    if (message) {
+      link.href = createWhatsAppUrl(message);
+    }
+  });
+};
 
 const parsePrice = (value) => {
   if (!value) return null;
@@ -730,6 +740,7 @@ const init = () => {
   renderProducts();
   updateAdminList();
   setupCourseButtons();
+  setupStaticWhatsAppLinks();
   setupTabs();
   setupAdminTabs();
   setupNotification();
