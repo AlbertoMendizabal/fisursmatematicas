@@ -1,97 +1,373 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FISURAS MATEMÁTICAS</title>
-<link rel="stylesheet" href="styles.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LA TIENDA DE ALBERTO</title>
+  <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
-<header class="sticky">
-  <div class="container">
-    <h1>FISURAS MATEMÁTICAS</h1>
-    <nav>
-      <a href="#inicio">Inicio</a>
-      <a href="courses.html">Cursos</a>
-      <a href="admin.php">Acceso <span id="badge" class="badge" aria-label="nuevas notificaciones"></span></a>
-      <a href="#contacto">Contacto</a>
-    </nav>
-    <a href="https://wa.me/525610885357" class="whatsapp">WhatsApp: +52 56 1088 5357</a>
-  </div>
-</header>
-<main class="container">
-  <section id="inicio">
-    <div id="juego">
-      <nav id="opMenu">
-        <label><input type="checkbox" data-op="+" checked> SUMAS</label>
-        <label><input type="checkbox" data-op="-" checked> RESTAS</label>
-        <label><input type="checkbox" data-op="×" checked> MULTIPLICACIONES</label>
-        <label><input type="checkbox" data-op="÷" checked> FRACCIONES</label>
-        <label><input type="checkbox" data-op="√" checked> RAÍCES</label>
-        <label><input type="checkbox" data-op="^" checked> POTENCIAS</label>
-        <label>DIFICULTAD <input type="range" id="difficulty" min="1" max="5" value="1"></label>
-        <label>VELOCIDAD <input type="range" id="speed" min="1" max="5" value="3"></label>
-      </nav>
-      <div id="gameWrapper">
-        <canvas id="game" width="1000" height="600"></canvas>
-        <div id="hud">Aciertos 0  Errores 5/5</div>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container header-grid">
+      <div class="brand">
+        <span class="brand-kicker">Tienda & Cursos</span>
+        <h1>LA TIENDA DE ALBERTO</h1>
       </div>
-      <div id="typedDisplay"></div>
-      <div id="controls">
-        <div id="keypad"></div>
-        <button id="restartBtn" class="hidden">Reiniciar</button>
+      <nav class="main-nav" aria-label="Principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#cursos">Cursos</a>
+        <a href="#productos">Productos</a>
+        <a href="#interactivo">Juego & Estudiantes</a>
+        <a href="#publica">Publica tu producto</a>
+      </nav>
+      <button class="admin-button" id="openAdmin" type="button">Admin</button>
+    </div>
+    <div class="contact-bar">
+      <div class="container contact-bar-inner">
+        <div class="contact-info">
+          <span>WhatsApp directo</span>
+          <strong>+52 56 1088 5357</strong>
+        </div>
+        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
-    <section id="cursos">
-      <h2 class="cursos-title">CATÁLOGO DE CURSOS</h2>
-      <p><a href="courses.html">Ver cursos disponibles</a></p>
-    </section>
-  </section>
-  <section id="contacto">
-    <h2>CONTACTO</h2>
-    <form id="contactForm">
-      <label for="cNombre">Nombre
-        <input id="cNombre" name="nombre" required>
-      </label>
-      <label for="cTelefono">Teléfono 10 dígitos
-        <input id="cTelefono" name="telefono" pattern="\d{10}" required>
-      </label>
-      <label for="cEmail">Email
-        <input id="cEmail" type="email" name="email" required>
-      </label>
-      <label for="cCurso">Curso de interés
-        <input list="cursosLista" id="cCurso" name="curso" required>
-        <datalist id="cursosLista">
-          <option value="Aritmética">
-          <option value="Álgebra">
-          <option value="Geometría">
-          <option value="Trigonometría">
-          <option value="Cálculo Diferencial">
-          <option value="Cálculo Integral">
-          <option value="Probabilidad">
-          <option value="Estadística">
-        </datalist>
-      </label>
-      <label for="cMensaje">Mensaje
-        <textarea id="cMensaje" name="mensaje" required></textarea>
-      </label>
-      <div id="dropZone" class="drop-zone">
-        Arrastra y suelta archivos aquí
-        <input type="file" id="fileInput" name="archivos[]" multiple hidden>
-        <button type="button" id="fileBtn">Buscar archivos</button>
-        <ul id="fileList"></ul>
+  </header>
+
+  <main id="contenido">
+    <section id="inicio" class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Confianza y claridad para aprender y vender</p>
+          <h2>Aprende matemáticas y vende tus productos con respaldo.</h2>
+          <p class="lead">Cursos intensivos y catálogo verificado. Comunicación directa por WhatsApp con procesos claros.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#cursos">Ver cursos</a>
+            <a class="btn btn-ghost" href="#productos">Explorar productos</a>
+          </div>
+          <div class="trust-box">
+            <p><strong>Comisión: 20% por venta</strong></p>
+            <p class="muted">El vendedor conserva sus productos. Después de acordar pago, comprador y vendedor coordinan día/hora de entrega. Alberto ya no interviene en esa coordinación.</p>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3>Atención inmediata</h3>
+          <p>Respuestas rápidas y proceso transparente. Cursos y productos listos para comenzar.</p>
+          <ul>
+            <li>Catálogo actualizado</li>
+            <li>Pago seguro por acuerdo directo</li>
+            <li>Soporte personalizado</li>
+          </ul>
+        </div>
       </div>
-      <input type="text" id="website" name="website" hidden aria-hidden="true">
-      <button type="submit">Enviar</button>
-      <p id="formStatus" aria-live="polite"></p>
-    </form>
-  </section>
-</main>
-<footer class="container">
-  <a href="https://wa.me/525610885357" class="whatsapp">WhatsApp: +52 56 1088 5357</a>
-  &copy; 2025 Fisuras Matemáticas
-</footer>
-<script src="notify.min.js"></script>
-<script src="scripts.min.js"></script>
+    </section>
+
+    <section id="cursos" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Cursos en línea</h2>
+          <p>8 sesiones de 1 hora · Atención personalizada · Precio fijo</p>
+        </div>
+        <div class="card-grid">
+          <article class="card course-card">
+            <h3>Álgebra</h3>
+            <p>8 sesiones de 1 hora</p>
+            <p class="price">$2400 MXN</p>
+            <button class="btn btn-whatsapp" data-course="Álgebra">Inscribirme por WhatsApp</button>
+          </article>
+          <article class="card course-card">
+            <h3>Cálculo Diferencial</h3>
+            <p>8 sesiones de 1 hora</p>
+            <p class="price">$2400 MXN</p>
+            <button class="btn btn-whatsapp" data-course="Cálculo Diferencial">Inscribirme por WhatsApp</button>
+          </article>
+          <article class="card course-card">
+            <h3>Cálculo Integral</h3>
+            <p>8 sesiones de 1 hora</p>
+            <p class="price">$2400 MXN</p>
+            <button class="btn btn-whatsapp" data-course="Cálculo Integral">Inscribirme por WhatsApp</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="productos" class="section alt-section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Productos</h2>
+          <p>Catálogo actualizado con productos y servicios disponibles.</p>
+        </div>
+        <div class="filters">
+          <label class="field">
+            <span>Buscar</span>
+            <input type="search" id="searchInput" placeholder="Buscar por título o descripción">
+          </label>
+          <label class="field">
+            <span>Ordenar por</span>
+            <select id="sortSelect">
+              <option value="recent">Más recientes</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+            </select>
+          </label>
+        </div>
+        <div id="productGrid" class="card-grid"></div>
+      </div>
+    </section>
+
+    <section id="publica" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Publica tu producto</h2>
+          <p>Comparte tu producto con nuestra comunidad. La publicación se gestiona desde el panel administrador.</p>
+        </div>
+        <div class="publica-grid">
+          <div class="dropzone" aria-label="Zona de carga de imagen">
+            <p><strong>Arrastrar y soltar imagen</strong></p>
+            <p class="muted">o</p>
+            <button class="btn btn-ghost" type="button">Subir imagen</button>
+            <p class="muted small">Para publicar o editar productos se requiere acceso (solo administrador).</p>
+          </div>
+          <div class="publica-info">
+            <h3>¿Qué se necesita?</h3>
+            <ul>
+              <li>Imagen clara del producto</li>
+              <li>Descripción breve</li>
+              <li>Precio en MXN</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="interactivo" class="section alt-section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Zona interactiva</h2>
+          <p>Juego matemático, próximos cursos, acceso de estudiantes y contacto.</p>
+        </div>
+        <div class="tabs" data-tabs>
+          <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Juego & Próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
+          </div>
+          <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn">
+            <div class="panel-grid">
+              <div class="game-card">
+                <h3>Juego rápido</h3>
+                <p>Resuelve operaciones y mejora tu velocidad.</p>
+                <div class="game-area">
+                  <div class="game-question" id="gameQuestion">3 + 4 = ?</div>
+                  <input type="number" id="gameAnswer" aria-label="Respuesta del juego">
+                  <button class="btn btn-primary" id="gameSubmit" type="button">Responder</button>
+                  <button class="btn btn-ghost" id="gameReset" type="button">Nuevo reto</button>
+                  <p id="gameFeedback" class="muted" aria-live="polite"></p>
+                </div>
+              </div>
+              <div class="upcoming-card">
+                <h3>Próximos cursos</h3>
+                <ul class="timeline">
+                  <li><strong>Álgebra intensiva</strong><span>Inicia 15 de marzo</span></li>
+                  <li><strong>Cálculo diferencial</strong><span>Inicia 2 de abril</span></li>
+                  <li><strong>Cálculo integral</strong><span>Inicia 20 de abril</span></li>
+                </ul>
+                <p class="muted">Solicita tu lugar con anticipación.</p>
+              </div>
+            </div>
+          </div>
+          <div id="tab-estudiantes" class="tab-panel" role="tabpanel" aria-labelledby="tab-estudiantes-btn" hidden>
+            <div class="student-grid">
+              <div class="card">
+                <h3>Acceso estudiantes</h3>
+                <p>Ingresa tu contraseña para editar contenido rápido.</p>
+                <form id="studentLoginForm">
+                  <label class="field">
+                    <span>Contraseña</span>
+                    <input type="password" id="studentPassword" required>
+                  </label>
+                  <button class="btn btn-primary" type="submit">Entrar</button>
+                  <p id="studentLoginStatus" class="muted" aria-live="polite"></p>
+                </form>
+              </div>
+              <div class="card" id="studentPanel" hidden>
+                <div class="panel-header">
+                  <h3>Edición rápida</h3>
+                  <button class="btn btn-ghost" id="studentLogout" type="button">Cerrar sesión</button>
+                </div>
+                <form id="studentEditForm">
+                  <label class="field">
+                    <span>Contenido destacado</span>
+                    <textarea id="studentContent" rows="3"></textarea>
+                  </label>
+                  <div class="field-row">
+                    <label class="field">
+                      <span>Fecha clave</span>
+                      <input type="date" id="studentDate">
+                    </label>
+                    <label class="field">
+                      <span>Número rápido</span>
+                      <input type="number" id="studentNumber">
+                    </label>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                  <p id="studentSaveStatus" class="muted" aria-live="polite"></p>
+                </form>
+                <div class="preview-box">
+                  <h4>Vista previa</h4>
+                  <p id="studentPreview"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="tab-contacto" class="tab-panel" role="tabpanel" aria-labelledby="tab-contacto-btn" hidden>
+            <div class="contact-grid">
+              <form id="contactForm" class="card">
+                <h3>Enviar mensaje</h3>
+                <label class="field">
+                  <span>Nombre</span>
+                  <input type="text" id="contactName" required>
+                </label>
+                <label class="field">
+                  <span>Email</span>
+                  <input type="email" id="contactEmail" required>
+                </label>
+                <label class="field">
+                  <span>Mensaje</span>
+                  <textarea id="contactMessage" rows="4" required></textarea>
+                </label>
+                <button class="btn btn-primary" type="submit">Enviar</button>
+                <p id="contactStatus" class="muted" aria-live="polite"></p>
+              </form>
+              <div class="card">
+                <h3>Información básica</h3>
+                <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
+                <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
+                <p><strong>Ubicación:</strong> Ciudad de México</p>
+                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h3>LA TIENDA DE ALBERTO</h3>
+        <p class="muted">Cursos, productos y asesoría directa.</p>
+      </div>
+      <div class="footer-contact">
+        <span>WhatsApp</span>
+        <strong>+52 56 1088 5357</strong>
+        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="notificationToast" class="toast" role="status" aria-live="polite" hidden>
+    <div>
+      <h4>Notificación</h4>
+      <p id="notificationMessage"></p>
+    </div>
+    <button class="btn btn-ghost" id="closeNotification" type="button">Cerrar</button>
+  </div>
+
+  <div id="adminModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+      <button class="modal-close" id="closeAdmin" type="button" aria-label="Cerrar">×</button>
+      <h2 id="adminTitle">Panel administrador</h2>
+      <div id="adminLogin">
+        <p class="muted">Acceso solo administrador. Contraseñas válidas: 2025 o 2010.</p>
+        <form id="adminLoginForm">
+          <label class="field">
+            <span>Contraseña</span>
+            <input type="password" id="adminPassword" required>
+          </label>
+          <button class="btn btn-primary" type="submit">Ingresar</button>
+          <p id="adminLoginStatus" class="muted" aria-live="polite"></p>
+        </form>
+      </div>
+      <div id="adminPanel" hidden>
+        <div class="panel-header">
+          <div class="tab-list" role="tablist" aria-label="Panel administrador">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="admin-products" id="admin-products-btn">Productos</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-notifications" id="admin-notifications-btn">Notificaciones</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-settings" id="admin-settings-btn">Ajustes</button>
+          </div>
+          <button class="btn btn-ghost" id="adminLogout" type="button">Cerrar sesión</button>
+        </div>
+
+        <div id="admin-products" class="tab-panel" role="tabpanel" aria-labelledby="admin-products-btn">
+          <div class="admin-actions">
+            <button class="btn btn-primary" id="newProduct" type="button">Nuevo producto</button>
+            <p class="muted" id="adminStorageStatus"></p>
+          </div>
+          <div id="adminProductList" class="admin-list"></div>
+          <form id="productForm" class="card" hidden>
+            <h3 id="productFormTitle">Nuevo producto</h3>
+            <div class="dropzone" id="adminDropzone">
+              <p><strong>Arrastra tu imagen aquí</strong></p>
+              <p class="muted">o</p>
+              <input type="file" id="productImage" accept="image/*" hidden>
+              <button class="btn btn-ghost" id="productImageBtn" type="button">Seleccionar imagen</button>
+              <img id="productPreview" alt="Vista previa" hidden>
+            </div>
+            <label class="field">
+              <span>Título</span>
+              <input type="text" id="productTitle" required>
+            </label>
+            <label class="field">
+              <span>Mini-descripción</span>
+              <textarea id="productDescription" maxlength="220" rows="3" required></textarea>
+              <small id="descCount">0/220</small>
+            </label>
+            <label class="field">
+              <span>Precio MXN</span>
+              <input type="text" id="productPrice" placeholder="350.50" required>
+            </label>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Guardar</button>
+              <button class="btn btn-whatsapp" id="adminWhatsApp" type="button">Avisar por WhatsApp</button>
+              <button class="btn btn-ghost" id="cancelProduct" type="button">Cancelar</button>
+            </div>
+            <p id="productFormStatus" class="muted" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div id="admin-notifications" class="tab-panel" role="tabpanel" aria-labelledby="admin-notifications-btn" hidden>
+          <form id="notificationForm" class="card">
+            <label class="field">
+              <span>Mensaje de notificación</span>
+              <textarea id="notificationInput" rows="3" required></textarea>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="notificationEnabled" checked>
+              <span>Activar notificación al abrir</span>
+            </label>
+            <button class="btn btn-primary" type="submit">Guardar notificación</button>
+            <p id="notificationStatus" class="muted" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div id="admin-settings" class="tab-panel" role="tabpanel" aria-labelledby="admin-settings-btn" hidden>
+          <div class="card">
+            <h3>Respaldo</h3>
+            <p class="muted">Exporta o importa tu catálogo y notificaciones.</p>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="exportData" type="button">Exportar JSON</button>
+              <input type="file" id="importData" accept="application/json" hidden>
+              <button class="btn btn-ghost" id="importDataBtn" type="button">Importar JSON</button>
+            </div>
+            <p id="settingsStatus" class="muted" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
