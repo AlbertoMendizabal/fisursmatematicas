@@ -1,4 +1,4 @@
-const WHATSAPP_NUMBER = "525610885357";
+const WHATSAPP_NUMBER = "525610885857";
 const APPROVED_KEY = "LTA_APPROVED_V1";
 const PENDING_KEY = "LTA_PENDING_V1";
 const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
@@ -6,6 +6,7 @@ const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
 const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
+const MESSAGE_KEY = "LTA_MESSAGES_V1";
 
 const DEFAULT_NOTIFICATION =
   "Bienvenido a LA TIENDA DE ALBERTO. Consulta cursos y productos disponibles.";
@@ -23,9 +24,15 @@ const proposalDropzone = document.getElementById("proposalDropzone");
 const proposalImageBtn = document.getElementById("proposalImageBtn");
 const proposalImage = document.getElementById("proposalImage");
 const proposalPreview = document.getElementById("proposalPreview");
+const proposalType = document.getElementById("proposalType");
+const proposalCategory = document.getElementById("proposalCategory");
 const proposalTitle = document.getElementById("proposalTitle");
 const proposalDescription = document.getElementById("proposalDescription");
 const proposalPrice = document.getElementById("proposalPrice");
+const proposalSchedule = document.getElementById("proposalSchedule");
+const proposalDates = document.getElementById("proposalDates");
+const proposalStartDate = document.getElementById("proposalStartDate");
+const proposalEndDate = document.getElementById("proposalEndDate");
 const proposalStatus = document.getElementById("proposalStatus");
 
 const adminModal = document.getElementById("adminModal");
@@ -48,13 +55,20 @@ const productImageBtn = document.getElementById("productImageBtn");
 const productPreview = document.getElementById("productPreview");
 const adminDropzone = document.getElementById("adminDropzone");
 const adminWhatsApp = document.getElementById("adminWhatsApp");
+const productType = document.getElementById("productType");
+const productCategory = document.getElementById("productCategory");
 const productTitle = document.getElementById("productTitle");
 const productDescription = document.getElementById("productDescription");
 const productPrice = document.getElementById("productPrice");
+const productSchedule = document.getElementById("productSchedule");
+const productDates = document.getElementById("productDates");
+const productStartDate = document.getElementById("productStartDate");
+const productEndDate = document.getElementById("productEndDate");
 const descCount = document.getElementById("descCount");
 const cancelProduct = document.getElementById("cancelProduct");
 const productFormStatus = document.getElementById("productFormStatus");
 const adminStorageStatus = document.getElementById("adminStorageStatus");
+const adminMessagesList = document.getElementById("adminMessagesList");
 
 const notificationForm = document.getElementById("notificationForm");
 const notificationInput = document.getElementById("notificationInput");
@@ -89,6 +103,7 @@ const studentPreview = document.getElementById("studentPreview");
 
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
+const categorySelect = document.getElementById("categorySelect");
 
 let approvedProducts = [];
 let pendingProposals = [];
@@ -96,6 +111,7 @@ let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
 let currentGame = null;
+let storedMessages = [];
 
 const currencyFormatter = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -145,7 +161,11 @@ const defaultProducts = () => [
     title: "Calculadora científica",
     description: "Ideal para bachillerato y primeros semestres. Incluye manual.",
     price: 650,
-    imageDataUrl: demoImage("Calculadora"),
+    images: [demoImage("Calculadora")],
+    category: "Electrónica",
+    type: "Producto",
+    startDate: "",
+    endDate: "",
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
@@ -154,7 +174,11 @@ const defaultProducts = () => [
     title: "Asesoría personalizada",
     description: "Sesión 1 a 1 para resolver dudas y reforzar conceptos.",
     price: 450,
-    imageDataUrl: demoImage("Asesoría"),
+    images: [demoImage("Asesoría")],
+    category: "Servicios profesionales",
+    type: "Servicio",
+    startDate: "2024-11-18",
+    endDate: "2024-11-18",
     createdAt: Date.now() - 10000,
     updatedAt: Date.now() - 10000,
   },
@@ -163,7 +187,11 @@ const defaultProducts = () => [
     title: "Guía de ejercicios",
     description: "Colección de problemas con soluciones paso a paso.",
     price: 220,
-    imageDataUrl: demoImage("Guía"),
+    images: [demoImage("Guía")],
+    category: "Educación",
+    type: "Producto",
+    startDate: "",
+    endDate: "",
     createdAt: Date.now() - 20000,
     updatedAt: Date.now() - 20000,
   },
@@ -188,10 +216,19 @@ const loadFromStorage = (key, fallback) => {
   }
 };
 
+const normalizeItem = (item) => ({
+  ...item,
+  images: item.images || (item.imageDataUrl ? [item.imageDataUrl] : []),
+  type: item.type || "Producto",
+  category: item.category || "Otros",
+  startDate: item.startDate || "",
+  endDate: item.endDate || "",
+});
+
 const loadApproved = () => {
   const stored = loadFromStorage(APPROVED_KEY, null);
   if (stored && Array.isArray(stored)) {
-    approvedProducts = stored;
+    approvedProducts = stored.map(normalizeItem);
     return;
   }
   approvedProducts = defaultProducts();
@@ -200,16 +237,81 @@ const loadApproved = () => {
 
 const loadPending = () => {
   const stored = loadFromStorage(PENDING_KEY, []);
-  pendingProposals = Array.isArray(stored) ? stored : [];
+  pendingProposals = Array.isArray(stored)
+    ? stored.map(normalizeItem)
+    : [];
+};
+
+const loadMessages = () => {
+  const stored = loadFromStorage(MESSAGE_KEY, []);
+  storedMessages = Array.isArray(stored) ? stored : [];
+};
+
+const renderMessages = () => {
+  if (!adminMessagesList) return;
+  adminMessagesList.innerHTML = "";
+  if (!storedMessages.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No hay mensajes privados aún.";
+    adminMessagesList.appendChild(empty);
+    return;
+  }
+
+  storedMessages.forEach((message) => {
+    const item = document.createElement("div");
+    item.className = "admin-item";
+    item.classList.add("message-item");
+
+    const info = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = message.productTitle || "Producto sin título";
+    const meta = document.createElement("p");
+    meta.className = "muted";
+    meta.textContent = `${message.name} · ${message.contact}`;
+    const body = document.createElement("p");
+    body.textContent = message.message;
+    info.append(title, meta, body);
+
+    const actions = document.createElement("div");
+    const readBtn = document.createElement("button");
+    readBtn.className = "btn btn-ghost";
+    readBtn.type = "button";
+    readBtn.textContent = message.read ? "Leído" : "Marcar leído";
+    readBtn.disabled = message.read;
+    readBtn.addEventListener("click", () => {
+      message.read = true;
+      saveToStorage(MESSAGE_KEY, storedMessages);
+      renderMessages();
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-ghost";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Eliminar";
+    deleteBtn.addEventListener("click", () => {
+      storedMessages = storedMessages.filter((item) => item.id !== message.id);
+      saveToStorage(MESSAGE_KEY, storedMessages);
+      renderMessages();
+    });
+
+    actions.append(readBtn, deleteBtn);
+    item.append(info, actions);
+    if (!message.read) item.classList.add("is-unread");
+    adminMessagesList.appendChild(item);
+  });
 };
 
 const renderProducts = () => {
   const query = safeText(searchInput.value).toLowerCase();
   const sort = sortSelect.value;
+  const selectedCategory = categorySelect?.value ?? "all";
 
   let filtered = approvedProducts.filter((product) => {
     const text = `${product.title} ${product.description}`.toLowerCase();
-    return text.includes(query);
+    const matchesCategory =
+      selectedCategory === "all" || product.category === selectedCategory;
+    return text.includes(query) && matchesCategory;
   });
 
   if (sort === "price-asc") {
@@ -227,11 +329,21 @@ const renderProducts = () => {
 
     const img = document.createElement("img");
     img.loading = "lazy";
-    img.src = product.imageDataUrl;
+    img.src = product.images?.[0] || demoImage("Producto");
     img.alt = safeText(product.title);
 
     const title = document.createElement("h3");
     title.textContent = safeText(product.title);
+
+    const meta = document.createElement("div");
+    meta.className = "tag-row";
+    const typeTag = document.createElement("span");
+    typeTag.className = "tag";
+    typeTag.textContent = product.type || "Producto";
+    const categoryTag = document.createElement("span");
+    categoryTag.className = "tag tag-alt";
+    categoryTag.textContent = product.category || "Otros";
+    meta.append(typeTag, categoryTag);
 
     const desc = document.createElement("p");
     desc.textContent = safeText(product.description);
@@ -240,15 +352,89 @@ const renderProducts = () => {
     price.className = "price";
     price.textContent = formatPrice(product.price);
 
+    const schedule = document.createElement("p");
+    schedule.className = "muted small";
+    if (product.startDate || product.endDate) {
+      const start = product.startDate ? `Inicio: ${product.startDate}` : "";
+      const end = product.endDate ? `Fin: ${product.endDate}` : "";
+      schedule.textContent = [start, end].filter(Boolean).join(" · ");
+    }
+
+    const gallery = document.createElement("div");
+    gallery.className = "mini-gallery";
+    (product.images || []).slice(0, 4).forEach((image) => {
+      const thumb = document.createElement("img");
+      thumb.src = image;
+      thumb.alt = `Vista de ${product.title}`;
+      gallery.appendChild(thumb);
+    });
+
     const button = document.createElement("a");
     button.className = "btn btn-whatsapp";
     button.target = "_blank";
     button.rel = "noopener";
     button.textContent = "Comprar por WhatsApp";
-    const message = `Hola Alberto. Me interesa este producto: ${product.title}. Precio: $${product.price} MXN. ¿Sigue disponible? ¿Cómo procedemos?`;
+    const message = `Hola Alberto. Me interesa este ${product.type?.toLowerCase() || "producto"}: ${product.title}. Precio: $${product.price} MXN. ¿Sigue disponible? ¿Cómo procedemos?`;
     button.href = createWhatsAppUrl(message);
 
-    card.append(img, title, desc, price, button);
+    const messageToggle = document.createElement("button");
+    messageToggle.className = "btn btn-ghost";
+    messageToggle.type = "button";
+    messageToggle.textContent = "Enviar mensaje privado";
+
+    const messageForm = document.createElement("form");
+    messageForm.className = "message-form";
+    messageForm.hidden = true;
+    messageForm.innerHTML = `
+      <label class="field">
+        <span>Nombre</span>
+        <input type="text" name="name" required>
+      </label>
+      <label class="field">
+        <span>WhatsApp o email</span>
+        <input type="text" name="contact" required>
+      </label>
+      <label class="field">
+        <span>Mensaje</span>
+        <textarea name="message" rows="3" required></textarea>
+      </label>
+      <button class="btn btn-primary" type="submit">Enviar mensaje</button>
+      <p class="muted small" data-status></p>
+    `;
+
+    messageToggle.addEventListener("click", () => {
+      messageForm.hidden = !messageForm.hidden;
+    });
+
+    messageForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(messageForm);
+      const payload = {
+        id: generateId(),
+        productId: product.id,
+        productTitle: product.title,
+        name: formData.get("name")?.toString().trim() || "",
+        contact: formData.get("contact")?.toString().trim() || "",
+        message: formData.get("message")?.toString().trim() || "",
+        createdAt: Date.now(),
+        read: false,
+      };
+      if (!payload.name || !payload.contact || !payload.message) return;
+      storedMessages.unshift(payload);
+      saveToStorage(MESSAGE_KEY, storedMessages);
+      const status = messageForm.querySelector("[data-status]");
+      if (status) {
+        status.textContent = "Mensaje enviado. Te responderemos pronto.";
+      }
+      messageForm.reset();
+      renderMessages();
+    });
+
+    card.append(img);
+    if (gallery.childElementCount) card.append(gallery);
+    card.append(meta, title, desc, price);
+    if (schedule.textContent) card.append(schedule);
+    card.append(button, messageToggle, messageForm);
     productGrid.appendChild(card);
   });
 };
@@ -268,7 +454,7 @@ const updateAdminList = () => {
     item.className = "admin-item";
 
     const img = document.createElement("img");
-    img.src = product.imageDataUrl;
+    img.src = product.images?.[0] || demoImage("Producto");
     img.alt = safeText(product.title);
 
     const info = document.createElement("div");
@@ -276,7 +462,10 @@ const updateAdminList = () => {
     title.textContent = safeText(product.title);
     const meta = document.createElement("p");
     meta.className = "muted";
-    meta.textContent = `${formatPrice(product.price)} · ${safeText(product.description)}`;
+    const dates = [product.startDate, product.endDate].filter(Boolean).join(" · ");
+    meta.textContent = `${formatPrice(product.price)} · ${product.type || "Producto"} · ${
+      product.category || "Otros"
+    }${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
     info.append(title, meta);
 
     const actions = document.createElement("div");
@@ -313,7 +502,7 @@ const updatePendingList = () => {
     item.className = "admin-item";
 
     const img = document.createElement("img");
-    img.src = proposal.imageDataUrl;
+    img.src = proposal.images?.[0] || demoImage("Producto");
     img.alt = safeText(proposal.title);
 
     const info = document.createElement("div");
@@ -321,7 +510,10 @@ const updatePendingList = () => {
     title.textContent = safeText(proposal.title);
     const meta = document.createElement("p");
     meta.className = "muted";
-    meta.textContent = `${formatPrice(proposal.price)} · ${safeText(proposal.description)}`;
+    const dates = [proposal.startDate, proposal.endDate].filter(Boolean).join(" · ");
+    meta.textContent = `${formatPrice(proposal.price)} · ${proposal.type || "Producto"} · ${
+      proposal.category || "Otros"
+    }${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
     info.append(title, meta);
 
     const actions = document.createElement("div");
@@ -352,14 +544,15 @@ const updatePendingList = () => {
 const resetProductForm = () => {
   productForm.reset();
   productPreview.hidden = true;
-  productPreview.src = "";
-  productPreview.dataset.image = "";
+  productPreview.innerHTML = "";
+  productPreview.dataset.images = "";
   editingApprovedId = null;
   editingPendingId = null;
   editingMode = "approved";
   productFormTitle.textContent = "Nuevo producto";
   productFormStatus.textContent = "";
   descCount.textContent = "0/220";
+  productDates.hidden = true;
 };
 
 const openEditForm = (item, mode) => {
@@ -374,13 +567,17 @@ const openEditForm = (item, mode) => {
     editingPendingId = item.id;
     editingApprovedId = null;
   }
+  productType.value = item.type || "";
+  productCategory.value = item.category || "";
   productTitle.value = item.title;
   productDescription.value = item.description;
   productPrice.value = item.price;
   descCount.textContent = `${item.description.length}/220`;
-  productPreview.src = item.imageDataUrl;
-  productPreview.dataset.image = item.imageDataUrl;
-  productPreview.hidden = false;
+  productStartDate.value = item.startDate || "";
+  productEndDate.value = item.endDate || "";
+  productSchedule.checked = Boolean(item.startDate || item.endDate);
+  productDates.hidden = !productSchedule.checked;
+  renderPreviewGrid(productPreview, item.images || []);
 
   const adminProductsTab = document.getElementById("admin-products-btn");
   if (adminProductsTab) adminProductsTab.click();
@@ -460,13 +657,46 @@ const compressImage = (file) =>
     reader.readAsDataURL(file);
   });
 
-const handleImageDrop = async ({ file, previewEl, statusEl }) => {
-  if (!file) return;
-  try {
+const compressImages = async (files) => {
+  const fileList = Array.from(files || []);
+  const images = [];
+  for (const file of fileList) {
+    // eslint-disable-next-line no-await-in-loop
     const dataUrl = await compressImage(file);
-    previewEl.src = dataUrl;
-    previewEl.hidden = false;
-    previewEl.dataset.image = dataUrl;
+    images.push(dataUrl);
+  }
+  return images;
+};
+
+const renderPreviewGrid = (previewEl, images) => {
+  const list = images || [];
+  previewEl.innerHTML = "";
+  list.forEach((image, index) => {
+    const img = document.createElement("img");
+    img.src = image;
+    img.alt = `Imagen ${index + 1}`;
+    previewEl.appendChild(img);
+  });
+  previewEl.dataset.images = JSON.stringify(list);
+  previewEl.hidden = list.length === 0;
+};
+
+const getPreviewImages = (previewEl) => {
+  const raw = previewEl.dataset.images;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const handleImageDrop = async ({ files, previewEl, statusEl }) => {
+  if (!files || !files.length) return;
+  try {
+    const images = await compressImages(files);
+    renderPreviewGrid(previewEl, images);
     if (statusEl) statusEl.textContent = "";
   } catch (error) {
     if (statusEl) {
@@ -588,18 +818,22 @@ const handleAdminLogout = () => {
 
 const handleProductSubmit = (event) => {
   event.preventDefault();
+  const type = productType.value.trim();
+  const category = productCategory.value.trim();
   const title = productTitle.value.trim();
   const description = productDescription.value.trim();
   const priceValue = parsePrice(productPrice.value);
-  const imageData = productPreview.dataset.image || productPreview.src;
+  const images = getPreviewImages(productPreview);
+  const startDate = productSchedule.checked ? productStartDate.value : "";
+  const endDate = productSchedule.checked ? productEndDate.value : "";
 
-  if (!title || !description || priceValue === null) {
+  if (!type || !category || !title || !description || priceValue === null) {
     productFormStatus.textContent = "Completa todos los campos con datos válidos.";
     return;
   }
 
-  if (!imageData) {
-    productFormStatus.textContent = "Agrega una imagen del producto.";
+  if (!images.length) {
+    productFormStatus.textContent = "Agrega al menos una imagen del producto.";
     return;
   }
 
@@ -609,10 +843,14 @@ const handleProductSubmit = (event) => {
       proposal.id === editingPendingId
         ? {
             ...proposal,
+            type,
+            category,
             title,
             description,
             price: priceValue,
-            imageDataUrl: imageData,
+            images,
+            startDate,
+            endDate,
             updatedAt: now,
           }
         : proposal
@@ -629,10 +867,14 @@ const handleProductSubmit = (event) => {
       product.id === editingApprovedId
         ? {
             ...product,
+            type,
+            category,
             title,
             description,
             price: priceValue,
-            imageDataUrl: imageData,
+            images,
+            startDate,
+            endDate,
             updatedAt: now,
           }
         : product
@@ -648,10 +890,14 @@ const handleProductSubmit = (event) => {
   } else {
     approvedProducts.unshift({
       id: generateId(),
+      type,
+      category,
       title,
       description,
       price: priceValue,
-      imageDataUrl: imageData,
+      images,
+      startDate,
+      endDate,
       createdAt: now,
       updatedAt: now,
     });
@@ -833,27 +1079,35 @@ const setupContactForm = () => {
 
 const handleProposalSubmit = (event) => {
   event.preventDefault();
+  const type = proposalType.value.trim();
+  const category = proposalCategory.value.trim();
   const title = proposalTitle.value.trim();
   const description = proposalDescription.value.trim();
   const priceValue = parsePrice(proposalPrice.value);
-  const imageData = proposalPreview.dataset.image || proposalPreview.src;
+  const images = getPreviewImages(proposalPreview);
+  const startDate = proposalSchedule.checked ? proposalStartDate.value : "";
+  const endDate = proposalSchedule.checked ? proposalEndDate.value : "";
 
-  if (!title || !description || priceValue === null) {
+  if (!type || !category || !title || !description || priceValue === null) {
     proposalStatus.textContent = "Completa los campos con datos válidos.";
     return;
   }
 
-  if (!imageData) {
-    proposalStatus.textContent = "Agrega una imagen para enviar la propuesta.";
+  if (!images.length) {
+    proposalStatus.textContent = "Agrega una o más imágenes para enviar la propuesta.";
     return;
   }
 
   const proposal = {
     id: generateId(),
+    type,
+    category,
     title,
     description,
     price: priceValue,
-    imageDataUrl: imageData,
+    images,
+    startDate,
+    endDate,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -870,8 +1124,9 @@ const handleProposalSubmit = (event) => {
   proposalStatus.textContent = "Propuesta enviada. Será revisada.";
   proposalForm.reset();
   proposalPreview.hidden = true;
-  proposalPreview.src = "";
-  proposalPreview.dataset.image = "";
+  proposalPreview.innerHTML = "";
+  proposalPreview.dataset.images = "";
+  proposalDates.hidden = true;
   updatePendingList();
 };
 
@@ -894,7 +1149,7 @@ const setupAdminEvents = () => {
   productImageBtn.addEventListener("click", () => productImage.click());
   productImage.addEventListener("change", (event) =>
     handleImageDrop({
-      file: event.target.files?.[0],
+      files: event.target.files,
       previewEl: productPreview,
       statusEl: productFormStatus,
     })
@@ -909,11 +1164,14 @@ const setupAdminEvents = () => {
   adminDropzone.addEventListener("drop", (event) => {
     event.preventDefault();
     adminDropzone.classList.remove("is-dragging");
-    const file = event.dataTransfer?.files?.[0];
-    handleImageDrop({ file, previewEl: productPreview, statusEl: productFormStatus });
+    const files = event.dataTransfer?.files;
+    handleImageDrop({ files, previewEl: productPreview, statusEl: productFormStatus });
   });
   productDescription.addEventListener("input", () => {
     descCount.textContent = `${productDescription.value.length}/220`;
+  });
+  productSchedule.addEventListener("change", () => {
+    productDates.hidden = !productSchedule.checked;
   });
   productForm.addEventListener("submit", handleProductSubmit);
   adminWhatsApp.addEventListener("click", () => {
@@ -932,7 +1190,7 @@ const setupProposalEvents = () => {
   proposalImageBtn.addEventListener("click", () => proposalImage.click());
   proposalImage.addEventListener("change", (event) =>
     handleImageDrop({
-      file: event.target.files?.[0],
+      files: event.target.files,
       previewEl: proposalPreview,
       statusEl: proposalStatus,
     })
@@ -947,8 +1205,11 @@ const setupProposalEvents = () => {
   proposalDropzone.addEventListener("drop", (event) => {
     event.preventDefault();
     proposalDropzone.classList.remove("is-dragging");
-    const file = event.dataTransfer?.files?.[0];
-    handleImageDrop({ file, previewEl: proposalPreview, statusEl: proposalStatus });
+    const files = event.dataTransfer?.files;
+    handleImageDrop({ files, previewEl: proposalPreview, statusEl: proposalStatus });
+  });
+  proposalSchedule.addEventListener("change", () => {
+    proposalDates.hidden = !proposalSchedule.checked;
   });
   proposalForm.addEventListener("submit", handleProposalSubmit);
 };
@@ -964,9 +1225,11 @@ const initializeNotificationForm = () => {
 const init = () => {
   loadApproved();
   loadPending();
+  loadMessages();
   renderProducts();
   updateAdminList();
   updatePendingList();
+  renderMessages();
   setupCourseButtons();
   setupTabs();
   setupAdminTabs();
@@ -979,6 +1242,7 @@ const init = () => {
   gameReset.addEventListener("click", updateGame);
   searchInput.addEventListener("input", renderProducts);
   sortSelect.addEventListener("change", renderProducts);
+  categorySelect?.addEventListener("change", renderProducts);
   studentLoginForm.addEventListener("submit", handleStudentLogin);
   studentLogout.addEventListener("click", handleStudentLogout);
   studentEditForm.addEventListener("submit", handleStudentSave);

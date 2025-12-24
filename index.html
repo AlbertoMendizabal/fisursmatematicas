@@ -16,10 +16,10 @@
       </div>
       <nav class="main-nav" aria-label="Principal">
         <a href="#inicio">Inicio</a>
-        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#como-funciona">Cómo ofrecer tu producto o servicio</a>
+        <a href="#propuestas">Propón tu producto</a>
         <a href="#cursos">Cursos</a>
         <a href="#catalogo">Catálogo</a>
-        <a href="#propuestas">Propón tu producto</a>
         <a href="#interactivo">Zona interactiva</a>
       </nav>
       <button class="admin-button" id="openAdmin" type="button">Admin</button>
@@ -28,9 +28,9 @@
       <div class="container contact-bar-inner">
         <div class="contact-info">
           <span>WhatsApp directo</span>
-          <strong>+52 56 1088 5357</strong>
+          <strong>+52 56 1088 5857</strong>
         </div>
-        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
+        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885857?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </header>
@@ -40,8 +40,8 @@
       <div class="container hero-grid">
         <div>
           <p class="eyebrow">Confianza y claridad para aprender y vender</p>
-          <h2>Aprende matemáticas y vende tus productos con respaldo.</h2>
-          <p class="lead">Cursos intensivos y catálogo verificado. Comunicación directa por WhatsApp con procesos claros.</p>
+          <h2>Aprende matemáticas y ofrece tus productos o servicios con respaldo.</h2>
+          <p class="lead">Cursos intensivos y escaparate verificado. Comunicación directa por WhatsApp con procesos claros.</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="#cursos">Ver cursos</a>
             <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
@@ -66,27 +66,186 @@
     <section id="como-funciona" class="section">
       <div class="container">
         <div class="section-head">
-          <h2>Cómo funciona</h2>
-          <p>Proceso claro para colaboradores y compradores.</p>
+          <h2>Cómo ofrecer tu producto o servicio</h2>
+          <p>Proceso directo, claro y sin pasos ocultos.</p>
+        </div>
+        <div class="flow-banner" aria-hidden="true">
+          <div class="flow-track">
+            <span>📸 Sube fotos · 📝 Describe tu producto o servicio · ✅ Revisión y aprobación · 💬 Contacto por WhatsApp · 20% comisión por exhibición ·</span>
+            <span>📸 Sube fotos · 📝 Describe tu producto o servicio · ✅ Revisión y aprobación · 💬 Contacto por WhatsApp · 20% comisión por exhibición ·</span>
+          </div>
         </div>
         <div class="steps-grid">
           <article class="step-card">
-            <h3>1. Propón tu producto</h3>
-            <p>Envía imagen, descripción y precio. Tu propuesta queda en revisión.</p>
+            <h3>1. Envía tu propuesta</h3>
+            <p>Sube una o más fotos, agrega descripción (máx 220) y elige si es producto o servicio.</p>
           </article>
           <article class="step-card">
             <h3>2. Se revisa y aprueba</h3>
-            <p>Al aprobarse, el producto aparece en el catálogo público.</p>
+            <p>Tu propuesta pasa por revisión y aprobación antes de publicarse.</p>
           </article>
           <article class="step-card">
-            <h3>3. Compradores contactan</h3>
-            <p>Los interesados te escriben por WhatsApp para cerrar la venta.</p>
+            <h3>3. Contacto directo</h3>
+            <p>Los interesados se comunican por WhatsApp y coordinan entrega contigo.</p>
+          </article>
+          <article class="step-card">
+            <h3>4. Comisión transparente</h3>
+            <p>Se cobra 20% por la exhibición del producto o servicio. No cubrimos envíos.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="confianza" class="section alt-section">
+    <section id="propuestas" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Propón tu producto o servicio</h2>
+          <p>Envía tu propuesta y se revisa para aprobación. Solo el administrador publica.</p>
+        </div>
+        <div class="publica-grid">
+          <form id="proposalForm" class="card form-grid">
+            <div class="dropzone" id="proposalDropzone">
+              <p><strong>Arrastra y suelta tus imágenes</strong></p>
+              <p class="muted">o</p>
+              <input type="file" id="proposalImage" accept="image/*" multiple hidden>
+              <button class="btn btn-ghost" id="proposalImageBtn" type="button">Subir imágenes</button>
+              <div class="preview-grid" id="proposalPreview" hidden></div>
+            </div>
+            <label class="field">
+              <span>Tipo</span>
+              <select id="proposalType" required>
+                <option value="">Selecciona</option>
+                <option value="Producto">Producto</option>
+                <option value="Servicio">Servicio</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Categoría</span>
+              <select id="proposalCategory" required>
+                <option value="">Selecciona</option>
+                <option>Hogar</option>
+                <option>Electrónica</option>
+                <option>Moda</option>
+                <option>Salud &amp; bienestar</option>
+                <option>Comida</option>
+                <option>Educación</option>
+                <option>Servicios profesionales</option>
+                <option>Otros</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Título</span>
+              <input type="text" id="proposalTitle" required>
+            </label>
+            <label class="field">
+              <span>Mini-descripción (máx 220, sin precio)</span>
+              <textarea id="proposalDescription" maxlength="220" rows="3" required></textarea>
+            </label>
+            <label class="field">
+              <span>Precio MXN</span>
+              <input type="text" id="proposalPrice" placeholder="350.50" required>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="proposalSchedule">
+              <span>Agregar calendario de fechas</span>
+            </label>
+            <div class="field-row" id="proposalDates" hidden>
+              <label class="field">
+                <span>Inicio</span>
+                <input type="date" id="proposalStartDate">
+              </label>
+              <label class="field">
+                <span>Fin</span>
+                <input type="date" id="proposalEndDate">
+              </label>
+            </div>
+            <button class="btn btn-primary" type="submit">Enviar propuesta</button>
+            <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
+          </form>
+          <div class="publica-info">
+            <h3>¿Qué sucede después?</h3>
+            <ul>
+              <li>Tu propuesta queda en revisión</li>
+              <li>Recibirás confirmación al aprobarse</li>
+              <li>La comisión es del 20% por exhibición</li>
+            </ul>
+            <p class="muted">Nosotros solo conectamos a compradores y vendedores vía WhatsApp.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cursos" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Cursos en línea</h2>
+          <p>8 sesiones de 1 hora · Atención personalizada · Precio fijo</p>
+        </div>
+        <div class="card-grid">
+          <article class="card course-card">
+            <h3>Álgebra</h3>
+            <p>8 sesiones de 1 hora</p>
+            <p class="muted">Inicio: 15 de marzo · Fin: 15 de abril</p>
+            <p class="price">$2400 MXN</p>
+            <button class="btn btn-whatsapp" data-course="Álgebra">Solicitar por WhatsApp</button>
+          </article>
+          <article class="card course-card">
+            <h3>Cálculo Diferencial</h3>
+            <p>8 sesiones de 1 hora</p>
+            <p class="muted">Inicio: 2 de abril · Fin: 2 de mayo</p>
+            <p class="price">$2400 MXN</p>
+            <button class="btn btn-whatsapp" data-course="Cálculo Diferencial">Solicitar por WhatsApp</button>
+          </article>
+          <article class="card course-card">
+            <h3>Cálculo Integral</h3>
+            <p>8 sesiones de 1 hora</p>
+            <p class="muted">Inicio: 20 de abril · Fin: 20 de mayo</p>
+            <p class="price">$2400 MXN</p>
+            <button class="btn btn-whatsapp" data-course="Cálculo Integral">Solicitar por WhatsApp</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="catalogo" class="section alt-section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Catálogo</h2>
+          <p>Productos y servicios aprobados, listos para comprar.</p>
+        </div>
+        <div class="filters">
+          <label class="field">
+            <span>Buscar</span>
+            <input type="search" id="searchInput" placeholder="Buscar por título o descripción">
+          </label>
+          <label class="field">
+            <span>Categoría</span>
+            <select id="categorySelect">
+              <option value="all">Todas</option>
+              <option>Hogar</option>
+              <option>Electrónica</option>
+              <option>Moda</option>
+              <option>Salud &amp; bienestar</option>
+              <option>Comida</option>
+              <option>Educación</option>
+              <option>Servicios profesionales</option>
+              <option>Otros</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Ordenar por</span>
+            <select id="sortSelect">
+              <option value="recent">Más recientes</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+            </select>
+          </label>
+        </div>
+        <div id="productGrid" class="card-grid"></div>
+      </div>
+    </section>
+
+    <section id="confianza" class="section">
       <div class="container">
         <div class="section-head">
           <h2>Confianza y transparencia</h2>
@@ -105,101 +264,6 @@
             <h3>Catálogo curado</h3>
             <p>Solo se publican productos aprobados por el administrador.</p>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="cursos" class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Cursos en línea</h2>
-          <p>8 sesiones de 1 hora · Atención personalizada · Precio fijo</p>
-        </div>
-        <div class="card-grid">
-          <article class="card course-card">
-            <h3>Álgebra</h3>
-            <p>8 sesiones de 1 hora</p>
-            <p class="price">$2400 MXN</p>
-            <button class="btn btn-whatsapp" data-course="Álgebra">Inscribirme por WhatsApp</button>
-          </article>
-          <article class="card course-card">
-            <h3>Cálculo Diferencial</h3>
-            <p>8 sesiones de 1 hora</p>
-            <p class="price">$2400 MXN</p>
-            <button class="btn btn-whatsapp" data-course="Cálculo Diferencial">Inscribirme por WhatsApp</button>
-          </article>
-          <article class="card course-card">
-            <h3>Cálculo Integral</h3>
-            <p>8 sesiones de 1 hora</p>
-            <p class="price">$2400 MXN</p>
-            <button class="btn btn-whatsapp" data-course="Cálculo Integral">Inscribirme por WhatsApp</button>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="catalogo" class="section alt-section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Catálogo</h2>
-          <p>Productos y servicios aprobados, listos para comprar.</p>
-        </div>
-        <div class="filters">
-          <label class="field">
-            <span>Buscar</span>
-            <input type="search" id="searchInput" placeholder="Buscar por título o descripción">
-          </label>
-          <label class="field">
-            <span>Ordenar por</span>
-            <select id="sortSelect">
-              <option value="recent">Más recientes</option>
-              <option value="price-asc">Precio: menor a mayor</option>
-              <option value="price-desc">Precio: mayor a menor</option>
-            </select>
-          </label>
-        </div>
-        <div id="productGrid" class="card-grid"></div>
-      </div>
-    </section>
-
-    <section id="propuestas" class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Propón tu producto o servicio</h2>
-          <p>Envía tu propuesta y se revisa para aprobación. Solo el administrador publica.</p>
-        </div>
-        <div class="publica-grid">
-          <form id="proposalForm" class="card form-grid">
-            <div class="dropzone" id="proposalDropzone">
-              <p><strong>Arrastra y suelta tu imagen</strong></p>
-              <p class="muted">o</p>
-              <input type="file" id="proposalImage" accept="image/*" hidden>
-              <button class="btn btn-ghost" id="proposalImageBtn" type="button">Subir imagen</button>
-              <img class="preview" id="proposalPreview" alt="Vista previa" hidden>
-            </div>
-            <label class="field">
-              <span>Título</span>
-              <input type="text" id="proposalTitle" required>
-            </label>
-            <label class="field">
-              <span>Mini-descripción (máx 220)</span>
-              <textarea id="proposalDescription" maxlength="220" rows="3" required></textarea>
-            </label>
-            <label class="field">
-              <span>Precio MXN</span>
-              <input type="text" id="proposalPrice" placeholder="350.50" required>
-            </label>
-            <button class="btn btn-primary" type="submit">Enviar propuesta</button>
-            <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
-          </form>
-          <div class="publica-info">
-            <h3>¿Qué sucede después?</h3>
-            <ul>
-              <li>Tu propuesta queda en revisión</li>
-              <li>Recibirás confirmación al aprobarse</li>
-              <li>La comisión es del 20% por venta</li>
-            </ul>
-          </div>
         </div>
       </div>
     </section>
@@ -305,10 +369,10 @@
               </form>
               <div class="card">
                 <h3>Información básica</h3>
-                <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
+                <p><strong>WhatsApp:</strong> +52 56 1088 5857</p>
                 <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
                 <p><strong>Ubicación:</strong> Ciudad de México</p>
-                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar por WhatsApp</a>
+                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885857?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar por WhatsApp</a>
               </div>
             </div>
           </div>
@@ -326,8 +390,8 @@
       </div>
       <div class="footer-contact">
         <span>WhatsApp</span>
-        <strong>+52 56 1088 5357</strong>
-        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
+        <strong>+52 56 1088 5857</strong>
+        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885857?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </footer>
@@ -345,7 +409,7 @@
       <button class="modal-close" id="closeAdmin" type="button" aria-label="Cerrar">×</button>
       <h2 id="adminTitle">Panel administrador</h2>
       <div id="adminLogin">
-        <p class="muted">Acceso solo administrador. Contraseñas válidas: 2025 o 2010.</p>
+        <p class="muted">Acceso solo administrador. Protege tus credenciales.</p>
         <form id="adminLoginForm">
           <label class="field">
             <span>Contraseña</span>
@@ -360,6 +424,7 @@
           <div class="tab-list" role="tablist" aria-label="Panel administrador">
             <button class="tab" role="tab" aria-selected="true" aria-controls="admin-pending" id="admin-pending-btn">Pendientes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-products" id="admin-products-btn">Productos</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-messages" id="admin-messages-btn">Mensajes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-notifications" id="admin-notifications-btn">Notificaciones</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-settings" id="admin-settings-btn">Ajustes</button>
           </div>
@@ -380,18 +445,40 @@
           <form id="productForm" class="card" hidden>
             <h3 id="productFormTitle">Nuevo producto</h3>
             <div class="dropzone" id="adminDropzone">
-              <p><strong>Arrastra tu imagen aquí</strong></p>
+              <p><strong>Arrastra tus imágenes aquí</strong></p>
               <p class="muted">o</p>
-              <input type="file" id="productImage" accept="image/*" hidden>
-              <button class="btn btn-ghost" id="productImageBtn" type="button">Seleccionar imagen</button>
-              <img id="productPreview" alt="Vista previa" hidden>
+              <input type="file" id="productImage" accept="image/*" multiple hidden>
+              <button class="btn btn-ghost" id="productImageBtn" type="button">Seleccionar imágenes</button>
+              <div class="preview-grid" id="productPreview" hidden></div>
             </div>
+            <label class="field">
+              <span>Tipo</span>
+              <select id="productType" required>
+                <option value="">Selecciona</option>
+                <option value="Producto">Producto</option>
+                <option value="Servicio">Servicio</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Categoría</span>
+              <select id="productCategory" required>
+                <option value="">Selecciona</option>
+                <option>Hogar</option>
+                <option>Electrónica</option>
+                <option>Moda</option>
+                <option>Salud &amp; bienestar</option>
+                <option>Comida</option>
+                <option>Educación</option>
+                <option>Servicios profesionales</option>
+                <option>Otros</option>
+              </select>
+            </label>
             <label class="field">
               <span>Título</span>
               <input type="text" id="productTitle" required>
             </label>
             <label class="field">
-              <span>Mini-descripción</span>
+              <span>Mini-descripción (máx 220, sin precio)</span>
               <textarea id="productDescription" maxlength="220" rows="3" required></textarea>
               <small id="descCount">0/220</small>
             </label>
@@ -399,6 +486,20 @@
               <span>Precio MXN</span>
               <input type="text" id="productPrice" placeholder="350.50" required>
             </label>
+            <label class="checkbox">
+              <input type="checkbox" id="productSchedule">
+              <span>Agregar calendario de fechas</span>
+            </label>
+            <div class="field-row" id="productDates" hidden>
+              <label class="field">
+                <span>Inicio</span>
+                <input type="date" id="productStartDate">
+              </label>
+              <label class="field">
+                <span>Fin</span>
+                <input type="date" id="productEndDate">
+              </label>
+            </div>
             <div class="form-actions">
               <button class="btn btn-primary" type="submit">Guardar</button>
               <button class="btn btn-whatsapp" id="adminWhatsApp" type="button">Avisar por WhatsApp</button>
@@ -406,6 +507,14 @@
             </div>
             <p id="productFormStatus" class="muted" aria-live="polite"></p>
           </form>
+        </div>
+
+        <div id="admin-messages" class="tab-panel" role="tabpanel" aria-labelledby="admin-messages-btn" hidden>
+          <div class="card">
+            <h3>Mensajes privados</h3>
+            <p class="muted">Mensajes enviados desde el catálogo. Solo tú los puedes leer aquí.</p>
+          </div>
+          <div id="adminMessagesList" class="admin-list"></div>
         </div>
 
         <div id="admin-notifications" class="tab-panel" role="tabpanel" aria-labelledby="admin-notifications-btn" hidden>
