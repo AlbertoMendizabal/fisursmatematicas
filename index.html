@@ -29,7 +29,7 @@
           <span>WhatsApp directo</span>
           <strong>+52 56 1088 5357</strong>
         </div>
-        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
+        <a class="btn btn-whatsapp" id="topWhatsapp" data-whatsapp-message="Hola Alberto. Quiero información sobre cursos y productos en LA TIENDA DE ALBERTO." href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </header>
@@ -128,13 +128,17 @@
             <button class="btn btn-ghost" type="button">Subir imagen</button>
             <p class="muted small">Para publicar o editar productos se requiere acceso (solo administrador).</p>
           </div>
-          <div class="publica-info">
-            <h3>¿Qué se necesita?</h3>
-            <ul>
-              <li>Imagen clara del producto</li>
-              <li>Descripción breve</li>
-              <li>Precio en MXN</li>
-            </ul>
+          <div class="publica-info card">
+            <h3>Detalles sugeridos</h3>
+            <label class="field">
+              <span>Mini-descripción</span>
+              <textarea rows="3" placeholder="Ej. Calculadora científica en excelente estado" disabled></textarea>
+            </label>
+            <label class="field">
+              <span>Precio MXN</span>
+              <input type="text" placeholder="$350 MXN" disabled>
+            </label>
+            <p class="muted small">Esta sección es informativa. La publicación real se gestiona desde el panel admin.</p>
           </div>
         </div>
       </div>
@@ -244,7 +248,7 @@
                 <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
                 <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
                 <p><strong>Ubicación:</strong> Ciudad de México</p>
-                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+                <a class="btn btn-whatsapp" id="contactWhatsapp" data-whatsapp-message="Hola Alberto. Me gustaría recibir información y asesoría." href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar por WhatsApp</a>
               </div>
             </div>
           </div>
@@ -262,7 +266,7 @@
       <div class="footer-contact">
         <span>WhatsApp</span>
         <strong>+52 56 1088 5357</strong>
-        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
+        <a class="btn btn-whatsapp" id="bottomWhatsapp" data-whatsapp-message="Hola Alberto. Quiero información sobre cursos y productos en LA TIENDA DE ALBERTO." href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </footer>
