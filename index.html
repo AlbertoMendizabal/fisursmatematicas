@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
-  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -16,10 +16,11 @@
       </div>
       <nav class="main-nav" aria-label="Principal">
         <a href="#inicio">Inicio</a>
+        <a href="#como-funciona">Cómo funciona</a>
         <a href="#cursos">Cursos</a>
-        <a href="#productos">Productos</a>
-        <a href="#interactivo">Juego & Estudiantes</a>
-        <a href="#publica">Publica tu producto</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#propuestas">Propón tu producto</a>
+        <a href="#interactivo">Zona interactiva</a>
       </nav>
       <button class="admin-button" id="openAdmin" type="button">Admin</button>
     </div>
@@ -29,7 +30,7 @@
           <span>WhatsApp directo</span>
           <strong>+52 56 1088 5357</strong>
         </div>
-        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
+        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </header>
@@ -43,11 +44,11 @@
           <p class="lead">Cursos intensivos y catálogo verificado. Comunicación directa por WhatsApp con procesos claros.</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="#cursos">Ver cursos</a>
-            <a class="btn btn-ghost" href="#productos">Explorar productos</a>
+            <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
           </div>
           <div class="trust-box">
             <p><strong>Comisión: 20% por venta</strong></p>
-            <p class="muted">El vendedor conserva sus productos. Después de acordar pago, comprador y vendedor coordinan día/hora de entrega. Alberto ya no interviene en esa coordinación.</p>
+            <p class="muted">El vendedor conserva su producto. Tras el pago, comprador y vendedor acuerdan día y hora de entrega directamente; Alberto no interviene en esa coordinación.</p>
           </div>
         </div>
         <div class="hero-card">
@@ -58,6 +59,52 @@
             <li>Pago seguro por acuerdo directo</li>
             <li>Soporte personalizado</li>
           </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="como-funciona" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Cómo funciona</h2>
+          <p>Proceso claro para colaboradores y compradores.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card">
+            <h3>1. Propón tu producto</h3>
+            <p>Envía imagen, descripción y precio. Tu propuesta queda en revisión.</p>
+          </article>
+          <article class="step-card">
+            <h3>2. Se revisa y aprueba</h3>
+            <p>Al aprobarse, el producto aparece en el catálogo público.</p>
+          </article>
+          <article class="step-card">
+            <h3>3. Compradores contactan</h3>
+            <p>Los interesados te escriben por WhatsApp para cerrar la venta.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="confianza" class="section alt-section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Confianza y transparencia</h2>
+          <p>Comisión clara y coordinación directa para entregas.</p>
+        </div>
+        <div class="trust-grid">
+          <article class="card">
+            <h3>Comisión visible</h3>
+            <p>La comisión de 20% por venta está clara desde el inicio, sin costos ocultos.</p>
+          </article>
+          <article class="card">
+            <h3>Entrega coordinada</h3>
+            <p>Después del pago, comprador y vendedor coordinan día y hora directamente.</p>
+          </article>
+          <article class="card">
+            <h3>Catálogo curado</h3>
+            <p>Solo se publican productos aprobados por el administrador.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -91,11 +138,11 @@
       </div>
     </section>
 
-    <section id="productos" class="section alt-section">
+    <section id="catalogo" class="section alt-section">
       <div class="container">
         <div class="section-head">
-          <h2>Productos</h2>
-          <p>Catálogo actualizado con productos y servicios disponibles.</p>
+          <h2>Catálogo</h2>
+          <p>Productos y servicios aprobados, listos para comprar.</p>
         </div>
         <div class="filters">
           <label class="field">
@@ -115,25 +162,42 @@
       </div>
     </section>
 
-    <section id="publica" class="section">
+    <section id="propuestas" class="section">
       <div class="container">
         <div class="section-head">
-          <h2>Publica tu producto</h2>
-          <p>Comparte tu producto con nuestra comunidad. La publicación se gestiona desde el panel administrador.</p>
+          <h2>Propón tu producto o servicio</h2>
+          <p>Envía tu propuesta y se revisa para aprobación. Solo el administrador publica.</p>
         </div>
         <div class="publica-grid">
-          <div class="dropzone" aria-label="Zona de carga de imagen">
-            <p><strong>Arrastrar y soltar imagen</strong></p>
-            <p class="muted">o</p>
-            <button class="btn btn-ghost" type="button">Subir imagen</button>
-            <p class="muted small">Para publicar o editar productos se requiere acceso (solo administrador).</p>
-          </div>
+          <form id="proposalForm" class="card form-grid">
+            <div class="dropzone" id="proposalDropzone">
+              <p><strong>Arrastra y suelta tu imagen</strong></p>
+              <p class="muted">o</p>
+              <input type="file" id="proposalImage" accept="image/*" hidden>
+              <button class="btn btn-ghost" id="proposalImageBtn" type="button">Subir imagen</button>
+              <img class="preview" id="proposalPreview" alt="Vista previa" hidden>
+            </div>
+            <label class="field">
+              <span>Título</span>
+              <input type="text" id="proposalTitle" required>
+            </label>
+            <label class="field">
+              <span>Mini-descripción (máx 220)</span>
+              <textarea id="proposalDescription" maxlength="220" rows="3" required></textarea>
+            </label>
+            <label class="field">
+              <span>Precio MXN</span>
+              <input type="text" id="proposalPrice" placeholder="350.50" required>
+            </label>
+            <button class="btn btn-primary" type="submit">Enviar propuesta</button>
+            <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
+          </form>
           <div class="publica-info">
-            <h3>¿Qué se necesita?</h3>
+            <h3>¿Qué sucede después?</h3>
             <ul>
-              <li>Imagen clara del producto</li>
-              <li>Descripción breve</li>
-              <li>Precio en MXN</li>
+              <li>Tu propuesta queda en revisión</li>
+              <li>Recibirás confirmación al aprobarse</li>
+              <li>La comisión es del 20% por venta</li>
             </ul>
           </div>
         </div>
@@ -244,7 +308,7 @@
                 <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
                 <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
                 <p><strong>Ubicación:</strong> Ciudad de México</p>
-                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar por WhatsApp</a>
               </div>
             </div>
           </div>
@@ -258,11 +322,12 @@
       <div>
         <h3>LA TIENDA DE ALBERTO</h3>
         <p class="muted">Cursos, productos y asesoría directa.</p>
+        <p class="muted"><strong>Comisión: 20% por venta.</strong> Coordinación directa entre comprador y vendedor.</p>
       </div>
       <div class="footer-contact">
         <span>WhatsApp</span>
         <strong>+52 56 1088 5357</strong>
-        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885357" target="_blank" rel="noopener">Contactar</a>
+        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </footer>
@@ -293,14 +358,20 @@
       <div id="adminPanel" hidden>
         <div class="panel-header">
           <div class="tab-list" role="tablist" aria-label="Panel administrador">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="admin-products" id="admin-products-btn">Productos</button>
+            <button class="tab" role="tab" aria-selected="true" aria-controls="admin-pending" id="admin-pending-btn">Pendientes</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-products" id="admin-products-btn">Productos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-notifications" id="admin-notifications-btn">Notificaciones</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-settings" id="admin-settings-btn">Ajustes</button>
           </div>
           <button class="btn btn-ghost" id="adminLogout" type="button">Cerrar sesión</button>
         </div>
 
-        <div id="admin-products" class="tab-panel" role="tabpanel" aria-labelledby="admin-products-btn">
+        <div id="admin-pending" class="tab-panel" role="tabpanel" aria-labelledby="admin-pending-btn">
+          <p class="muted">Revisa propuestas y aprueba solo las que cumplan con calidad y comisión del 20%.</p>
+          <div id="adminPendingList" class="admin-list"></div>
+        </div>
+
+        <div id="admin-products" class="tab-panel" role="tabpanel" aria-labelledby="admin-products-btn" hidden>
           <div class="admin-actions">
             <button class="btn btn-primary" id="newProduct" type="button">Nuevo producto</button>
             <p class="muted" id="adminStorageStatus"></p>
@@ -355,7 +426,7 @@
         <div id="admin-settings" class="tab-panel" role="tabpanel" aria-labelledby="admin-settings-btn" hidden>
           <div class="card">
             <h3>Respaldo</h3>
-            <p class="muted">Exporta o importa tu catálogo y notificaciones.</p>
+            <p class="muted">Exporta o importa tu catálogo, pendientes y notificaciones.</p>
             <div class="form-actions">
               <button class="btn btn-primary" id="exportData" type="button">Exportar JSON</button>
               <input type="file" id="importData" accept="application/json" hidden>
@@ -368,6 +439,6 @@
     </div>
   </div>
 
-  <script src="js/main.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
