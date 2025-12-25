@@ -1,4 +1,4 @@
-const WHATSAPP_NUMBER = "525610885857";
+const WHATSAPP_NUMBER = "525610885357";
 const APPROVED_KEY = "LTA_APPROVED_V1";
 const PENDING_KEY = "LTA_PENDING_V1";
 const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
@@ -9,9 +9,12 @@ const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
 const PRIVATE_ACCESS_KEY = "LTA_PRIVATE_ACCESS_V1";
 const PRIVATE_ACCESS_CODES = ["2025", "2010"];
+const ABOUT_KEY = "LTA_ABOUT_V1";
 
 const DEFAULT_NOTIFICATION =
   "Bienvenido a LA TIENDA DE ALBERTO. Consulta cursos y productos disponibles.";
+const DEFAULT_ABOUT =
+  "Soy Alberto, creador de La Tienda de Alberto: un espacio pensado para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nMe enfoco en revisar cada propuesta para mantener calidad y confianza. Trabajo de cerca con los vendedores para que sus productos se muestren de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y estudiantes que desean promover asesorías, cursos o artículos especializados. Mi prioridad es que el proceso sea simple, directo y seguro para ambas partes.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarme y con gusto te acompaño en el proceso.";
 
 const courseButtons = document.querySelectorAll("[data-course]");
 const productGrid = document.getElementById("productGrid");
@@ -32,7 +35,10 @@ const proposalCustomCategoryField = document.getElementById("proposalCustomCateg
 const proposalCustomCategory = document.getElementById("proposalCustomCategory");
 const proposalTitle = document.getElementById("proposalTitle");
 const proposalDescription = document.getElementById("proposalDescription");
+const proposalDescCount = document.getElementById("proposalDescCount");
 const proposalPrice = document.getElementById("proposalPrice");
+const proposalCommission = document.getElementById("proposalCommission");
+const proposalPayout = document.getElementById("proposalPayout");
 const proposalPrivate = document.getElementById("proposalPrivate");
 const proposalSchedule = document.getElementById("proposalSchedule");
 const proposalDates = document.getElementById("proposalDates");
@@ -91,12 +97,6 @@ const settingsStatus = document.getElementById("settingsStatus");
 const tabButtons = document.querySelectorAll("[data-tabs] .tab");
 const adminTabButtons = document.querySelectorAll("#adminPanel .tab");
 
-const gameQuestion = document.getElementById("gameQuestion");
-const gameAnswer = document.getElementById("gameAnswer");
-const gameSubmit = document.getElementById("gameSubmit");
-const gameReset = document.getElementById("gameReset");
-const gameFeedback = document.getElementById("gameFeedback");
-
 const studentLoginForm = document.getElementById("studentLoginForm");
 const studentPassword = document.getElementById("studentPassword");
 const studentLoginStatus = document.getElementById("studentLoginStatus");
@@ -116,13 +116,16 @@ const privateAccessForm = document.getElementById("privateAccessForm");
 const privateAccessInput = document.getElementById("privateAccessInput");
 const privateAccessStatus = document.getElementById("privateAccessStatus");
 const privateAccessNote = document.getElementById("privateAccessNote");
+const aboutContent = document.getElementById("aboutContent");
+const aboutForm = document.getElementById("aboutForm");
+const aboutInput = document.getElementById("aboutInput");
+const aboutStatus = document.getElementById("aboutStatus");
 
 let approvedProducts = [];
 let pendingProposals = [];
 let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
-let currentGame = null;
 let storedMessages = [];
 
 const currencyFormatter = new Intl.NumberFormat("es-MX", {
@@ -151,6 +154,19 @@ const hasPrivateAccess = () =>
 
 const setPrivateAccess = () =>
   sessionStorage.setItem(PRIVATE_ACCESS_KEY, "true");
+
+const updatePriceBreakdown = (priceValue, commissionEl, payoutEl) => {
+  if (!commissionEl || !payoutEl) return;
+  if (priceValue === null) {
+    commissionEl.textContent = "$0 MXN";
+    payoutEl.textContent = "$0 MXN";
+    return;
+  }
+  const commission = priceValue * 0.2;
+  const payout = priceValue - commission;
+  commissionEl.textContent = formatPrice(commission);
+  payoutEl.textContent = formatPrice(payout);
+};
 
 const updateCustomCategoryField = (selectEl, customField) => {
   if (!selectEl || !customField) return;
@@ -299,6 +315,21 @@ const loadMessages = () => {
   storedMessages = Array.isArray(stored) ? stored : [];
 };
 
+const loadAbout = () =>
+  loadFromStorage(ABOUT_KEY, DEFAULT_ABOUT).toString().trim();
+
+const renderAbout = () => {
+  if (!aboutContent) return;
+  const text = loadAbout();
+  const paragraphs = text.split("\n").map((line) => line.trim()).filter(Boolean);
+  aboutContent.innerHTML = "";
+  paragraphs.forEach((paragraph) => {
+    const p = document.createElement("p");
+    p.textContent = paragraph;
+    aboutContent.appendChild(p);
+  });
+};
+
 const renderMessages = () => {
   if (!adminMessagesList) return;
   adminMessagesList.innerHTML = "";
@@ -320,7 +351,8 @@ const renderMessages = () => {
     title.textContent = message.productTitle || "Producto sin título";
     const meta = document.createElement("p");
     meta.className = "muted";
-    meta.textContent = `${message.name} · ${message.contact}`;
+    const dateLine = message.requestedDate ? ` · Fecha: ${message.requestedDate}` : "";
+    meta.textContent = `${message.name} · ${message.contact}${dateLine}`;
     const body = document.createElement("p");
     body.textContent = message.message;
     info.append(title, meta, body);
@@ -494,11 +526,46 @@ const renderProducts = () => {
       renderMessages();
     });
 
+    const requestForm = document.createElement("form");
+    requestForm.className = "message-form";
+    requestForm.innerHTML = `
+      <label class="field">
+        <span>Solicitar fecha específica</span>
+        <input type="date" name="requestedDate" required>
+      </label>
+      <button class="btn btn-primary" type="submit">Enviar solicitud</button>
+      <p class="muted small" data-status></p>
+    `;
+
+    requestForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(requestForm);
+      const requestedDate = formData.get("requestedDate")?.toString() || "";
+      if (!requestedDate) return;
+      const payload = {
+        id: generateId(),
+        productId: product.id,
+        productTitle: product.title,
+        name: "Solicitud de fecha",
+        contact: "Pendiente de contacto",
+        requestedDate,
+        message: `Solicitud de fecha para ${product.title}.`,
+        createdAt: Date.now(),
+        read: false,
+      };
+      storedMessages.unshift(payload);
+      saveToStorage(MESSAGE_KEY, storedMessages);
+      const status = requestForm.querySelector("[data-status]");
+      if (status) status.textContent = "Solicitud enviada. Te contactaremos.";
+      requestForm.reset();
+      renderMessages();
+    });
+
     card.append(img);
     if (gallery.childElementCount) card.append(gallery);
     card.append(meta, title, desc, price);
     if (schedule.textContent) card.append(schedule);
-    card.append(button, messageToggle, messageForm);
+    card.append(button, messageToggle, messageForm, requestForm);
     productGrid.appendChild(card);
   });
 
@@ -1071,31 +1138,6 @@ const handleImport = (event) => {
   reader.readAsText(file);
 };
 
-const updateGame = () => {
-  const a = Math.floor(Math.random() * 9) + 1;
-  const b = Math.floor(Math.random() * 9) + 1;
-  const operator = Math.random() > 0.5 ? "+" : "-";
-  const result = operator === "+" ? a + b : a - b;
-  currentGame = { a, b, operator, result };
-  gameQuestion.textContent = `${a} ${operator} ${b} = ?`;
-  gameAnswer.value = "";
-  gameFeedback.textContent = "";
-};
-
-const handleGameSubmit = () => {
-  if (!currentGame) return;
-  const answer = Number.parseInt(gameAnswer.value, 10);
-  if (Number.isNaN(answer)) {
-    gameFeedback.textContent = "Escribe una respuesta válida.";
-    return;
-  }
-  if (answer === currentGame.result) {
-    gameFeedback.textContent = "¡Correcto!";
-  } else {
-    gameFeedback.textContent = "Respuesta incorrecta. Intenta de nuevo.";
-  }
-};
-
 const setStudentSession = () => {
   const expiresAt = Date.now() + 2 * 60 * 60 * 1000;
   sessionStorage.setItem(STUDENT_SESSION_KEY, JSON.stringify({ expiresAt }));
@@ -1225,6 +1267,10 @@ const handleProposalSubmit = (event) => {
   proposalPreview.dataset.images = "";
   proposalDates.hidden = true;
   proposalCustomCategoryField.hidden = true;
+  if (proposalDescCount) {
+    proposalDescCount.textContent = "220 caracteres restantes";
+  }
+  updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
   updatePendingList();
 };
 
@@ -1315,6 +1361,14 @@ const setupProposalEvents = () => {
   proposalCategory.addEventListener("change", () =>
     updateCustomCategoryField(proposalCategory, proposalCustomCategoryField)
   );
+  proposalDescription.addEventListener("input", () => {
+    const remaining = 220 - proposalDescription.value.length;
+    proposalDescCount.textContent = `${Math.max(remaining, 0)} caracteres restantes`;
+  });
+  proposalPrice.addEventListener("input", () => {
+    const priceValue = parsePrice(proposalPrice.value);
+    updatePriceBreakdown(priceValue, proposalCommission, proposalPayout);
+  });
   proposalForm.addEventListener("submit", handleProposalSubmit);
 };
 
@@ -1334,6 +1388,22 @@ const setupPrivateAccess = () => {
   });
 };
 
+const setupAboutForm = () => {
+  if (!aboutForm || !aboutInput) return;
+  aboutInput.value = loadAbout();
+  aboutForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = aboutInput.value.trim();
+    if (!value) {
+      aboutStatus.textContent = "Escribe un texto válido.";
+      return;
+    }
+    saveToStorage(ABOUT_KEY, value);
+    aboutStatus.textContent = "Sección actualizada.";
+    renderAbout();
+  });
+};
+
 const initializeNotificationForm = () => {
   notificationInput.value = loadFromStorage(
     NOTIFICATION_TEXT_KEY,
@@ -1346,6 +1416,7 @@ const init = () => {
   loadApproved();
   loadPending();
   loadMessages();
+  renderAbout();
   renderProducts();
   updateAdminList();
   updatePendingList();
@@ -1357,10 +1428,8 @@ const init = () => {
   setupAdminEvents();
   setupProposalEvents();
   setupPrivateAccess();
+  setupAboutForm();
   initializeNotificationForm();
-  updateGame();
-  gameSubmit.addEventListener("click", handleGameSubmit);
-  gameReset.addEventListener("click", updateGame);
   searchInput.addEventListener("input", renderProducts);
   sortSelect.addEventListener("change", renderProducts);
   categorySelect?.addEventListener("change", renderProducts);
@@ -1370,6 +1439,10 @@ const init = () => {
   setupContactForm();
   updateCustomCategoryField(productCategory, productCustomCategoryField);
   updateCustomCategoryField(proposalCategory, proposalCustomCategoryField);
+  if (proposalDescCount) {
+    proposalDescCount.textContent = "220 caracteres restantes";
+  }
+  updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
 
   if (hasAdminSession()) {
     adminLogin.hidden = true;
