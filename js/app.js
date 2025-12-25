@@ -30,6 +30,8 @@ const proposalImageBtn = document.getElementById("proposalImageBtn");
 const proposalImage = document.getElementById("proposalImage");
 const proposalPreview = document.getElementById("proposalPreview");
 const proposalType = document.getElementById("proposalType");
+const proposalCondition = document.getElementById("proposalCondition");
+const proposalDelivery = document.getElementById("proposalDelivery");
 const proposalCategory = document.getElementById("proposalCategory");
 const proposalCustomCategoryField = document.getElementById("proposalCustomCategoryField");
 const proposalCustomCategory = document.getElementById("proposalCustomCategory");
@@ -67,6 +69,8 @@ const productPreview = document.getElementById("productPreview");
 const adminDropzone = document.getElementById("adminDropzone");
 const adminWhatsApp = document.getElementById("adminWhatsApp");
 const productType = document.getElementById("productType");
+const productCondition = document.getElementById("productCondition");
+const productDelivery = document.getElementById("productDelivery");
 const productCategory = document.getElementById("productCategory");
 const productCustomCategoryField = document.getElementById("productCustomCategoryField");
 const productCustomCategory = document.getElementById("productCustomCategory");
@@ -121,12 +125,19 @@ const aboutForm = document.getElementById("aboutForm");
 const aboutInput = document.getElementById("aboutInput");
 const aboutStatus = document.getElementById("aboutStatus");
 
+const mathProblem = document.getElementById("mathProblem");
+const mathAnswer = document.getElementById("mathAnswer");
+const checkMath = document.getElementById("checkMath");
+const newMath = document.getElementById("newMath");
+const mathStatus = document.getElementById("mathStatus");
+
 let approvedProducts = [];
 let pendingProposals = [];
 let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
 let storedMessages = [];
+let currentMathAnswer = null;
 
 const currencyFormatter = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -183,6 +194,27 @@ const getCategoryValue = (selectEl, customEl) => {
     return customEl.value.trim();
   }
   return selected;
+};
+
+const formatCondition = (value) => (value ? `Estado: ${value}` : "Estado: Sin especificar");
+
+const formatDelivery = (value) =>
+  value ? `Entrega: ${value}` : "Entrega: Sin especificar";
+
+const createMathChallenge = () => {
+  const a = Math.floor(Math.random() * 20) + 1;
+  const b = Math.floor(Math.random() * 20) + 1;
+  const operators = ["+", "-", "×"];
+  const operator = operators[Math.floor(Math.random() * operators.length)];
+  let answer = 0;
+  if (operator === "+") {
+    answer = a + b;
+  } else if (operator === "-") {
+    answer = a - b;
+  } else {
+    answer = a * b;
+  }
+  return { question: `${a} ${operator} ${b} = ?`, answer };
 };
 
 const setCategoryInputs = (selectEl, customField, customInput, category) => {
@@ -441,6 +473,12 @@ const renderProducts = () => {
       meta.append(privateTag);
     }
 
+    const details = document.createElement("p");
+    details.className = "muted small";
+    details.textContent = `${formatCondition(product.condition)} · ${formatDelivery(
+      product.deliveryZone
+    )}`;
+
     const desc = document.createElement("p");
     desc.textContent = safeText(product.description);
 
@@ -470,7 +508,11 @@ const renderProducts = () => {
     button.target = "_blank";
     button.rel = "noopener";
     button.textContent = "Comprar por WhatsApp";
-    const message = `Hola Alberto. Me interesa este ${product.type?.toLowerCase() || "producto"}: ${product.title}. Precio: $${product.price} MXN. ¿Sigue disponible? ¿Cómo procedemos?`;
+    const message = `Hola Alberto. Me interesa este ${
+      product.type?.toLowerCase() || "producto"
+    }: ${product.title}. Precio: $${product.price} MXN. ${formatCondition(
+      product.condition
+    )}. ${formatDelivery(product.deliveryZone)}. ¿Sigue disponible? ¿Cómo procedemos?`;
     button.href = createWhatsAppUrl(message);
 
     const messageToggle = document.createElement("button");
@@ -563,7 +605,7 @@ const renderProducts = () => {
 
     card.append(img);
     if (gallery.childElementCount) card.append(gallery);
-    card.append(meta, title, desc, price);
+    card.append(meta, title, details, desc, price);
     if (schedule.textContent) card.append(schedule);
     card.append(button, messageToggle, messageForm, requestForm);
     productGrid.appendChild(card);
@@ -605,7 +647,9 @@ const updateAdminList = () => {
     const privateLabel = product.isPrivate ? " · Privado" : "";
     meta.textContent = `${formatPrice(product.price)} · ${product.type || "Producto"} · ${
       product.category || "Otros"
-    }${privateLabel}${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
+    }${privateLabel} · ${formatCondition(product.condition)} · ${formatDelivery(
+      product.deliveryZone
+    )}${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
     info.append(title, meta);
 
     const actions = document.createElement("div");
@@ -654,7 +698,9 @@ const updatePendingList = () => {
     const privateLabel = proposal.isPrivate ? " · Privado" : "";
     meta.textContent = `${formatPrice(proposal.price)} · ${proposal.type || "Producto"} · ${
       proposal.category || "Otros"
-    }${privateLabel}${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
+    }${privateLabel} · ${formatCondition(proposal.condition)} · ${formatDelivery(
+      proposal.deliveryZone
+    )}${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
     info.append(title, meta);
 
     const actions = document.createElement("div");
@@ -710,6 +756,8 @@ const openEditForm = (item, mode) => {
     editingApprovedId = null;
   }
   productType.value = item.type || "";
+  productCondition.value = item.condition || "";
+  productDelivery.value = item.deliveryZone || "";
   setCategoryInputs(
     productCategory,
     productCustomCategoryField,
@@ -967,6 +1015,8 @@ const handleAdminLogout = () => {
 const handleProductSubmit = (event) => {
   event.preventDefault();
   const type = productType.value.trim();
+  const condition = productCondition.value.trim();
+  const deliveryZone = productDelivery.value.trim();
   const category = getCategoryValue(productCategory, productCustomCategory);
   const title = productTitle.value.trim();
   const description = productDescription.value.trim();
@@ -981,7 +1031,15 @@ const handleProductSubmit = (event) => {
     return;
   }
 
-  if (!type || !category || !title || !description || priceValue === null) {
+  if (
+    !type ||
+    !condition ||
+    !deliveryZone ||
+    !category ||
+    !title ||
+    !description ||
+    priceValue === null
+  ) {
     productFormStatus.textContent = "Completa todos los campos con datos válidos.";
     return;
   }
@@ -998,6 +1056,8 @@ const handleProductSubmit = (event) => {
         ? {
             ...proposal,
             type,
+            condition,
+            deliveryZone,
             category,
             title,
             description,
@@ -1023,6 +1083,8 @@ const handleProductSubmit = (event) => {
         ? {
             ...product,
             type,
+            condition,
+            deliveryZone,
             category,
             title,
             description,
@@ -1047,6 +1109,8 @@ const handleProductSubmit = (event) => {
     approvedProducts.unshift({
       id: generateId(),
       type,
+      condition,
+      deliveryZone,
       category,
       title,
       description,
@@ -1212,6 +1276,8 @@ const setupContactForm = () => {
 const handleProposalSubmit = (event) => {
   event.preventDefault();
   const type = proposalType.value.trim();
+  const condition = proposalCondition.value.trim();
+  const deliveryZone = proposalDelivery.value.trim();
   const category = getCategoryValue(proposalCategory, proposalCustomCategory);
   const title = proposalTitle.value.trim();
   const description = proposalDescription.value.trim();
@@ -1226,7 +1292,15 @@ const handleProposalSubmit = (event) => {
     return;
   }
 
-  if (!type || !category || !title || !description || priceValue === null) {
+  if (
+    !type ||
+    !condition ||
+    !deliveryZone ||
+    !category ||
+    !title ||
+    !description ||
+    priceValue === null
+  ) {
     proposalStatus.textContent = "Completa los campos con datos válidos.";
     return;
   }
@@ -1239,6 +1313,8 @@ const handleProposalSubmit = (event) => {
   const proposal = {
     id: generateId(),
     type,
+    condition,
+    deliveryZone,
     category,
     title,
     description,
@@ -1404,6 +1480,34 @@ const setupAboutForm = () => {
   });
 };
 
+const setupMathGame = () => {
+  if (!mathProblem || !mathAnswer || !checkMath || !newMath || !mathStatus) return;
+
+  const setNewChallenge = () => {
+    const challenge = createMathChallenge();
+    currentMathAnswer = challenge.answer;
+    mathProblem.textContent = challenge.question;
+    mathAnswer.value = "";
+    mathStatus.textContent = "";
+  };
+
+  checkMath.addEventListener("click", () => {
+    const userAnswer = Number.parseFloat(mathAnswer.value);
+    if (Number.isNaN(userAnswer)) {
+      mathStatus.textContent = "Ingresa una respuesta válida.";
+      return;
+    }
+    if (userAnswer === currentMathAnswer) {
+      mathStatus.textContent = "¡Correcto! Puedes generar un nuevo reto.";
+    } else {
+      mathStatus.textContent = "Respuesta incorrecta. Intenta nuevamente.";
+    }
+  });
+
+  newMath.addEventListener("click", setNewChallenge);
+  setNewChallenge();
+};
+
 const initializeNotificationForm = () => {
   notificationInput.value = loadFromStorage(
     NOTIFICATION_TEXT_KEY,
@@ -1429,6 +1533,7 @@ const init = () => {
   setupProposalEvents();
   setupPrivateAccess();
   setupAboutForm();
+  setupMathGame();
   initializeNotificationForm();
   searchInput.addEventListener("input", renderProducts);
   sortSelect.addEventListener("change", renderProducts);

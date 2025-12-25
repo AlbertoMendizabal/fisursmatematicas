@@ -18,13 +18,13 @@
     </div>
     <div class="container header-grid">
       <nav class="main-nav" aria-label="Principal">
-        <a href="#inicio">Inicio</a>
-        <a href="#como-funciona">Cómo ofrecer tu producto o servicio</a>
-        <a href="#propuestas">Propón tu producto</a>
-        <a href="#cursos">Cursos</a>
-        <a href="#catalogo">Catálogo</a>
-        <a href="#conoceme">Conóceme</a>
-        <a href="#centro">Centro estudiantil</a>
+        <a href="#inicio">INICIO</a>
+        <a href="#como-funciona">CÓMO OFRECER TU PRODUCTO O SERVICIO</a>
+        <a href="#propuestas">SUBE TU PRODUCTO O SERVICIO</a>
+        <a href="#cursos">MIS CURSOS</a>
+        <a href="#proximos">PRÓXIMOS CURSOS</a>
+        <a href="#catalogo">CATÁLOGO</a>
+        <a href="#contacto">CONTACTO</a>
       </nav>
       <button class="admin-button" id="openAdmin" type="button">Admin</button>
     </div>
@@ -75,8 +75,8 @@
         </div>
         <div class="flow-banner" aria-hidden="true">
           <div class="flow-track">
-            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · 20% de comisión por exhibición ·</span>
-            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · 20% de comisión por exhibición ·</span>
+            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · Reglas claras de publicación ·</span>
+            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · Reglas claras de publicación ·</span>
           </div>
         </div>
         <div class="steps-grid">
@@ -94,7 +94,7 @@
           </article>
           <article class="step-card">
             <h3>4. Comisión transparente</h3>
-            <p>Se cobra 20% por la exhibición del producto o servicio. No cubrimos envíos.</p>
+            <p>Se aplica una comisión por la exhibición del producto o servicio. No cubrimos envíos.</p>
           </article>
         </div>
         <div class="note-card">
@@ -125,6 +125,18 @@
                 <option value="Producto">Producto</option>
                 <option value="Servicio">Servicio</option>
               </select>
+            </label>
+            <label class="field">
+              <span>Estado del producto</span>
+              <select id="proposalCondition" required>
+                <option value="">Selecciona</option>
+                <option value="Nuevo">Nuevo</option>
+                <option value="Usado">Usado</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Lugar o zona de entrega</span>
+              <input type="text" id="proposalDelivery" placeholder="Ej. CDMX, Polanco, envío nacional" required>
             </label>
             <label class="field">
               <span>Categoría</span>
@@ -173,7 +185,7 @@
             </label>
             <div class="price-breakdown" aria-live="polite">
               <div>
-                <span class="muted">Comisión 20%</span>
+                <span class="muted">Comisión</span>
                 <strong class="text-danger" id="proposalCommission">$0 MXN</strong>
               </div>
               <div>
@@ -207,7 +219,7 @@
             <ul>
               <li>Tu propuesta queda en revisión</li>
               <li>Recibirás confirmación al aprobarse</li>
-              <li>La comisión es del 20% por exhibición</li>
+              <li>Se aplica la comisión acordada al publicarse</li>
             </ul>
             <p class="muted">Envía imágenes y descripción por correo si lo prefieres. Si no deseas hacerlo tú mismo, contáctame y yo subo tu producto o servicio.</p>
           </div>
@@ -218,7 +230,7 @@
     <section id="cursos" class="section">
       <div class="container">
         <div class="section-head">
-          <h2>Cursos en línea</h2>
+          <h2>Mis cursos en línea</h2>
           <p>8 sesiones de 1 hora · Atención personalizada · Precio fijo</p>
         </div>
         <div class="card-grid">
@@ -329,12 +341,12 @@
       <div class="container">
         <div class="section-head">
           <h2>Confianza y transparencia</h2>
-          <p>Comisión clara y coordinación directa para entregas.</p>
+          <p>Coordinación directa para entregas y procesos claros.</p>
         </div>
         <div class="trust-grid">
           <article class="card">
             <h3>Comisión visible</h3>
-            <p>La comisión de 20% por venta está clara desde el inicio, sin costos ocultos.</p>
+            <p>La comisión está clara desde el inicio, sin costos ocultos.</p>
           </article>
           <article class="card">
             <h3>Entrega coordinada</h3>
@@ -348,16 +360,16 @@
       </div>
     </section>
 
-    <section id="centro" class="section alt-section">
+    <section id="proximos" class="section alt-section">
       <div class="container">
         <div class="section-head">
-          <h2>Centro estudiantil</h2>
-          <p>Próximos cursos, acceso de estudiantes y contacto.</p>
+          <h2>Próximos cursos</h2>
+          <p>Próximos cursos, juego matemático, acceso de estudiantes y contacto.</p>
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
             <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Próximos cursos</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Acceso</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn">
@@ -372,16 +384,24 @@
                 <p class="muted">Solicita tu lugar con anticipación.</p>
               </div>
               <div class="card">
-                <h3>Agenda de solicitudes</h3>
-                <p>Si necesitas un producto o asesoría para una fecha específica, selecciona tu día en el catálogo y me llegará una notificación para contactarte.</p>
-                <p class="muted">Así podemos coordinar horarios y disponibilidad rápidamente.</p>
+                <h3>Juego rápido de matemáticas</h3>
+                <p>Resuelve el reto y genera uno nuevo para practicar.</p>
+                <div class="math-game">
+                  <p class="math-problem" id="mathProblem">¿Listo para iniciar?</p>
+                  <div class="math-actions">
+                    <input type="number" id="mathAnswer" placeholder="Tu respuesta">
+                    <button class="btn btn-primary" id="checkMath" type="button">Verificar</button>
+                    <button class="btn btn-ghost" id="newMath" type="button">Nuevo reto</button>
+                  </div>
+                  <p class="muted" id="mathStatus" aria-live="polite"></p>
+                </div>
               </div>
             </div>
           </div>
           <div id="tab-estudiantes" class="tab-panel" role="tabpanel" aria-labelledby="tab-estudiantes-btn" hidden>
             <div class="student-grid">
               <div class="card">
-                <h3>Acceso estudiantes</h3>
+                <h3>Acceso al panel</h3>
                 <p>Ingresa tu contraseña para editar contenido rápido.</p>
                 <form id="studentLoginForm">
                   <label class="field">
@@ -455,7 +475,7 @@
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" id="contacto">
     <div class="container footer-grid">
       <div>
         <h3>LA TIENDA DE ALBERTO</h3>
@@ -507,7 +527,7 @@
         </div>
 
         <div id="admin-pending" class="tab-panel" role="tabpanel" aria-labelledby="admin-pending-btn">
-          <p class="muted">Revisa propuestas y aprueba solo las que cumplan con calidad y comisión del 20%.</p>
+          <p class="muted">Revisa propuestas y aprueba solo las que cumplan con calidad y reglas de publicación.</p>
           <div id="adminPendingList" class="admin-list"></div>
         </div>
 
@@ -533,6 +553,18 @@
                 <option value="Producto">Producto</option>
                 <option value="Servicio">Servicio</option>
               </select>
+            </label>
+            <label class="field">
+              <span>Estado del producto</span>
+              <select id="productCondition" required>
+                <option value="">Selecciona</option>
+                <option value="Nuevo">Nuevo</option>
+                <option value="Usado">Usado</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Lugar o zona de entrega</span>
+              <input type="text" id="productDelivery" placeholder="Ej. CDMX, Polanco, envío nacional" required>
             </label>
             <label class="field">
               <span>Categoría</span>
