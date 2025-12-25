@@ -349,6 +349,102 @@ a:focus-visible {
   margin: 0.75rem 0 1rem;
 }
 
+.catalog-toolbar {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: end;
+}
+
+.catalog-menu-wrapper {
+  display: grid;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.catalog-menu {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: min(680px, 90vw);
+  z-index: 20;
+}
+
+.catalog-menu-columns {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+}
+
+.catalog-menu-left,
+.catalog-menu-right {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.catalog-menu-left button {
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.catalog-menu-left button.active {
+  background: var(--bg-alt);
+}
+
+.catalog-menu-right .submenu-group {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.catalog-menu-right .submenu-title {
+  font-weight: 700;
+  margin: 0.2rem 0;
+}
+
+.menu-link {
+  text-align: left;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0.35rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.menu-link:hover {
+  background: var(--bg-alt);
+}
+
+.catalog-menu-mobile {
+  display: none;
+  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem;
+  background: #fff;
+}
+
+.catalog-menu-mobile details {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.catalog-menu-mobile summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -538,23 +634,6 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-}
-
-.game-card {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.game-question {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--gold-4);
-}
-
-.game-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
 }
 
 .panel-header {
@@ -898,6 +977,18 @@ a:focus-visible {
   .contact-bar-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .catalog-menu {
+    display: none !important;
+  }
+
+  .catalog-menu-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-menu-mobile {
+    display: grid;
   }
 }
 
