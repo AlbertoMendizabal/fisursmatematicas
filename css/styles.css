@@ -631,6 +631,53 @@ a:focus-visible {
   color: var(--gold-4);
 }
 
+.tag-highlight {
+  background: var(--gold-2);
+  color: #ffffff;
+}
+
+.protected-section {
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.protected-header h3 {
+  margin: 0;
+}
+
+.protected-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  border: 2px solid var(--gold-2);
+  background: linear-gradient(135deg, #fff6de, #ffffff);
+  cursor: pointer;
+}
+
+.protected-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(184, 137, 0, 0.2);
+}
+
+.protected-catalog {
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(184, 137, 0, 0.4);
+  background: #fff8e9;
+}
+
+.protected-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.protected-card-item {
+  border: 1px solid rgba(184, 137, 0, 0.4);
+}
+
 .mini-gallery {
   display: grid;
   grid-auto-flow: column;

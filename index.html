@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
-  <link rel="stylesheet" href="css/styles.css?v=20251225-01">
+  <link rel="stylesheet" href="css/styles.css?v=20250305-01">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -87,7 +87,7 @@
           <article class="step-card reveal">
             <span class="step-icon" aria-hidden="true">💬</span>
             <h3>Contacto directo</h3>
-            <p>Coordina por WhatsApp con interesados de manera rápida.</p>
+            <p>Cuando haya personas interesadas, yo te notificaré por WhatsApp para que puedas dar seguimiento y coordinar los detalles.</p>
           </article>
         </div>
       </div>
@@ -114,6 +114,7 @@
                 <option value="">Selecciona</option>
                 <option value="Producto">Producto</option>
                 <option value="Servicio">Servicio</option>
+                <option value="Curso">Curso</option>
               </select>
             </label>
             <label class="field">
@@ -140,35 +141,11 @@
             </div>
             <label class="field">
               <span>Categoría</span>
-              <select id="proposalCategory" required>
-                <option value="">Selecciona</option>
-                <option>Accesorios</option>
-                <option>Alimentos</option>
-                <option>Arte</option>
-                <option>Belleza</option>
-                <option>Decoración</option>
-                <option>Deportes</option>
-                <option>Educación</option>
-                <option>Electrónica</option>
-                <option>Eventos</option>
-                <option>Hogar</option>
-                <option>Juguetes</option>
-                <option>Libros</option>
-                <option>Mascotas</option>
-                <option>Mobiliario</option>
-                <option>Moda</option>
-                <option>Otros</option>
-                <option>Salud &amp; bienestar</option>
-                <option>Servicios profesionales</option>
-                <option>Tecnología</option>
-                <option>Transporte</option>
-                <option>Viajes</option>
-                <option>Otra (especifica)</option>
-              </select>
+              <select id="proposalCategory" required></select>
             </label>
-            <label class="field" id="proposalCustomCategoryField" hidden>
-              <span>Categoría personalizada</span>
-              <input type="text" id="proposalCustomCategory" placeholder="Escribe tu categoría">
+            <label class="field">
+              <span>Subcategoría</span>
+              <select id="proposalSubcategory" required></select>
             </label>
             <label class="field">
               <span>Título</span>
@@ -181,7 +158,7 @@
             </label>
             <label class="field">
               <span>Precio MXN</span>
-              <input type="text" id="proposalPrice" placeholder="350.50" required>
+              <input type="text" id="proposalPrice" placeholder="350.50">
             </label>
             <div class="price-breakdown" aria-live="polite">
               <div>
@@ -195,7 +172,7 @@
             </div>
             <label class="checkbox">
               <input type="checkbox" id="proposalPrivate">
-              <span>Producto visible solo con contraseña</span>
+              <span>Producto visible solo en Especiales</span>
             </label>
             <label class="checkbox">
               <input type="checkbox" id="proposalSchedule">
@@ -272,30 +249,11 @@
           </label>
           <label class="field">
             <span>Categoría</span>
-            <select id="categorySelect">
-              <option value="all">Todas</option>
-              <option>Accesorios</option>
-              <option>Alimentos</option>
-              <option>Arte</option>
-              <option>Belleza</option>
-              <option>Decoración</option>
-              <option>Deportes</option>
-              <option>Educación</option>
-              <option>Electrónica</option>
-              <option>Eventos</option>
-              <option>Hogar</option>
-              <option>Juguetes</option>
-              <option>Libros</option>
-              <option>Mascotas</option>
-              <option>Mobiliario</option>
-              <option>Moda</option>
-              <option>Otros</option>
-              <option>Salud &amp; bienestar</option>
-              <option>Servicios profesionales</option>
-              <option>Tecnología</option>
-              <option>Transporte</option>
-              <option>Viajes</option>
-            </select>
+            <select id="categorySelect"></select>
+          </label>
+          <label class="field">
+            <span>Subcategoría</span>
+            <select id="subcategorySelect" disabled></select>
           </label>
           <label class="field">
             <span>Ordenar por</span>
@@ -305,23 +263,33 @@
               <option value="price-desc">Precio: mayor a menor</option>
             </select>
           </label>
-          <form id="privateAccessForm" class="field">
-            <span>Acceso privado</span>
-            <div class="inline-field">
-              <input type="password" id="privateAccessInput" placeholder="Contraseña">
-              <button class="btn btn-primary" type="submit">Desbloquear</button>
-            </div>
-            <small class="muted" id="privateAccessStatus"></small>
-          </form>
         </div>
-        <p class="muted" id="privateAccessNote"></p>
         <div class="category-strip" aria-hidden="true">
           <div class="category-track">
-            <span>Accesorios · Alimentos · Arte · Belleza · Decoración · Deportes · Educación · Electrónica · Eventos · Hogar · Juguetes · Libros · Mascotas · Mobiliario · Moda · Otros · Salud &amp; bienestar · Servicios profesionales · Tecnología · Transporte · Viajes ·</span>
-            <span>Accesorios · Alimentos · Arte · Belleza · Decoración · Deportes · Educación · Electrónica · Eventos · Hogar · Juguetes · Libros · Mascotas · Mobiliario · Moda · Otros · Salud &amp; bienestar · Servicios profesionales · Tecnología · Transporte · Viajes ·</span>
+            <span>Inmuebles · Vehículos · Electrónica · Servicios · Cursos ·</span>
+            <span>Inmuebles · Vehículos · Electrónica · Servicios · Cursos ·</span>
           </div>
         </div>
         <div id="productGrid" class="card-grid"></div>
+        <div class="protected-section">
+          <div class="protected-header">
+            <h3>Especiales</h3>
+            <p class="muted">Catálogo con acceso</p>
+          </div>
+          <button class="card protected-card" id="openProtectedCatalog" type="button">
+            <div>
+              <h4>Especiales</h4>
+              <p class="muted">Catálogo con acceso</p>
+            </div>
+            <span class="tag tag-highlight">Acceso</span>
+          </button>
+          <div id="protectedCatalog" class="protected-catalog" hidden>
+            <div class="protected-actions">
+              <button class="btn btn-ghost" id="closeProtectedCatalog" type="button">Cerrar catálogo</button>
+            </div>
+            <div id="protectedGrid" class="card-grid"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -553,6 +521,7 @@
                 <option value="">Selecciona</option>
                 <option value="Producto">Producto</option>
                 <option value="Servicio">Servicio</option>
+                <option value="Curso">Curso</option>
               </select>
             </label>
             <label class="field">
@@ -569,35 +538,11 @@
             </label>
             <label class="field">
               <span>Categoría</span>
-              <select id="productCategory" required>
-                <option value="">Selecciona</option>
-                <option>Accesorios</option>
-                <option>Alimentos</option>
-                <option>Arte</option>
-                <option>Belleza</option>
-                <option>Decoración</option>
-                <option>Deportes</option>
-                <option>Educación</option>
-                <option>Electrónica</option>
-                <option>Eventos</option>
-                <option>Hogar</option>
-                <option>Juguetes</option>
-                <option>Libros</option>
-                <option>Mascotas</option>
-                <option>Mobiliario</option>
-                <option>Moda</option>
-                <option>Otros</option>
-                <option>Salud &amp; bienestar</option>
-                <option>Servicios profesionales</option>
-                <option>Tecnología</option>
-                <option>Transporte</option>
-                <option>Viajes</option>
-                <option>Otra (especifica)</option>
-              </select>
+              <select id="productCategory" required></select>
             </label>
-            <label class="field" id="productCustomCategoryField" hidden>
-              <span>Categoría personalizada</span>
-              <input type="text" id="productCustomCategory" placeholder="Escribe tu categoría">
+            <label class="field">
+              <span>Subcategoría</span>
+              <select id="productSubcategory" required></select>
             </label>
             <label class="field">
               <span>Título</span>
@@ -610,11 +555,11 @@
             </label>
             <label class="field">
               <span>Precio MXN</span>
-              <input type="text" id="productPrice" placeholder="350.50" required>
+              <input type="text" id="productPrice" placeholder="350.50">
             </label>
             <label class="checkbox">
               <input type="checkbox" id="productPrivate">
-              <span>Producto visible solo con contraseña</span>
+              <span>Producto visible solo en Especiales</span>
             </label>
             <label class="checkbox">
               <input type="checkbox" id="productSchedule">
@@ -691,6 +636,22 @@
     </div>
   </div>
 
-  <script src="js/scripts.js?v=20251225-01"></script>
+  <div id="protectedModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="protectedTitle">
+      <button class="modal-close" id="closeProtectedModal" type="button" aria-label="Cerrar">×</button>
+      <h2 id="protectedTitle">Acceso a Especiales</h2>
+      <p class="muted">Ingresa la contraseña para desbloquear este catálogo.</p>
+      <form id="protectedAccessForm">
+        <label class="field">
+          <span>Contraseña</span>
+          <input type="password" id="protectedPassword" required>
+        </label>
+        <button class="btn btn-primary" type="submit">Entrar</button>
+        <p class="muted" id="protectedAccessStatus" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/scripts.js?v=20250305-01"></script>
 </body>
 </html>
