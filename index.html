@@ -9,18 +9,21 @@
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
   <header class="site-header">
-    <div class="container header-grid">
-      <div class="brand">
-        <span class="brand-kicker">Tienda & Cursos</span>
-        <h1>LA TIENDA DE ALBERTO</h1>
+    <div class="brand-banner">
+      <div class="container brand-banner-inner">
+        <span class="brand-kicker">Tienda &amp; Cursos</span>
+        <h1><span>LA TIENDA</span><span>DE ALBERTO</span></h1>
+        <p class="brand-subtitle">Cursos, productos y servicios verificados en un solo lugar.</p>
       </div>
+    </div>
+    <div class="container header-grid">
       <nav class="main-nav" aria-label="Principal">
         <a href="#inicio">Inicio</a>
         <a href="#como-funciona">Cómo ofrecer tu producto o servicio</a>
         <a href="#propuestas">Propón tu producto</a>
         <a href="#cursos">Cursos</a>
         <a href="#catalogo">Catálogo</a>
-        <a href="#interactivo">Zona interactiva</a>
+        <a href="#centro">Centro estudiantil</a>
       </nav>
       <button class="admin-button" id="openAdmin" type="button">Admin</button>
     </div>
@@ -71,14 +74,14 @@
         </div>
         <div class="flow-banner" aria-hidden="true">
           <div class="flow-track">
-            <span>📸 Sube fotos · 📝 Describe tu producto o servicio · ✅ Revisión y aprobación · 💬 Contacto por WhatsApp · 20% comisión por exhibición ·</span>
-            <span>📸 Sube fotos · 📝 Describe tu producto o servicio · ✅ Revisión y aprobación · 💬 Contacto por WhatsApp · 20% comisión por exhibición ·</span>
+            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · 20% de comisión por exhibición ·</span>
+            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · 20% de comisión por exhibición ·</span>
           </div>
         </div>
         <div class="steps-grid">
           <article class="step-card">
             <h3>1. Envía tu propuesta</h3>
-            <p>Sube una o más fotos, agrega descripción (máx 220) y elige si es producto o servicio.</p>
+            <p>Sube una o más fotos, agrega una descripción clara (máx 220) y elige si es producto o servicio.</p>
           </article>
           <article class="step-card">
             <h3>2. Se revisa y aprueba</h3>
@@ -92,6 +95,9 @@
             <h3>4. Comisión transparente</h3>
             <p>Se cobra 20% por la exhibición del producto o servicio. No cubrimos envíos.</p>
           </article>
+        </div>
+        <div class="note-card">
+          <p>También puedes enviar tus imágenes y descripción por correo. Si no deseas hacerlo tú mismo, contáctame y yo me encargo de subir tu producto o servicio.</p>
         </div>
       </div>
     </section>
@@ -123,15 +129,33 @@
               <span>Categoría</span>
               <select id="proposalCategory" required>
                 <option value="">Selecciona</option>
-                <option>Hogar</option>
-                <option>Electrónica</option>
-                <option>Moda</option>
-                <option>Salud &amp; bienestar</option>
-                <option>Comida</option>
+                <option>Accesorios</option>
+                <option>Alimentos</option>
+                <option>Arte</option>
+                <option>Belleza</option>
+                <option>Decoración</option>
+                <option>Deportes</option>
                 <option>Educación</option>
-                <option>Servicios profesionales</option>
+                <option>Electrónica</option>
+                <option>Eventos</option>
+                <option>Hogar</option>
+                <option>Juguetes</option>
+                <option>Libros</option>
+                <option>Mascotas</option>
+                <option>Mobiliario</option>
+                <option>Moda</option>
                 <option>Otros</option>
+                <option>Salud &amp; bienestar</option>
+                <option>Servicios profesionales</option>
+                <option>Tecnología</option>
+                <option>Transporte</option>
+                <option>Viajes</option>
+                <option>Otra (especifica)</option>
               </select>
+            </label>
+            <label class="field" id="proposalCustomCategoryField" hidden>
+              <span>Categoría personalizada</span>
+              <input type="text" id="proposalCustomCategory" placeholder="Escribe tu categoría">
             </label>
             <label class="field">
               <span>Título</span>
@@ -144,6 +168,10 @@
             <label class="field">
               <span>Precio MXN</span>
               <input type="text" id="proposalPrice" placeholder="350.50" required>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="proposalPrivate">
+              <span>Producto visible solo con contraseña</span>
             </label>
             <label class="checkbox">
               <input type="checkbox" id="proposalSchedule">
@@ -169,7 +197,7 @@
               <li>Recibirás confirmación al aprobarse</li>
               <li>La comisión es del 20% por exhibición</li>
             </ul>
-            <p class="muted">Nosotros solo conectamos a compradores y vendedores vía WhatsApp.</p>
+            <p class="muted">Envía imágenes y descripción por correo si lo prefieres. Si no deseas hacerlo tú mismo, contáctame y yo subo tu producto o servicio.</p>
           </div>
         </div>
       </div>
@@ -222,14 +250,27 @@
             <span>Categoría</span>
             <select id="categorySelect">
               <option value="all">Todas</option>
-              <option>Hogar</option>
-              <option>Electrónica</option>
-              <option>Moda</option>
-              <option>Salud &amp; bienestar</option>
-              <option>Comida</option>
+              <option>Accesorios</option>
+              <option>Alimentos</option>
+              <option>Arte</option>
+              <option>Belleza</option>
+              <option>Decoración</option>
+              <option>Deportes</option>
               <option>Educación</option>
-              <option>Servicios profesionales</option>
+              <option>Electrónica</option>
+              <option>Eventos</option>
+              <option>Hogar</option>
+              <option>Juguetes</option>
+              <option>Libros</option>
+              <option>Mascotas</option>
+              <option>Mobiliario</option>
+              <option>Moda</option>
               <option>Otros</option>
+              <option>Salud &amp; bienestar</option>
+              <option>Servicios profesionales</option>
+              <option>Tecnología</option>
+              <option>Transporte</option>
+              <option>Viajes</option>
             </select>
           </label>
           <label class="field">
@@ -240,6 +281,21 @@
               <option value="price-desc">Precio: mayor a menor</option>
             </select>
           </label>
+          <form id="privateAccessForm" class="field">
+            <span>Acceso privado</span>
+            <div class="inline-field">
+              <input type="password" id="privateAccessInput" placeholder="Contraseña">
+              <button class="btn btn-primary" type="submit">Desbloquear</button>
+            </div>
+            <small class="muted" id="privateAccessStatus"></small>
+          </form>
+        </div>
+        <p class="muted" id="privateAccessNote"></p>
+        <div class="category-strip" aria-hidden="true">
+          <div class="category-track">
+            <span>Accesorios · Alimentos · Arte · Belleza · Decoración · Deportes · Educación · Electrónica · Eventos · Hogar · Juguetes · Libros · Mascotas · Mobiliario · Moda · Otros · Salud &amp; bienestar · Servicios profesionales · Tecnología · Transporte · Viajes ·</span>
+            <span>Accesorios · Alimentos · Arte · Belleza · Decoración · Deportes · Educación · Electrónica · Eventos · Hogar · Juguetes · Libros · Mascotas · Mobiliario · Moda · Otros · Salud &amp; bienestar · Servicios profesionales · Tecnología · Transporte · Viajes ·</span>
+          </div>
         </div>
         <div id="productGrid" class="card-grid"></div>
       </div>
@@ -268,23 +324,23 @@
       </div>
     </section>
 
-    <section id="interactivo" class="section alt-section">
+    <section id="centro" class="section alt-section">
       <div class="container">
         <div class="section-head">
-          <h2>Zona interactiva</h2>
-          <p>Juego matemático, próximos cursos, acceso de estudiantes y contacto.</p>
+          <h2>Centro estudiantil</h2>
+          <p>Práctica matemática, próximos cursos, acceso de estudiantes y contacto.</p>
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Juego & Próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Práctica & Próximos cursos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn">
             <div class="panel-grid">
               <div class="game-card">
-                <h3>Juego rápido</h3>
-                <p>Resuelve operaciones y mejora tu velocidad.</p>
+                <h3>Práctica matemática</h3>
+                <p>Resuelve operaciones sencillas para mantener agilidad.</p>
                 <div class="game-area">
                   <div class="game-question" id="gameQuestion">3 + 4 = ?</div>
                   <input type="number" id="gameAnswer" aria-label="Respuesta del juego">
@@ -296,9 +352,9 @@
               <div class="upcoming-card">
                 <h3>Próximos cursos</h3>
                 <ul class="timeline">
-                  <li><strong>Álgebra intensiva</strong><span>Inicia 15 de marzo</span></li>
-                  <li><strong>Cálculo diferencial</strong><span>Inicia 2 de abril</span></li>
-                  <li><strong>Cálculo integral</strong><span>Inicia 20 de abril</span></li>
+                  <li><strong>Álgebra intensiva</strong><span>Inicio: 15 de marzo · Fin: 15 de abril</span></li>
+                  <li><strong>Cálculo diferencial</strong><span>Inicio: 2 de abril · Fin: 2 de mayo</span></li>
+                  <li><strong>Cálculo integral</strong><span>Inicio: 20 de abril · Fin: 20 de mayo</span></li>
                 </ul>
                 <p class="muted">Solicita tu lugar con anticipación.</p>
               </div>
@@ -463,15 +519,33 @@
               <span>Categoría</span>
               <select id="productCategory" required>
                 <option value="">Selecciona</option>
-                <option>Hogar</option>
-                <option>Electrónica</option>
-                <option>Moda</option>
-                <option>Salud &amp; bienestar</option>
-                <option>Comida</option>
+                <option>Accesorios</option>
+                <option>Alimentos</option>
+                <option>Arte</option>
+                <option>Belleza</option>
+                <option>Decoración</option>
+                <option>Deportes</option>
                 <option>Educación</option>
-                <option>Servicios profesionales</option>
+                <option>Electrónica</option>
+                <option>Eventos</option>
+                <option>Hogar</option>
+                <option>Juguetes</option>
+                <option>Libros</option>
+                <option>Mascotas</option>
+                <option>Mobiliario</option>
+                <option>Moda</option>
                 <option>Otros</option>
+                <option>Salud &amp; bienestar</option>
+                <option>Servicios profesionales</option>
+                <option>Tecnología</option>
+                <option>Transporte</option>
+                <option>Viajes</option>
+                <option>Otra (especifica)</option>
               </select>
+            </label>
+            <label class="field" id="productCustomCategoryField" hidden>
+              <span>Categoría personalizada</span>
+              <input type="text" id="productCustomCategory" placeholder="Escribe tu categoría">
             </label>
             <label class="field">
               <span>Título</span>
@@ -485,6 +559,10 @@
             <label class="field">
               <span>Precio MXN</span>
               <input type="text" id="productPrice" placeholder="350.50" required>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="productPrivate">
+              <span>Producto visible solo con contraseña</span>
             </label>
             <label class="checkbox">
               <input type="checkbox" id="productSchedule">

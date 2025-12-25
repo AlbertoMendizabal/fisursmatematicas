@@ -7,6 +7,8 @@ const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
 const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
+const PRIVATE_ACCESS_KEY = "LTA_PRIVATE_ACCESS_V1";
+const PRIVATE_ACCESS_CODES = ["2025", "2010"];
 
 const DEFAULT_NOTIFICATION =
   "Bienvenido a LA TIENDA DE ALBERTO. Consulta cursos y productos disponibles.";
@@ -26,9 +28,12 @@ const proposalImage = document.getElementById("proposalImage");
 const proposalPreview = document.getElementById("proposalPreview");
 const proposalType = document.getElementById("proposalType");
 const proposalCategory = document.getElementById("proposalCategory");
+const proposalCustomCategoryField = document.getElementById("proposalCustomCategoryField");
+const proposalCustomCategory = document.getElementById("proposalCustomCategory");
 const proposalTitle = document.getElementById("proposalTitle");
 const proposalDescription = document.getElementById("proposalDescription");
 const proposalPrice = document.getElementById("proposalPrice");
+const proposalPrivate = document.getElementById("proposalPrivate");
 const proposalSchedule = document.getElementById("proposalSchedule");
 const proposalDates = document.getElementById("proposalDates");
 const proposalStartDate = document.getElementById("proposalStartDate");
@@ -57,9 +62,12 @@ const adminDropzone = document.getElementById("adminDropzone");
 const adminWhatsApp = document.getElementById("adminWhatsApp");
 const productType = document.getElementById("productType");
 const productCategory = document.getElementById("productCategory");
+const productCustomCategoryField = document.getElementById("productCustomCategoryField");
+const productCustomCategory = document.getElementById("productCustomCategory");
 const productTitle = document.getElementById("productTitle");
 const productDescription = document.getElementById("productDescription");
 const productPrice = document.getElementById("productPrice");
+const productPrivate = document.getElementById("productPrivate");
 const productSchedule = document.getElementById("productSchedule");
 const productDates = document.getElementById("productDates");
 const productStartDate = document.getElementById("productStartDate");
@@ -104,6 +112,10 @@ const studentPreview = document.getElementById("studentPreview");
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
 const categorySelect = document.getElementById("categorySelect");
+const privateAccessForm = document.getElementById("privateAccessForm");
+const privateAccessInput = document.getElementById("privateAccessInput");
+const privateAccessStatus = document.getElementById("privateAccessStatus");
+const privateAccessNote = document.getElementById("privateAccessNote");
 
 let approvedProducts = [];
 let pendingProposals = [];
@@ -133,6 +145,42 @@ const parsePrice = (value) => {
 const formatPrice = (value) => currencyFormatter.format(value ?? 0);
 
 const safeText = (value) => (value ?? "").toString();
+
+const hasPrivateAccess = () =>
+  sessionStorage.getItem(PRIVATE_ACCESS_KEY) === "true";
+
+const setPrivateAccess = () =>
+  sessionStorage.setItem(PRIVATE_ACCESS_KEY, "true");
+
+const updateCustomCategoryField = (selectEl, customField) => {
+  if (!selectEl || !customField) return;
+  customField.hidden = selectEl.value !== "Otra (especifica)";
+  if (customField.hidden) {
+    const input = customField.querySelector("input");
+    if (input) input.value = "";
+  }
+};
+
+const getCategoryValue = (selectEl, customEl) => {
+  const selected = selectEl.value.trim();
+  if (selected === "Otra (especifica)") {
+    return customEl.value.trim();
+  }
+  return selected;
+};
+
+const setCategoryInputs = (selectEl, customField, customInput, category) => {
+  const options = Array.from(selectEl.options).map((option) => option.value);
+  if (options.includes(category)) {
+    selectEl.value = category;
+    if (customField) customField.hidden = true;
+    if (customInput) customInput.value = "";
+    return;
+  }
+  selectEl.value = "Otra (especifica)";
+  if (customField) customField.hidden = false;
+  if (customInput) customInput.value = category;
+};
 
 const generateId = () =>
   typeof crypto !== "undefined" && crypto.randomUUID
@@ -164,6 +212,7 @@ const defaultProducts = () => [
     images: [demoImage("Calculadora")],
     category: "Electrónica",
     type: "Producto",
+    isPrivate: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now(),
@@ -177,6 +226,7 @@ const defaultProducts = () => [
     images: [demoImage("Asesoría")],
     category: "Servicios profesionales",
     type: "Servicio",
+    isPrivate: false,
     startDate: "2024-11-18",
     endDate: "2024-11-18",
     createdAt: Date.now() - 10000,
@@ -190,6 +240,7 @@ const defaultProducts = () => [
     images: [demoImage("Guía")],
     category: "Educación",
     type: "Producto",
+    isPrivate: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 20000,
@@ -221,6 +272,7 @@ const normalizeItem = (item) => ({
   images: item.images || (item.imageDataUrl ? [item.imageDataUrl] : []),
   type: item.type || "Producto",
   category: item.category || "Otros",
+  isPrivate: Boolean(item.isPrivate),
   startDate: item.startDate || "",
   endDate: item.endDate || "",
 });
@@ -306,8 +358,14 @@ const renderProducts = () => {
   const query = safeText(searchInput.value).toLowerCase();
   const sort = sortSelect.value;
   const selectedCategory = categorySelect?.value ?? "all";
+  const allowPrivate = hasPrivateAccess();
+  let hiddenPrivateCount = 0;
 
   let filtered = approvedProducts.filter((product) => {
+    if (product.isPrivate && !allowPrivate) {
+      hiddenPrivateCount += 1;
+      return false;
+    }
     const text = `${product.title} ${product.description}`.toLowerCase();
     const matchesCategory =
       selectedCategory === "all" || product.category === selectedCategory;
@@ -344,6 +402,12 @@ const renderProducts = () => {
     categoryTag.className = "tag tag-alt";
     categoryTag.textContent = product.category || "Otros";
     meta.append(typeTag, categoryTag);
+    if (product.isPrivate) {
+      const privateTag = document.createElement("span");
+      privateTag.className = "tag";
+      privateTag.textContent = "Privado";
+      meta.append(privateTag);
+    }
 
     const desc = document.createElement("p");
     desc.textContent = safeText(product.description);
@@ -437,6 +501,14 @@ const renderProducts = () => {
     card.append(button, messageToggle, messageForm);
     productGrid.appendChild(card);
   });
+
+  if (privateAccessNote) {
+    privateAccessNote.textContent = allowPrivate
+      ? "Acceso privado activado. Estás viendo productos con contraseña."
+      : hiddenPrivateCount
+      ? "Hay productos privados disponibles. Ingresa la contraseña para verlos."
+      : "";
+  }
 };
 
 const updateAdminList = () => {
@@ -463,9 +535,10 @@ const updateAdminList = () => {
     const meta = document.createElement("p");
     meta.className = "muted";
     const dates = [product.startDate, product.endDate].filter(Boolean).join(" · ");
+    const privateLabel = product.isPrivate ? " · Privado" : "";
     meta.textContent = `${formatPrice(product.price)} · ${product.type || "Producto"} · ${
       product.category || "Otros"
-    }${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
+    }${privateLabel}${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
     info.append(title, meta);
 
     const actions = document.createElement("div");
@@ -511,9 +584,10 @@ const updatePendingList = () => {
     const meta = document.createElement("p");
     meta.className = "muted";
     const dates = [proposal.startDate, proposal.endDate].filter(Boolean).join(" · ");
+    const privateLabel = proposal.isPrivate ? " · Privado" : "";
     meta.textContent = `${formatPrice(proposal.price)} · ${proposal.type || "Producto"} · ${
       proposal.category || "Otros"
-    }${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
+    }${privateLabel}${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
     info.append(title, meta);
 
     const actions = document.createElement("div");
@@ -553,6 +627,7 @@ const resetProductForm = () => {
   productFormStatus.textContent = "";
   descCount.textContent = "0/220";
   productDates.hidden = true;
+  productCustomCategoryField.hidden = true;
 };
 
 const openEditForm = (item, mode) => {
@@ -568,7 +643,12 @@ const openEditForm = (item, mode) => {
     editingApprovedId = null;
   }
   productType.value = item.type || "";
-  productCategory.value = item.category || "";
+  setCategoryInputs(
+    productCategory,
+    productCustomCategoryField,
+    productCustomCategory,
+    item.category || ""
+  );
   productTitle.value = item.title;
   productDescription.value = item.description;
   productPrice.value = item.price;
@@ -577,6 +657,7 @@ const openEditForm = (item, mode) => {
   productEndDate.value = item.endDate || "";
   productSchedule.checked = Boolean(item.startDate || item.endDate);
   productDates.hidden = !productSchedule.checked;
+  productPrivate.checked = Boolean(item.isPrivate);
   renderPreviewGrid(productPreview, item.images || []);
 
   const adminProductsTab = document.getElementById("admin-products-btn");
@@ -819,13 +900,19 @@ const handleAdminLogout = () => {
 const handleProductSubmit = (event) => {
   event.preventDefault();
   const type = productType.value.trim();
-  const category = productCategory.value.trim();
+  const category = getCategoryValue(productCategory, productCustomCategory);
   const title = productTitle.value.trim();
   const description = productDescription.value.trim();
   const priceValue = parsePrice(productPrice.value);
   const images = getPreviewImages(productPreview);
   const startDate = productSchedule.checked ? productStartDate.value : "";
   const endDate = productSchedule.checked ? productEndDate.value : "";
+  const isPrivate = productPrivate.checked;
+
+  if (productCategory.value === "Otra (especifica)" && !category) {
+    productFormStatus.textContent = "Escribe una categoría personalizada.";
+    return;
+  }
 
   if (!type || !category || !title || !description || priceValue === null) {
     productFormStatus.textContent = "Completa todos los campos con datos válidos.";
@@ -851,6 +938,7 @@ const handleProductSubmit = (event) => {
             images,
             startDate,
             endDate,
+            isPrivate,
             updatedAt: now,
           }
         : proposal
@@ -875,6 +963,7 @@ const handleProductSubmit = (event) => {
             images,
             startDate,
             endDate,
+            isPrivate,
             updatedAt: now,
           }
         : product
@@ -898,6 +987,7 @@ const handleProductSubmit = (event) => {
       images,
       startDate,
       endDate,
+      isPrivate,
       createdAt: now,
       updatedAt: now,
     });
@@ -1080,13 +1170,19 @@ const setupContactForm = () => {
 const handleProposalSubmit = (event) => {
   event.preventDefault();
   const type = proposalType.value.trim();
-  const category = proposalCategory.value.trim();
+  const category = getCategoryValue(proposalCategory, proposalCustomCategory);
   const title = proposalTitle.value.trim();
   const description = proposalDescription.value.trim();
   const priceValue = parsePrice(proposalPrice.value);
   const images = getPreviewImages(proposalPreview);
   const startDate = proposalSchedule.checked ? proposalStartDate.value : "";
   const endDate = proposalSchedule.checked ? proposalEndDate.value : "";
+  const isPrivate = proposalPrivate.checked;
+
+  if (proposalCategory.value === "Otra (especifica)" && !category) {
+    proposalStatus.textContent = "Escribe una categoría personalizada.";
+    return;
+  }
 
   if (!type || !category || !title || !description || priceValue === null) {
     proposalStatus.textContent = "Completa los campos con datos válidos.";
@@ -1108,6 +1204,7 @@ const handleProposalSubmit = (event) => {
     images,
     startDate,
     endDate,
+    isPrivate,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -1127,6 +1224,7 @@ const handleProposalSubmit = (event) => {
   proposalPreview.innerHTML = "";
   proposalPreview.dataset.images = "";
   proposalDates.hidden = true;
+  proposalCustomCategoryField.hidden = true;
   updatePendingList();
 };
 
@@ -1173,6 +1271,9 @@ const setupAdminEvents = () => {
   productSchedule.addEventListener("change", () => {
     productDates.hidden = !productSchedule.checked;
   });
+  productCategory.addEventListener("change", () =>
+    updateCustomCategoryField(productCategory, productCustomCategoryField)
+  );
   productForm.addEventListener("submit", handleProductSubmit);
   adminWhatsApp.addEventListener("click", () => {
     const title = productTitle.value.trim() || "Sin título";
@@ -1211,7 +1312,26 @@ const setupProposalEvents = () => {
   proposalSchedule.addEventListener("change", () => {
     proposalDates.hidden = !proposalSchedule.checked;
   });
+  proposalCategory.addEventListener("change", () =>
+    updateCustomCategoryField(proposalCategory, proposalCustomCategoryField)
+  );
   proposalForm.addEventListener("submit", handleProposalSubmit);
+};
+
+const setupPrivateAccess = () => {
+  if (!privateAccessForm) return;
+  privateAccessForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = privateAccessInput.value.trim();
+    if (PRIVATE_ACCESS_CODES.includes(value)) {
+      setPrivateAccess();
+      privateAccessStatus.textContent = "Acceso privado activado.";
+      privateAccessInput.value = "";
+      renderProducts();
+    } else {
+      privateAccessStatus.textContent = "Contraseña incorrecta.";
+    }
+  });
 };
 
 const initializeNotificationForm = () => {
@@ -1236,6 +1356,7 @@ const init = () => {
   setupNotification();
   setupAdminEvents();
   setupProposalEvents();
+  setupPrivateAccess();
   initializeNotificationForm();
   updateGame();
   gameSubmit.addEventListener("click", handleGameSubmit);
@@ -1247,6 +1368,8 @@ const init = () => {
   studentLogout.addEventListener("click", handleStudentLogout);
   studentEditForm.addEventListener("submit", handleStudentSave);
   setupContactForm();
+  updateCustomCategoryField(productCategory, productCustomCategoryField);
+  updateCustomCategoryField(proposalCategory, proposalCustomCategoryField);
 
   if (hasAdminSession()) {
     adminLogin.hidden = true;
@@ -1256,6 +1379,10 @@ const init = () => {
   if (hasStudentSession()) {
     studentPanel.hidden = false;
     loadStudentContent();
+  }
+
+  if (hasPrivateAccess() && privateAccessStatus) {
+    privateAccessStatus.textContent = "Acceso privado activado.";
   }
 };
 
