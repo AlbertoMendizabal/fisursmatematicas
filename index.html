@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
-  <link rel="stylesheet" href="css/styles.css?v=20250305-01">
+  <link rel="stylesheet" href="css/styles.css?v=20250305-02">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -148,6 +148,10 @@
               <select id="proposalSubcategory" required></select>
             </label>
             <label class="field">
+              <span>Detalle (opcional)</span>
+              <select id="proposalChildcategory"></select>
+            </label>
+            <label class="field">
               <span>Título</span>
               <input type="text" id="proposalTitle" required>
             </label>
@@ -240,13 +244,27 @@
       <div class="container">
         <div class="section-head reveal">
           <h2>Catálogo</h2>
-          <p>Productos y servicios aprobados, listos para comprar.</p>
+          <p>Compra o renta productos y servicios aprobados, listos para coordinar.</p>
         </div>
-        <div class="filters">
+        <div class="catalog-toolbar">
+          <div class="catalog-menu-wrapper">
+            <button class="btn btn-ghost" id="catalogMenuToggle" type="button" aria-expanded="false">
+              Explorar categorías
+            </button>
+            <div id="catalogMenu" class="catalog-menu" hidden>
+              <div class="catalog-menu-columns">
+                <div class="catalog-menu-left" id="catalogMenuCategories"></div>
+                <div class="catalog-menu-right" id="catalogMenuSubcategories"></div>
+              </div>
+            </div>
+            <div id="catalogMenuMobile" class="catalog-menu-mobile" hidden></div>
+          </div>
           <label class="field">
-            <span>Buscar</span>
+            <span>Búsqueda global</span>
             <input type="search" id="searchInput" placeholder="Buscar por título o descripción">
           </label>
+        </div>
+        <div class="filters">
           <label class="field">
             <span>Categoría</span>
             <select id="categorySelect"></select>
@@ -254,6 +272,35 @@
           <label class="field">
             <span>Subcategoría</span>
             <select id="subcategorySelect" disabled></select>
+          </label>
+          <label class="field">
+            <span>Detalle</span>
+            <select id="childcategorySelect" disabled></select>
+          </label>
+          <label class="field">
+            <span>Tipo</span>
+            <select id="typeSelect">
+              <option value="all">Todos</option>
+              <option value="Producto">Producto</option>
+              <option value="Servicio">Servicio</option>
+              <option value="Curso">Curso</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Precio mínimo</span>
+            <input type="number" id="priceMin" inputmode="numeric" placeholder="0">
+          </label>
+          <label class="field">
+            <span>Precio máximo</span>
+            <input type="number" id="priceMax" inputmode="numeric" placeholder="999999">
+          </label>
+          <label class="field">
+            <span>Estado (admin)</span>
+            <select id="conditionSelect" disabled>
+              <option value="all">Todos</option>
+              <option value="Nuevo">Nuevo</option>
+              <option value="Usado">Usado</option>
+            </select>
           </label>
           <label class="field">
             <span>Ordenar por</span>
@@ -266,8 +313,8 @@
         </div>
         <div class="category-strip" aria-hidden="true">
           <div class="category-track">
-            <span>Inmuebles · Vehículos · Electrónica · Servicios · Cursos ·</span>
-            <span>Inmuebles · Vehículos · Electrónica · Servicios · Cursos ·</span>
+            <span>Inmuebles · Vehículos · Electrónica · Hogar y muebles · Moda y accesorios · Salud y belleza · Servicios · Cursos ·</span>
+            <span>Inmuebles · Vehículos · Electrónica · Hogar y muebles · Moda y accesorios · Salud y belleza · Servicios · Cursos ·</span>
           </div>
         </div>
         <div id="productGrid" class="card-grid"></div>
@@ -336,7 +383,7 @@
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Juego y próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
@@ -350,20 +397,6 @@
                   <li><strong>Cálculo integral</strong><span>Inicio: 20 de abril · Fin: 20 de mayo</span></li>
                 </ul>
                 <p class="muted">Solicita tu lugar con anticipación.</p>
-              </div>
-              <div class="card reveal game-card">
-                <h3>Juego matemático rápido</h3>
-                <p class="muted">Resuelve operaciones rápidas para calentar motores.</p>
-                <div class="game-question" id="gameQuestion" aria-live="polite"></div>
-                <label class="field">
-                  <span>Tu respuesta</span>
-                  <input type="number" id="gameAnswer" inputmode="numeric" autocomplete="off">
-                </label>
-                <div class="game-actions">
-                  <button class="btn btn-primary" type="button" id="gameSubmit">Responder</button>
-                  <button class="btn btn-ghost" type="button" id="gameReset">Nuevo reto</button>
-                </div>
-                <p id="gameFeedback" class="muted" aria-live="polite"></p>
               </div>
             </div>
           </div>
@@ -545,6 +578,10 @@
               <select id="productSubcategory" required></select>
             </label>
             <label class="field">
+              <span>Detalle (opcional)</span>
+              <select id="productChildcategory"></select>
+            </label>
+            <label class="field">
               <span>Título</span>
               <input type="text" id="productTitle" required>
             </label>
@@ -652,6 +689,6 @@
     </div>
   </div>
 
-  <script src="js/scripts.js?v=20250305-01"></script>
+  <script src="js/scripts.js?v=20250305-02"></script>
 </body>
 </html>
