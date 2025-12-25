@@ -11,9 +11,9 @@
   <header class="site-header">
     <div class="brand-banner">
       <div class="container brand-banner-inner">
-        <span class="brand-kicker">Tienda &amp; Cursos</span>
+        <span class="brand-kicker">Tienda &amp; Servicios</span>
         <h1><span>LA TIENDA</span><span>DE ALBERTO</span></h1>
-        <p class="brand-subtitle">Cursos, productos y servicios verificados en un solo lugar.</p>
+        <p class="brand-subtitle">Productos y servicios verificados en un solo lugar.</p>
       </div>
     </div>
     <div class="container header-grid">
@@ -23,6 +23,7 @@
         <a href="#propuestas">Propón tu producto</a>
         <a href="#cursos">Cursos</a>
         <a href="#catalogo">Catálogo</a>
+        <a href="#conoceme">Conóceme</a>
         <a href="#centro">Centro estudiantil</a>
       </nav>
       <button class="admin-button" id="openAdmin" type="button">Admin</button>
@@ -31,9 +32,9 @@
       <div class="container contact-bar-inner">
         <div class="contact-info">
           <span>WhatsApp directo</span>
-          <strong>+52 56 1088 5857</strong>
+          <strong>+52 56 1088 5357</strong>
         </div>
-        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885857?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
+        <a class="btn btn-whatsapp" id="topWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </header>
@@ -43,8 +44,8 @@
       <div class="container hero-grid">
         <div>
           <p class="eyebrow">Confianza y claridad para aprender y vender</p>
-          <h2>Aprende matemáticas y ofrece tus productos o servicios con respaldo.</h2>
-          <p class="lead">Cursos intensivos y escaparate verificado. Comunicación directa por WhatsApp con procesos claros.</p>
+          <h2>Tu tienda confiable para anunciar productos y servicios.</h2>
+          <p class="lead">Publica tus propuestas, recibe solicitudes y coordina ventas con claridad. Comunicación directa por WhatsApp en cada paso.</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="#cursos">Ver cursos</a>
             <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
@@ -56,7 +57,7 @@
         </div>
         <div class="hero-card">
           <h3>Atención inmediata</h3>
-          <p>Respuestas rápidas y proceso transparente. Cursos y productos listos para comenzar.</p>
+          <p>Respuestas rápidas y proceso transparente. Productos y servicios listos para mostrarse.</p>
           <ul>
             <li>Catálogo actualizado</li>
             <li>Pago seguro por acuerdo directo</li>
@@ -164,11 +165,22 @@
             <label class="field">
               <span>Mini-descripción (máx 220, sin precio)</span>
               <textarea id="proposalDescription" maxlength="220" rows="3" required></textarea>
+              <small id="proposalDescCount">220 caracteres restantes</small>
             </label>
             <label class="field">
               <span>Precio MXN</span>
               <input type="text" id="proposalPrice" placeholder="350.50" required>
             </label>
+            <div class="price-breakdown" aria-live="polite">
+              <div>
+                <span class="muted">Comisión 20%</span>
+                <strong class="text-danger" id="proposalCommission">$0 MXN</strong>
+              </div>
+              <div>
+                <span class="muted">Recibes tú</span>
+                <strong class="text-success" id="proposalPayout">$0 MXN</strong>
+              </div>
+            </div>
             <label class="checkbox">
               <input type="checkbox" id="proposalPrivate">
               <span>Producto visible solo con contraseña</span>
@@ -301,6 +313,18 @@
       </div>
     </section>
 
+    <section id="conoceme" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Conóceme</h2>
+          <p>Un espacio para saber quién está detrás de La Tienda de Alberto.</p>
+        </div>
+        <div class="card">
+          <div id="aboutContent" class="about-content"></div>
+        </div>
+      </div>
+    </section>
+
     <section id="confianza" class="section">
       <div class="container">
         <div class="section-head">
@@ -328,27 +352,16 @@
       <div class="container">
         <div class="section-head">
           <h2>Centro estudiantil</h2>
-          <p>Práctica matemática, próximos cursos, acceso de estudiantes y contacto.</p>
+          <p>Próximos cursos, acceso de estudiantes y contacto.</p>
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Práctica & Próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Próximos cursos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn">
             <div class="panel-grid">
-              <div class="game-card">
-                <h3>Práctica matemática</h3>
-                <p>Resuelve operaciones sencillas para mantener agilidad.</p>
-                <div class="game-area">
-                  <div class="game-question" id="gameQuestion">3 + 4 = ?</div>
-                  <input type="number" id="gameAnswer" aria-label="Respuesta del juego">
-                  <button class="btn btn-primary" id="gameSubmit" type="button">Responder</button>
-                  <button class="btn btn-ghost" id="gameReset" type="button">Nuevo reto</button>
-                  <p id="gameFeedback" class="muted" aria-live="polite"></p>
-                </div>
-              </div>
               <div class="upcoming-card">
                 <h3>Próximos cursos</h3>
                 <ul class="timeline">
@@ -357,6 +370,11 @@
                   <li><strong>Cálculo integral</strong><span>Inicio: 20 de abril · Fin: 20 de mayo</span></li>
                 </ul>
                 <p class="muted">Solicita tu lugar con anticipación.</p>
+              </div>
+              <div class="card">
+                <h3>Agenda de solicitudes</h3>
+                <p>Si necesitas un producto o asesoría para una fecha específica, selecciona tu día en el catálogo y me llegará una notificación para contactarte.</p>
+                <p class="muted">Así podemos coordinar horarios y disponibilidad rápidamente.</p>
               </div>
             </div>
           </div>
@@ -425,10 +443,10 @@
               </form>
               <div class="card">
                 <h3>Información básica</h3>
-                <p><strong>WhatsApp:</strong> +52 56 1088 5857</p>
+                <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
                 <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
                 <p><strong>Ubicación:</strong> Ciudad de México</p>
-                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885857?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar por WhatsApp</a>
+                <a class="btn btn-whatsapp" id="contactWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar por WhatsApp</a>
               </div>
             </div>
           </div>
@@ -441,13 +459,13 @@
     <div class="container footer-grid">
       <div>
         <h3>LA TIENDA DE ALBERTO</h3>
-        <p class="muted">Cursos, productos y asesoría directa.</p>
+        <p class="muted">Productos, servicios y asesoría directa.</p>
         <p class="muted"><strong>Comisión: 20% por venta.</strong> Coordinación directa entre comprador y vendedor.</p>
       </div>
       <div class="footer-contact">
         <span>WhatsApp</span>
-        <strong>+52 56 1088 5857</strong>
-        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885857?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
+        <strong>+52 56 1088 5357</strong>
+        <a class="btn btn-whatsapp" id="bottomWhatsapp" href="https://wa.me/525610885357?text=Hola%20Alberto,%20quiero%20informaci%C3%B3n%20por%20favor." target="_blank" rel="noopener">Contactar</a>
       </div>
     </div>
   </footer>
@@ -482,6 +500,7 @@
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-products" id="admin-products-btn">Productos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-messages" id="admin-messages-btn">Mensajes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-notifications" id="admin-notifications-btn">Notificaciones</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-about" id="admin-about-btn">Conóceme</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-settings" id="admin-settings-btn">Ajustes</button>
           </div>
           <button class="btn btn-ghost" id="adminLogout" type="button">Cerrar sesión</button>
@@ -607,6 +626,19 @@
             </label>
             <button class="btn btn-primary" type="submit">Guardar notificación</button>
             <p id="notificationStatus" class="muted" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div id="admin-about" class="tab-panel" role="tabpanel" aria-labelledby="admin-about-btn" hidden>
+          <form id="aboutForm" class="card">
+            <h3>Editar sección Conóceme</h3>
+            <p class="muted">Escribe varios párrafos. Usa saltos de línea para separar ideas.</p>
+            <label class="field">
+              <span>Texto principal</span>
+              <textarea id="aboutInput" rows="8" required></textarea>
+            </label>
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <p id="aboutStatus" class="muted" aria-live="polite"></p>
           </form>
         </div>
 
