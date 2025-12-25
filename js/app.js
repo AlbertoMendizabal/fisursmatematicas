@@ -1,15 +1,19 @@
 const WHATSAPP_NUMBER = "525610885357";
-const APPROVED_KEY = "LTA_APPROVED_V1";
-const PENDING_KEY = "LTA_PENDING_V1";
+const APPROVED_KEY = "proposals_published";
+const PENDING_KEY = "proposals_pending";
+const REJECTED_KEY = "proposals_rejected";
+const LEGACY_APPROVED_KEY = "LTA_APPROVED_V1";
+const LEGACY_PENDING_KEY = "LTA_PENDING_V1";
 const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
 const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
-const NOTIFICATION_DISMISSED_KEY = "LTA_NOTIFICATION_DISMISSED_AT_V1";
+const WELCOME_DISMISSED_KEY = "welcomeToastDismissed";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
 const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
 const PRIVATE_ACCESS_KEY = "LTA_PRIVATE_ACCESS_V1";
 const PRIVATE_ACCESS_CODES = ["2025", "2010"];
+const ADMIN_ACCESS_CODES = ["2025", "1991"];
 const ABOUT_KEY = "LTA_ABOUT_V1";
 
 const DEFAULT_NOTIFICATION =
@@ -32,6 +36,8 @@ const proposalPreview = document.getElementById("proposalPreview");
 const proposalType = document.getElementById("proposalType");
 const proposalCondition = document.getElementById("proposalCondition");
 const proposalDelivery = document.getElementById("proposalDelivery");
+const proposalContactPhone = document.getElementById("proposalContactPhone");
+const proposalContactEmail = document.getElementById("proposalContactEmail");
 const proposalCategory = document.getElementById("proposalCategory");
 const proposalCustomCategoryField = document.getElementById("proposalCustomCategoryField");
 const proposalCustomCategory = document.getElementById("proposalCustomCategory");
@@ -127,6 +133,7 @@ const aboutStatus = document.getElementById("aboutStatus");
 
 let approvedProducts = [];
 let pendingProposals = [];
+let rejectedProposals = [];
 let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
@@ -303,10 +310,33 @@ const normalizeItem = (item) => ({
   endDate: item.endDate || "",
 });
 
+const sanitizeApprovedProduct = (item) => {
+  const normalized = normalizeItem(item);
+  const { contact, detailsRequest, status, ...rest } = normalized;
+  return rest;
+};
+
+const normalizeProposal = (item) => ({
+  ...normalizeItem(item),
+  status: item.status || "pending",
+  detailsRequest: item.detailsRequest || "",
+  contact: {
+    phone: item.contact?.phone || "",
+    email: item.contact?.email || "",
+  },
+});
+
 const loadApproved = () => {
   const stored = loadFromStorage(APPROVED_KEY, null);
   if (stored && Array.isArray(stored)) {
-    approvedProducts = stored.map(normalizeItem);
+    approvedProducts = stored.map(sanitizeApprovedProduct);
+    saveToStorage(APPROVED_KEY, approvedProducts);
+    return;
+  }
+  const legacy = loadFromStorage(LEGACY_APPROVED_KEY, null);
+  if (legacy && Array.isArray(legacy)) {
+    approvedProducts = legacy.map(sanitizeApprovedProduct);
+    saveToStorage(APPROVED_KEY, approvedProducts);
     return;
   }
   approvedProducts = defaultProducts();
@@ -314,10 +344,21 @@ const loadApproved = () => {
 };
 
 const loadPending = () => {
-  const stored = loadFromStorage(PENDING_KEY, []);
-  pendingProposals = Array.isArray(stored)
-    ? stored.map(normalizeItem)
-    : [];
+  const stored = loadFromStorage(PENDING_KEY, null);
+  if (stored && Array.isArray(stored)) {
+    pendingProposals = stored.map(normalizeProposal);
+    return;
+  }
+  const legacy = loadFromStorage(LEGACY_PENDING_KEY, null);
+  pendingProposals = Array.isArray(legacy) ? legacy.map(normalizeProposal) : [];
+  if (pendingProposals.length) {
+    saveToStorage(PENDING_KEY, pendingProposals);
+  }
+};
+
+const loadRejected = () => {
+  const stored = loadFromStorage(REJECTED_KEY, []);
+  rejectedProposals = Array.isArray(stored) ? stored.map(normalizeProposal) : [];
 };
 
 const loadMessages = () => {
@@ -677,9 +718,11 @@ const updatePendingList = () => {
     meta.className = "muted";
     const dates = [proposal.startDate, proposal.endDate].filter(Boolean).join(" · ");
     const privateLabel = proposal.isPrivate ? " · Privado" : "";
+    const statusLabel =
+      proposal.status === "details_requested" ? " · Solicita detalles" : "";
     meta.textContent = `${formatPrice(proposal.price)} · ${proposal.type || "Producto"} · ${
       proposal.category || "Otros"
-    }${privateLabel} · ${formatCondition(proposal.condition)} · ${formatDelivery(
+    }${privateLabel}${statusLabel} · ${formatCondition(proposal.condition)} · ${formatDelivery(
       proposal.deliveryZone
     )}${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
     info.append(title, meta);
@@ -697,14 +740,61 @@ const updatePendingList = () => {
     editBtn.textContent = "Editar antes de aprobar";
     editBtn.addEventListener("click", () => openEditForm(proposal, "pending"));
 
+    const detailsBtn = document.createElement("button");
+    detailsBtn.className = "btn btn-ghost";
+    detailsBtn.type = "button";
+    detailsBtn.textContent = "Ver detalles";
+
+    const requestBtn = document.createElement("button");
+    requestBtn.className = "btn btn-ghost";
+    requestBtn.type = "button";
+    requestBtn.textContent = "Pedir detalles";
+    requestBtn.addEventListener("click", () => requestProposalDetails(proposal.id));
+
     const rejectBtn = document.createElement("button");
     rejectBtn.className = "btn btn-ghost";
     rejectBtn.type = "button";
     rejectBtn.textContent = "Rechazar";
     rejectBtn.addEventListener("click", () => rejectProposal(proposal.id));
 
-    actions.append(approveBtn, editBtn, rejectBtn);
-    item.append(img, info, actions);
+    actions.append(approveBtn, editBtn, detailsBtn, requestBtn, rejectBtn);
+
+    const details = document.createElement("div");
+    details.className = "admin-details";
+    details.hidden = true;
+
+    const contact = document.createElement("p");
+    const contactLabel = document.createElement("strong");
+    contactLabel.textContent = "Contacto: ";
+    const contactValue = document.createElement("span");
+    const phone = proposal.contact?.phone || "Sin teléfono";
+    const email = proposal.contact?.email || "Sin correo";
+    contactValue.textContent = `${phone} · ${email}`;
+    contact.append(contactLabel, contactValue);
+
+    const detailNote = document.createElement("p");
+    detailNote.className = "muted";
+    detailNote.textContent = proposal.detailsRequest
+      ? `Detalle solicitado: ${proposal.detailsRequest}`
+      : "Sin solicitudes adicionales.";
+
+    const detailGallery = document.createElement("div");
+    detailGallery.className = "mini-gallery";
+    (proposal.images || []).forEach((image) => {
+      const thumb = document.createElement("img");
+      thumb.src = image;
+      thumb.alt = `Imagen de ${proposal.title}`;
+      detailGallery.appendChild(thumb);
+    });
+
+    details.append(contact, detailNote, detailGallery);
+
+    detailsBtn.addEventListener("click", () => {
+      details.hidden = !details.hidden;
+      detailsBtn.textContent = details.hidden ? "Ver detalles" : "Ocultar detalles";
+    });
+
+    item.append(img, info, actions, details);
     adminPendingList.appendChild(item);
   });
 };
@@ -775,18 +865,39 @@ const approveProposal = (id) => {
   );
   if (!confirmed) return;
   pendingProposals = pendingProposals.filter((item) => item.id !== id);
+  const { contact, detailsRequest, status, ...rest } = proposal;
   approvedProducts.unshift({
-    ...proposal,
+    ...rest,
     updatedAt: Date.now(),
   });
   persistPending();
   persistApproved();
 };
 
+const requestProposalDetails = (id) => {
+  const proposal = pendingProposals.find((item) => item.id === id);
+  if (!proposal) return;
+  const note = window.prompt("¿Qué detalles necesitas solicitar?");
+  if (!note) return;
+  proposal.status = "details_requested";
+  proposal.detailsRequest = note.trim();
+  proposal.updatedAt = Date.now();
+  persistPending();
+};
+
 const rejectProposal = (id) => {
   const confirmed = window.confirm("¿Rechazar esta propuesta?");
   if (!confirmed) return;
+  const proposal = pendingProposals.find((item) => item.id === id);
   pendingProposals = pendingProposals.filter((item) => item.id !== id);
+  if (proposal) {
+    rejectedProposals.unshift({
+      ...proposal,
+      status: "rejected",
+      updatedAt: Date.now(),
+    });
+    persistRejected();
+  }
   persistPending();
 };
 
@@ -809,6 +920,10 @@ const persistPending = () => {
       "No se pudo guardar pendientes. Reduce el tamaño de las imágenes.";
   }
   updatePendingList();
+};
+
+const persistRejected = () => {
+  saveToStorage(REJECTED_KEY, rejectedProposals);
 };
 
 const compressImage = (file) =>
@@ -957,35 +1072,43 @@ const registerReveals = (root = document) => {
   });
 };
 
-const isNotificationDismissed = () => {
-  const dismissedAt = loadFromStorage(NOTIFICATION_DISMISSED_KEY, 0);
-  if (!dismissedAt) return false;
-  return Date.now() - dismissedAt < 24 * 60 * 60 * 1000;
+const isWelcomeDismissed = () =>
+  sessionStorage.getItem(WELCOME_DISMISSED_KEY) === "1";
+
+const ensureToastElement = () => {
+  if (!notificationToast || !notificationMessage) return null;
+  if (!document.body.contains(notificationToast)) {
+    document.body.appendChild(notificationToast);
+  }
+  return notificationToast;
 };
 
-const dismissNotification = () => {
-  if (!notificationToast) return;
-  notificationToast.hidden = true;
-  notificationToast.remove();
-  saveToStorage(NOTIFICATION_DISMISSED_KEY, Date.now());
+const showToast = (message, toastType = "notice") => {
+  const toast = ensureToastElement();
+  if (!toast || !notificationMessage) return;
+  toast.dataset.toast = toastType;
+  notificationMessage.textContent = safeText(message);
+  toast.hidden = false;
 };
 
 const showNotification = () => {
-  if (!notificationToast || !notificationMessage) return;
   const enabled = loadFromStorage(NOTIFICATION_ENABLED_KEY, true);
-  if (!enabled || isNotificationDismissed()) return;
+  if (!enabled || isWelcomeDismissed()) return;
   const message = loadFromStorage(NOTIFICATION_TEXT_KEY, DEFAULT_NOTIFICATION);
-  notificationMessage.textContent = safeText(message);
-  notificationToast.hidden = false;
+  showToast(message, "welcome");
 };
 
 const setupNotification = () => {
-  if (!notificationToast) return;
   const handleDismiss = (event) => {
     if (!(event.target instanceof Element)) return;
     const target = event.target.closest("[data-toast-close]");
     if (!target) return;
-    dismissNotification();
+    const toast = target.closest("[data-toast]");
+    if (!toast) return;
+    if (toast.dataset.toast === "welcome") {
+      sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
+    }
+    toast.remove();
   };
 
   document.addEventListener("click", handleDismiss, { capture: true });
@@ -1001,7 +1124,12 @@ const setupNotification = () => {
       const target = event.target.closest("[data-toast-close]");
       if (!target) return;
       event.preventDefault();
-      dismissNotification();
+      const toast = target.closest("[data-toast]");
+      if (!toast) return;
+      if (toast.dataset.toast === "welcome") {
+        sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
+      }
+      toast.remove();
     },
     { capture: true }
   );
@@ -1047,7 +1175,7 @@ const closeAdminModal = () => {
 const handleAdminLogin = (event) => {
   event.preventDefault();
   const value = adminPassword.value.trim();
-  if (value === "2025" || value === "2010") {
+  if (ADMIN_ACCESS_CODES.includes(value)) {
     setAdminSession();
     adminLogin.hidden = true;
     adminPanel.hidden = false;
@@ -1203,6 +1331,7 @@ const handleExport = () => {
   const payload = {
     approved: approvedProducts,
     pending: pendingProposals,
+    rejected: rejectedProposals,
     notification: loadFromStorage(NOTIFICATION_TEXT_KEY, DEFAULT_NOTIFICATION),
     notificationEnabled: loadFromStorage(NOTIFICATION_ENABLED_KEY, true),
   };
@@ -1228,15 +1357,19 @@ const handleImport = (event) => {
     try {
       const data = JSON.parse(reader.result);
       if (Array.isArray(data.approved)) {
-        approvedProducts = data.approved;
+        approvedProducts = data.approved.map(sanitizeApprovedProduct);
         saveToStorage(APPROVED_KEY, approvedProducts);
         renderProducts();
         updateAdminList();
       }
       if (Array.isArray(data.pending)) {
-        pendingProposals = data.pending;
+        pendingProposals = data.pending.map(normalizeProposal);
         saveToStorage(PENDING_KEY, pendingProposals);
         updatePendingList();
+      }
+      if (Array.isArray(data.rejected)) {
+        rejectedProposals = data.rejected.map(normalizeProposal);
+        saveToStorage(REJECTED_KEY, rejectedProposals);
       }
       if (data.notification) {
         saveToStorage(NOTIFICATION_TEXT_KEY, data.notification);
@@ -1289,7 +1422,7 @@ const handleStudentLogin = (event) => {
   if (value === "2025" || value === "1991") {
     setStudentSession();
     studentPanel.hidden = false;
-    studentLoginStatus.textContent = "Acceso correcto.";
+    studentLoginStatus.textContent = "Ingreso correcto.";
     loadStudentContent();
     registerReveals(studentPanel);
   } else {
@@ -1330,6 +1463,8 @@ const handleProposalSubmit = (event) => {
   const type = proposalType.value.trim();
   const condition = proposalCondition.value.trim();
   const deliveryZone = proposalDelivery.value.trim();
+  const contactPhone = proposalContactPhone.value.trim();
+  const contactEmail = proposalContactEmail.value.trim();
   const category = getCategoryValue(proposalCategory, proposalCustomCategory);
   const title = proposalTitle.value.trim();
   const description = proposalDescription.value.trim();
@@ -1348,6 +1483,8 @@ const handleProposalSubmit = (event) => {
     !type ||
     !condition ||
     !deliveryZone ||
+    !contactPhone ||
+    !contactEmail ||
     !category ||
     !title ||
     !description ||
@@ -1375,6 +1512,12 @@ const handleProposalSubmit = (event) => {
     startDate,
     endDate,
     isPrivate,
+    status: "pending",
+    detailsRequest: "",
+    contact: {
+      phone: contactPhone,
+      email: contactEmail,
+    },
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -1400,6 +1543,10 @@ const handleProposalSubmit = (event) => {
   }
   updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
   updatePendingList();
+
+  if (hasAdminSession()) {
+    showToast("Nuevo producto/servicio por validar", "admin");
+  }
 };
 
 const setupAdminEvents = () => {
@@ -1543,6 +1690,7 @@ const initializeNotificationForm = () => {
 const init = () => {
   loadApproved();
   loadPending();
+  loadRejected();
   loadMessages();
   renderAbout();
   setupReveal();

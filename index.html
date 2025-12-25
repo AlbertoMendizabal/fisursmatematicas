@@ -128,6 +128,16 @@
               <span>Lugar o zona de entrega</span>
               <input type="text" id="proposalDelivery" placeholder="Ej. CDMX, Polanco, envío nacional" required>
             </label>
+            <div class="field-row">
+              <label class="field">
+                <span>Teléfono de contacto</span>
+                <input type="tel" id="proposalContactPhone" placeholder="WhatsApp o teléfono" required>
+              </label>
+              <label class="field">
+                <span>Correo de contacto</span>
+                <input type="email" id="proposalContactEmail" placeholder="correo@ejemplo.com" required>
+              </label>
+            </div>
             <label class="field">
               <span>Categoría</span>
               <select id="proposalCategory" required>
@@ -359,7 +369,7 @@
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
             <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Acceso</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn">
@@ -378,7 +388,7 @@
           <div id="tab-estudiantes" class="tab-panel" role="tabpanel" aria-labelledby="tab-estudiantes-btn" hidden>
             <div class="student-grid">
               <div class="card reveal">
-                <h3>Acceso al panel</h3>
+                <h3>Panel de estudiantes</h3>
                 <p>Ingresa tu contraseña para editar contenido rápido.</p>
                 <form id="studentLoginForm">
                   <label class="field">
@@ -472,7 +482,7 @@
       <h4>Notificación</h4>
       <p id="notificationMessage"></p>
     </div>
-    <button class="btn btn-ghost" id="closeNotification" type="button" data-toast-close="1" aria-label="Cerrar notificación">Cerrar</button>
+    <button class="btn btn-ghost toast-close" id="closeNotification" type="button" data-toast-close="1" aria-label="Cerrar notificación">Cerrar</button>
   </div>
 
   <div id="adminModal" class="modal" aria-hidden="true">
