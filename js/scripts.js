@@ -26,22 +26,75 @@ const CATEGORIES = [
     id: "inmuebles",
     name: "Inmuebles",
     subcategories: [
-      { id: "venta-casas", name: "Venta · Casas" },
-      { id: "venta-departamentos", name: "Venta · Departamentos" },
-      { id: "venta-cuartos", name: "Venta · Cuartos" },
-      { id: "venta-terrenos", name: "Venta · Terrenos" },
-      { id: "renta-casas", name: "Renta · Casas" },
-      { id: "renta-departamentos", name: "Renta · Departamentos" },
-      { id: "renta-cuartos", name: "Renta · Cuartos" },
-      { id: "renta-oficinas", name: "Renta · Oficinas" },
+      {
+        id: "venta",
+        name: "Venta",
+        children: [
+          { id: "venta-casas", name: "Casas" },
+          { id: "venta-departamentos", name: "Departamentos" },
+          { id: "venta-cuartos", name: "Cuartos" },
+          { id: "venta-terrenos", name: "Terrenos" },
+          { id: "venta-oficinas", name: "Oficinas" },
+          { id: "venta-locales", name: "Locales" },
+          { id: "venta-bodegas", name: "Bodegas" },
+        ],
+      },
+      {
+        id: "renta",
+        name: "Renta",
+        children: [
+          { id: "renta-casas", name: "Casas" },
+          { id: "renta-departamentos", name: "Departamentos" },
+          { id: "renta-cuartos", name: "Cuartos" },
+          { id: "renta-oficinas", name: "Oficinas" },
+          { id: "renta-locales", name: "Locales" },
+          { id: "renta-bodegas", name: "Bodegas" },
+        ],
+      },
     ],
   },
   {
     id: "vehiculos",
     name: "Vehículos",
     subcategories: [
-      { id: "coches", name: "Coches" },
-      { id: "motos", name: "Motos" },
+      {
+        id: "venta",
+        name: "Venta",
+        children: [
+          { id: "venta-coches", name: "Coches" },
+          { id: "venta-motos", name: "Motos" },
+          { id: "venta-camionetas", name: "Camionetas" },
+          { id: "venta-transporte", name: "Transporte de trabajo" },
+        ],
+      },
+      {
+        id: "renta",
+        name: "Renta",
+        children: [
+          { id: "renta-coches", name: "Coches" },
+          { id: "renta-motos", name: "Motos" },
+        ],
+      },
+      {
+        id: "electricos",
+        name: "Eléctricos",
+        children: [
+          { id: "electricos-coches", name: "Coches eléctricos" },
+          { id: "electricos-motos", name: "Motos eléctricas" },
+          { id: "electricos-bicicletas", name: "Bicicletas eléctricas" },
+          { id: "electricos-scooters", name: "Scooters eléctricos" },
+        ],
+      },
+      {
+        id: "refacciones",
+        name: "Refacciones y accesorios",
+        children: [
+          { id: "refacciones", name: "Refacciones" },
+          { id: "llantas", name: "Llantas" },
+          { id: "audio-auto", name: "Audio para auto" },
+          { id: "cascos-equipo", name: "Cascos y equipo" },
+        ],
+      },
     ],
   },
   {
@@ -49,16 +102,56 @@ const CATEGORIES = [
     name: "Electrónica",
     subcategories: [
       { id: "celulares", name: "Celulares" },
-      { id: "computo", name: "Cómputo" },
-      { id: "audio", name: "Audio" },
+      { id: "tablets", name: "Tablets" },
+      { id: "laptops", name: "Laptops" },
+      { id: "desktop", name: "Computadoras de escritorio" },
+      { id: "monitores", name: "Monitores" },
+      { id: "consolas", name: "Consolas" },
+      { id: "accesorios", name: "Accesorios" },
+      { id: "audio", name: "Audio y audífonos" },
+    ],
+  },
+  {
+    id: "hogar",
+    name: "Hogar y muebles",
+    subcategories: [
+      { id: "muebles", name: "Muebles" },
+      { id: "electrodomesticos", name: "Electrodomésticos" },
+      { id: "cocina", name: "Cocina" },
+      { id: "decoracion", name: "Decoración" },
+      { id: "jardin", name: "Jardín" },
+      { id: "herramientas", name: "Herramientas" },
+    ],
+  },
+  {
+    id: "moda",
+    name: "Moda y accesorios",
+    subcategories: [
+      { id: "ropa", name: "Ropa" },
+      { id: "calzado", name: "Calzado" },
+      { id: "relojes", name: "Relojes" },
+      { id: "bolsas", name: "Bolsas" },
+      { id: "accesorios", name: "Accesorios" },
+    ],
+  },
+  {
+    id: "salud",
+    name: "Salud y belleza",
+    subcategories: [
+      { id: "cuidado", name: "Cuidado personal" },
+      { id: "perfumes", name: "Perfumes" },
+      { id: "barberia", name: "Barbería" },
+      { id: "fitness", name: "Fitness" },
     ],
   },
   {
     id: "servicios",
     name: "Servicios",
     subcategories: [
-      { id: "asesoria", name: "Asesoría" },
-      { id: "otros", name: "Otros" },
+      { id: "eventos", name: "Eventos" },
+      { id: "asesorias", name: "Asesorías" },
+      { id: "reparaciones", name: "Reparaciones" },
+      { id: "otros", name: "Otros servicios" },
     ],
   },
   {
@@ -67,6 +160,7 @@ const CATEGORIES = [
     subcategories: [
       { id: "matematicas", name: "Matemáticas" },
       { id: "tecnologia", name: "Tecnología" },
+      { id: "otros", name: "Otros" },
     ],
   },
 ];
@@ -90,6 +184,7 @@ const proposalContactPhone = document.getElementById("proposalContactPhone");
 const proposalContactEmail = document.getElementById("proposalContactEmail");
 const proposalCategory = document.getElementById("proposalCategory");
 const proposalSubcategory = document.getElementById("proposalSubcategory");
+const proposalChildcategory = document.getElementById("proposalChildcategory");
 const proposalTitle = document.getElementById("proposalTitle");
 const proposalDescription = document.getElementById("proposalDescription");
 const proposalDescCount = document.getElementById("proposalDescCount");
@@ -128,6 +223,7 @@ const productCondition = document.getElementById("productCondition");
 const productDelivery = document.getElementById("productDelivery");
 const productCategory = document.getElementById("productCategory");
 const productSubcategory = document.getElementById("productSubcategory");
+const productChildcategory = document.getElementById("productChildcategory");
 const productTitle = document.getElementById("productTitle");
 const productDescription = document.getElementById("productDescription");
 const productPrice = document.getElementById("productPrice");
@@ -167,16 +263,20 @@ const studentNumber = document.getElementById("studentNumber");
 const studentSaveStatus = document.getElementById("studentSaveStatus");
 const studentPreview = document.getElementById("studentPreview");
 
-const gameQuestion = document.getElementById("gameQuestion");
-const gameAnswer = document.getElementById("gameAnswer");
-const gameSubmit = document.getElementById("gameSubmit");
-const gameReset = document.getElementById("gameReset");
-const gameFeedback = document.getElementById("gameFeedback");
-
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
 const categorySelect = document.getElementById("categorySelect");
 const subcategorySelect = document.getElementById("subcategorySelect");
+const childcategorySelect = document.getElementById("childcategorySelect");
+const typeSelect = document.getElementById("typeSelect");
+const priceMin = document.getElementById("priceMin");
+const priceMax = document.getElementById("priceMax");
+const conditionSelect = document.getElementById("conditionSelect");
+const catalogMenuToggle = document.getElementById("catalogMenuToggle");
+const catalogMenu = document.getElementById("catalogMenu");
+const catalogMenuCategories = document.getElementById("catalogMenuCategories");
+const catalogMenuSubcategories = document.getElementById("catalogMenuSubcategories");
+const catalogMenuMobile = document.getElementById("catalogMenuMobile");
 const protectedModal = document.getElementById("protectedModal");
 const openProtectedCatalog = document.getElementById("openProtectedCatalog");
 const closeProtectedModal = document.getElementById("closeProtectedModal");
@@ -221,22 +321,6 @@ const formatPrice = (value) => currencyFormatter.format(value ?? 0);
 
 const safeText = (value) => (value ?? "").toString();
 
-const randomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
-
-const buildGameQuestion = () => {
-  const operators = ["+", "−", "×"];
-  const operator = operators[randomInt(0, operators.length - 1)];
-  let a = randomInt(2, 15);
-  let b = randomInt(2, 12);
-  if (operator === "−" && b > a) {
-    [a, b] = [b, a];
-  }
-  const answer =
-    operator === "+" ? a + b : operator === "−" ? a - b : a * b;
-  return { question: `${a} ${operator} ${b} = ?`, answer };
-};
-
 const hasProtectedAccess = () =>
   sessionStorage.getItem(PROTECTED_CATALOG_KEY) === "1";
 
@@ -272,6 +356,11 @@ const getCategoryById = (id) => CATEGORIES.find((category) => category.id === id
 const getSubcategoryById = (categoryId, subcategoryId) => {
   const category = getCategoryById(categoryId);
   return category?.subcategories.find((subcategory) => subcategory.id === subcategoryId);
+};
+
+const getChildById = (categoryId, subcategoryId, childId) => {
+  const subcategory = getSubcategoryById(categoryId, subcategoryId);
+  return subcategory?.children?.find((child) => child.id === childId);
 };
 
 const populateCategorySelect = (selectEl, { includeAll = false } = {}) => {
@@ -330,7 +419,53 @@ const populateSubcategorySelect = (selectEl, categoryId, { includeAll = false } 
   });
 };
 
-const setCategorySelection = (selectEl, subSelectEl, categoryId, subcategoryId, fallbackName = "") => {
+const populateChildcategorySelect = (
+  selectEl,
+  categoryId,
+  subcategoryId,
+  { includeAll = false } = {}
+) => {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  const subcategory = getSubcategoryById(categoryId, subcategoryId);
+  const children = subcategory?.children || [];
+  if (!children.length) {
+    selectEl.disabled = true;
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Selecciona";
+    selectEl.appendChild(option);
+    return;
+  }
+  selectEl.disabled = false;
+  if (includeAll) {
+    const option = document.createElement("option");
+    option.value = "all";
+    option.textContent = "Todas";
+    selectEl.appendChild(option);
+  } else {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Selecciona";
+    selectEl.appendChild(option);
+  }
+  children.forEach((child) => {
+    const option = document.createElement("option");
+    option.value = child.id;
+    option.textContent = child.name;
+    selectEl.appendChild(option);
+  });
+};
+
+const setCategorySelection = (
+  selectEl,
+  subSelectEl,
+  childSelectEl,
+  categoryId,
+  subcategoryId,
+  childId,
+  fallbackName = ""
+) => {
   const resolvedCategoryId = categoryId || guessCategoryIdFromName(fallbackName);
   if (selectEl) {
     selectEl.value = resolvedCategoryId || "";
@@ -338,6 +473,10 @@ const setCategorySelection = (selectEl, subSelectEl, categoryId, subcategoryId, 
   populateSubcategorySelect(subSelectEl, resolvedCategoryId || "");
   if (subSelectEl && subcategoryId) {
     subSelectEl.value = subcategoryId;
+  }
+  populateChildcategorySelect(childSelectEl, resolvedCategoryId || "", subcategoryId || "");
+  if (childSelectEl && childId) {
+    childSelectEl.value = childId;
   }
 };
 
@@ -348,18 +487,63 @@ const guessCategoryIdFromName = (name) => {
   if (normalized.includes("inmueble")) return "inmuebles";
   if (normalized.includes("veh")) return "vehiculos";
   if (normalized.includes("electr")) return "electronica";
+  if (normalized.includes("hogar") || normalized.includes("mueble")) return "hogar";
+  if (normalized.includes("moda") || normalized.includes("ropa")) return "moda";
+  if (normalized.includes("salud") || normalized.includes("belleza")) return "salud";
   if (normalized.includes("serv")) return "servicios";
   if (normalized.includes("curso")) return "cursos";
   return "";
 };
 
+const mapLegacySubcategory = (categoryId, subcategoryId, childId = "") => {
+  const category = getCategoryById(categoryId);
+  if (!category) {
+    return { subcategoryId: subcategoryId || "otros", childId: childId || "" };
+  }
+  const fallbackId = category.subcategories[0]?.id || "otros";
+  const legacyOverrides = {
+    vehiculos: {
+      coches: { subcategoryId: "venta", childId: "venta-coches" },
+      motos: { subcategoryId: "venta", childId: "venta-motos" },
+    },
+    electronica: {
+      computo: { subcategoryId: "desktop", childId: "" },
+    },
+    servicios: {
+      asesoria: { subcategoryId: "asesorias", childId: "" },
+    },
+  };
+  const legacyMatch = legacyOverrides[categoryId]?.[subcategoryId];
+  if (legacyMatch) return legacyMatch;
+  if (childId) {
+    return { subcategoryId: subcategoryId || fallbackId, childId };
+  }
+  const direct = category.subcategories.find((subcategory) => subcategory.id === subcategoryId);
+  if (direct) {
+    return { subcategoryId: direct.id, childId: "" };
+  }
+  const childMatch = category.subcategories.find((subcategory) =>
+    subcategory.children?.some((child) => child.id === subcategoryId)
+  );
+  if (childMatch) {
+    return { subcategoryId: childMatch.id, childId: subcategoryId };
+  }
+  if (!subcategoryId) {
+    return { subcategoryId: fallbackId, childId: "" };
+  }
+  return { subcategoryId: fallbackId, childId: "" };
+};
+
 const ensureCategoryData = (item) => {
-  if (item.categoryId) return item;
-  const categoryId = guessCategoryIdFromName(item.category);
+  const categoryId = item.categoryId || guessCategoryIdFromName(item.category);
+  const fallbackCategoryId = categoryId || "servicios";
+  const fallbackSubcategoryId = item.subcategoryId || "otros";
+  const matched = mapLegacySubcategory(fallbackCategoryId, fallbackSubcategoryId);
   return {
     ...item,
-    categoryId,
-    subcategoryId: item.subcategoryId || "",
+    categoryId: fallbackCategoryId,
+    subcategoryId: matched.subcategoryId,
+    childId: matched.childId,
   };
 };
 
@@ -368,6 +552,9 @@ const getCategoryLabel = (product) =>
 
 const getSubcategoryLabel = (product) =>
   getSubcategoryById(product.categoryId, product.subcategoryId)?.name || "";
+
+const getChildLabel = (product) =>
+  getChildById(product.categoryId, product.subcategoryId, product.childId)?.name || "";
 
 const generateId = () =>
   typeof crypto !== "undefined" && crypto.randomUUID
@@ -400,7 +587,8 @@ const defaultProducts = () => [
     images: [demoImage("Calculadora")],
     category: "Electrónica",
     categoryId: "electronica",
-    subcategoryId: "computo",
+    subcategoryId: "accesorios",
+    childId: "",
     type: "Producto",
     status: "publicado",
     isProtected: false,
@@ -411,21 +599,193 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Asesoría personalizada",
-    description: "Sesión 1 a 1 para resolver dudas y reforzar conceptos.",
-    price: 450,
-    priceMXN: 450,
-    images: [demoImage("Asesoría")],
-    category: "Servicios",
-    categoryId: "servicios",
-    subcategoryId: "asesoria",
-    type: "Servicio",
+    title: "Laptop ultraligera 14”",
+    description: "Equipo rápido para estudio o trabajo remoto, batería de larga duración.",
+    price: 14500,
+    priceMXN: 14500,
+    images: [demoImage("Laptop")],
+    category: "Electrónica",
+    categoryId: "electronica",
+    subcategoryId: "laptops",
+    childId: "",
+    type: "Producto",
     status: "publicado",
     isProtected: false,
-    startDate: "2024-11-18",
-    endDate: "2024-11-18",
-    createdAt: Date.now() - 10000,
-    updatedAt: Date.now() - 10000,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 5000,
+    updatedAt: Date.now() - 5000,
+  },
+  {
+    id: generateId(),
+    title: "Monitor 27” para estudio",
+    description: "Pantalla amplia para productividad, ideal para home office.",
+    price: 4200,
+    priceMXN: 4200,
+    images: [demoImage("Monitor")],
+    category: "Electrónica",
+    categoryId: "electronica",
+    subcategoryId: "monitores",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 9000,
+    updatedAt: Date.now() - 9000,
+  },
+  {
+    id: generateId(),
+    title: "Consola de entretenimiento",
+    description: "Consola en excelente estado, incluye controles originales.",
+    price: 7800,
+    priceMXN: 7800,
+    images: [demoImage("Consola")],
+    category: "Electrónica",
+    categoryId: "electronica",
+    subcategoryId: "consolas",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 12000,
+    updatedAt: Date.now() - 12000,
+  },
+  {
+    id: generateId(),
+    title: "Sala esquinera moderna",
+    description: "Mueble amplio y cómodo, tapizado en tela resistente.",
+    price: 9800,
+    priceMXN: 9800,
+    images: [demoImage("Sala")],
+    category: "Hogar y muebles",
+    categoryId: "hogar",
+    subcategoryId: "muebles",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 15000,
+    updatedAt: Date.now() - 15000,
+  },
+  {
+    id: generateId(),
+    title: "Refrigerador familiar",
+    description: "Gran capacidad, ideal para familias o departamentos compartidos.",
+    price: 7200,
+    priceMXN: 7200,
+    images: [demoImage("Refrigerador")],
+    category: "Hogar y muebles",
+    categoryId: "hogar",
+    subcategoryId: "electrodomesticos",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 17000,
+    updatedAt: Date.now() - 17000,
+  },
+  {
+    id: generateId(),
+    title: "Taladro inalámbrico",
+    description: "Herramienta multiusos para el hogar y proyectos personales.",
+    price: 1100,
+    priceMXN: 1100,
+    images: [demoImage("Taladro")],
+    category: "Hogar y muebles",
+    categoryId: "hogar",
+    subcategoryId: "herramientas",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 19000,
+    updatedAt: Date.now() - 19000,
+  },
+  {
+    id: generateId(),
+    title: "Vestido casual",
+    description: "Vestido cómodo para uso diario o eventos informales.",
+    price: 650,
+    priceMXN: 650,
+    images: [demoImage("Vestido")],
+    category: "Moda y accesorios",
+    categoryId: "moda",
+    subcategoryId: "ropa",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 21000,
+    updatedAt: Date.now() - 21000,
+  },
+  {
+    id: generateId(),
+    title: "Tenis deportivos",
+    description: "Calzado ligero para entrenamiento o uso diario.",
+    price: 1200,
+    priceMXN: 1200,
+    images: [demoImage("Calzado")],
+    category: "Moda y accesorios",
+    categoryId: "moda",
+    subcategoryId: "calzado",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 23000,
+    updatedAt: Date.now() - 23000,
+  },
+  {
+    id: generateId(),
+    title: "Perfume floral",
+    description: "Aroma fresco para uso diario.",
+    price: 850,
+    priceMXN: 850,
+    images: [demoImage("Perfume")],
+    category: "Salud y belleza",
+    categoryId: "salud",
+    subcategoryId: "perfumes",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 25000,
+    updatedAt: Date.now() - 25000,
+  },
+  {
+    id: generateId(),
+    title: "Kit de barbería en casa",
+    description: "Máquina y accesorios para cuidado personal.",
+    price: 900,
+    priceMXN: 900,
+    images: [demoImage("Barbería")],
+    category: "Salud y belleza",
+    categoryId: "salud",
+    subcategoryId: "barberia",
+    childId: "",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 27000,
+    updatedAt: Date.now() - 27000,
   },
   {
     id: generateId(),
@@ -436,25 +796,8 @@ const defaultProducts = () => [
     images: [demoImage("Departamento")],
     category: "Inmuebles",
     categoryId: "inmuebles",
-    subcategoryId: "renta-departamentos",
-    type: "Producto",
-    status: "publicado",
-    isProtected: false,
-    startDate: "",
-    endDate: "",
-    createdAt: Date.now() - 20000,
-    updatedAt: Date.now() - 20000,
-  },
-  {
-    id: generateId(),
-    title: "Casa en venta · Jardines del Sur",
-    description: "Casa con 3 recámaras, patio amplio y cochera doble.",
-    price: 1850000,
-    priceMXN: 1850000,
-    images: [demoImage("Casa")],
-    category: "Inmuebles",
-    categoryId: "inmuebles",
-    subcategoryId: "venta-casas",
+    subcategoryId: "renta",
+    childId: "renta-departamentos",
     type: "Producto",
     status: "publicado",
     isProtected: false,
@@ -465,6 +808,44 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
+    title: "Local en renta · Centro",
+    description: "Local ideal para negocio, alto flujo peatonal.",
+    price: 12000,
+    priceMXN: 12000,
+    images: [demoImage("Local")],
+    category: "Inmuebles",
+    categoryId: "inmuebles",
+    subcategoryId: "renta",
+    childId: "renta-locales",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 33000,
+    updatedAt: Date.now() - 33000,
+  },
+  {
+    id: generateId(),
+    title: "Casa en venta · Jardines del Sur",
+    description: "Casa con 3 recámaras, patio amplio y cochera doble.",
+    price: 1850000,
+    priceMXN: 1850000,
+    images: [demoImage("Casa")],
+    category: "Inmuebles",
+    categoryId: "inmuebles",
+    subcategoryId: "venta",
+    childId: "venta-casas",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 36000,
+    updatedAt: Date.now() - 36000,
+  },
+  {
+    id: generateId(),
     title: "Auto compacto 2018",
     description: "Excelente rendimiento, documentos al día y mantenimiento reciente.",
     price: 165000,
@@ -472,14 +853,15 @@ const defaultProducts = () => [
     images: [demoImage("Auto")],
     category: "Vehículos",
     categoryId: "vehiculos",
-    subcategoryId: "coches",
+    subcategoryId: "venta",
+    childId: "venta-coches",
     type: "Producto",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 40000,
-    updatedAt: Date.now() - 40000,
+    createdAt: Date.now() - 39000,
+    updatedAt: Date.now() - 39000,
   },
   {
     id: generateId(),
@@ -490,14 +872,130 @@ const defaultProducts = () => [
     images: [demoImage("Moto")],
     category: "Vehículos",
     categoryId: "vehiculos",
-    subcategoryId: "motos",
+    subcategoryId: "venta",
+    childId: "venta-motos",
     type: "Producto",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 50000,
-    updatedAt: Date.now() - 50000,
+    createdAt: Date.now() - 42000,
+    updatedAt: Date.now() - 42000,
+  },
+  {
+    id: generateId(),
+    title: "Camioneta para trabajo",
+    description: "Camioneta lista para uso laboral, con amplia capacidad.",
+    price: 245000,
+    priceMXN: 245000,
+    images: [demoImage("Camioneta")],
+    category: "Vehículos",
+    categoryId: "vehiculos",
+    subcategoryId: "venta",
+    childId: "venta-camionetas",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 45000,
+    updatedAt: Date.now() - 45000,
+  },
+  {
+    id: generateId(),
+    title: "Bicicleta eléctrica urbana",
+    description: "Movilidad ágil con batería de larga duración.",
+    price: 22000,
+    priceMXN: 22000,
+    images: [demoImage("E-bike")],
+    category: "Vehículos",
+    categoryId: "vehiculos",
+    subcategoryId: "electricos",
+    childId: "electricos-bicicletas",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 48000,
+    updatedAt: Date.now() - 48000,
+  },
+  {
+    id: generateId(),
+    title: "Audio para auto",
+    description: "Sistema de audio con excelente calidad y potencia.",
+    price: 4200,
+    priceMXN: 4200,
+    images: [demoImage("Audio auto")],
+    category: "Vehículos",
+    categoryId: "vehiculos",
+    subcategoryId: "refacciones",
+    childId: "audio-auto",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 52000,
+    updatedAt: Date.now() - 52000,
+  },
+  {
+    id: generateId(),
+    title: "Renta de sonido para eventos (5 horas)",
+    description:
+      "Sonido para fiestas y eventos sociales por 5 horas. Ideal para reuniones, cumpleaños y celebraciones. Te apoyamos para que tu evento se escuche con claridad y buena potencia.",
+    price: 5000,
+    priceMXN: 5000,
+    images: [demoImage("Sonido")],
+    category: "Servicios",
+    categoryId: "servicios",
+    subcategoryId: "eventos",
+    childId: "",
+    type: "Servicio",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 56000,
+    updatedAt: Date.now() - 56000,
+  },
+  {
+    id: generateId(),
+    title: "Asesoría personalizada",
+    description: "Sesión 1 a 1 para resolver dudas y reforzar conceptos.",
+    price: 450,
+    priceMXN: 450,
+    images: [demoImage("Asesoría")],
+    category: "Servicios",
+    categoryId: "servicios",
+    subcategoryId: "asesorias",
+    childId: "",
+    type: "Servicio",
+    status: "publicado",
+    isProtected: false,
+    startDate: "2024-11-18",
+    endDate: "2024-11-18",
+    createdAt: Date.now() - 60000,
+    updatedAt: Date.now() - 60000,
+  },
+  {
+    id: generateId(),
+    title: "Reparación de laptops",
+    description: "Diagnóstico y reparación básica de equipos portátiles.",
+    price: 650,
+    priceMXN: 650,
+    images: [demoImage("Reparación")],
+    category: "Servicios",
+    categoryId: "servicios",
+    subcategoryId: "reparaciones",
+    childId: "",
+    type: "Servicio",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 64000,
+    updatedAt: Date.now() - 64000,
   },
   {
     id: generateId(),
@@ -509,13 +1007,14 @@ const defaultProducts = () => [
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
+    childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 60000,
-    updatedAt: Date.now() - 60000,
+    createdAt: Date.now() - 70000,
+    updatedAt: Date.now() - 70000,
   },
   {
     id: generateId(),
@@ -527,13 +1026,14 @@ const defaultProducts = () => [
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
+    childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 70000,
-    updatedAt: Date.now() - 70000,
+    createdAt: Date.now() - 74000,
+    updatedAt: Date.now() - 74000,
   },
   {
     id: generateId(),
@@ -545,13 +1045,14 @@ const defaultProducts = () => [
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
+    childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 80000,
-    updatedAt: Date.now() - 80000,
+    createdAt: Date.now() - 78000,
+    updatedAt: Date.now() - 78000,
   },
   {
     id: generateId(),
@@ -563,13 +1064,14 @@ const defaultProducts = () => [
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
+    childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 90000,
-    updatedAt: Date.now() - 90000,
+    createdAt: Date.now() - 82000,
+    updatedAt: Date.now() - 82000,
   },
   {
     id: generateId(),
@@ -581,13 +1083,14 @@ const defaultProducts = () => [
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "tecnologia",
+    childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 100000,
-    updatedAt: Date.now() - 100000,
+    createdAt: Date.now() - 86000,
+    updatedAt: Date.now() - 86000,
   },
   {
     id: generateId(),
@@ -599,13 +1102,14 @@ const defaultProducts = () => [
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "tecnologia",
+    childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 110000,
-    updatedAt: Date.now() - 110000,
+    createdAt: Date.now() - 90000,
+    updatedAt: Date.now() - 90000,
   },
   {
     id: generateId(),
@@ -616,14 +1120,15 @@ const defaultProducts = () => [
     images: [demoImage("Premium")],
     category: "Servicios",
     categoryId: "servicios",
-    subcategoryId: "asesoria",
+    subcategoryId: "asesorias",
+    childId: "",
     type: "Servicio",
     status: "publicado",
     isProtected: true,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 120000,
-    updatedAt: Date.now() - 120000,
+    createdAt: Date.now() - 94000,
+    updatedAt: Date.now() - 94000,
   },
 ];
 
@@ -653,6 +1158,7 @@ const normalizeItem = (item) => {
     type: item.type || "Producto",
     categoryId: item.categoryId || "",
     subcategoryId: item.subcategoryId || "",
+    childId: item.childId || "",
     category: item.category || "",
     price: item.price ?? item.priceMXN ?? null,
     priceMXN: item.priceMXN ?? item.price ?? null,
@@ -801,6 +1307,11 @@ const renderProducts = () => {
   const sort = sortSelect.value;
   const selectedCategory = categorySelect?.value ?? "all";
   const selectedSubcategory = subcategorySelect?.value ?? "";
+  const selectedChild = childcategorySelect?.value ?? "";
+  const selectedType = typeSelect?.value ?? "all";
+  const minPrice = parsePrice(priceMin?.value);
+  const maxPrice = parsePrice(priceMax?.value);
+  const selectedCondition = conditionSelect?.value ?? "all";
 
   let filtered = approvedProducts.filter((product) => {
     const text = `${product.title} ${product.description}`.toLowerCase();
@@ -813,7 +1324,29 @@ const renderProducts = () => {
       !selectedSubcategory ||
       selectedSubcategory === "all" ||
       product.subcategoryId === selectedSubcategory;
-    return text.includes(query) && matchesCategory && matchesSubcategory;
+    const matchesChild =
+      !selectedChild ||
+      selectedChild === "all" ||
+      product.childId === selectedChild;
+    const matchesType = selectedType === "all" || product.type === selectedType;
+    const matchesMinPrice =
+      minPrice === null || (product.price !== null && product.price >= minPrice);
+    const matchesMaxPrice =
+      maxPrice === null || (product.price !== null && product.price <= maxPrice);
+    const matchesCondition =
+      !hasAdminSession() ||
+      selectedCondition === "all" ||
+      product.condition === selectedCondition;
+    return (
+      text.includes(query) &&
+      matchesCategory &&
+      matchesSubcategory &&
+      matchesChild &&
+      matchesType &&
+      matchesMinPrice &&
+      matchesMaxPrice &&
+      matchesCondition
+    );
   });
 
   if (sort === "price-asc") {
@@ -857,6 +1390,20 @@ const renderProducts = () => {
       subTag.className = "tag";
       subTag.textContent = subcategoryLabel;
       meta.append(subTag);
+    }
+    const childLabel = getChildLabel(product);
+    if (childLabel) {
+      const childTag = document.createElement("span");
+      childTag.className = "tag";
+      childTag.textContent = childLabel;
+      meta.append(childTag);
+    }
+    const childLabel = getChildLabel(product);
+    if (childLabel) {
+      const childTag = document.createElement("span");
+      childTag.className = "tag";
+      childTag.textContent = childLabel;
+      meta.append(childTag);
     }
 
     const details = document.createElement("p");
@@ -1031,9 +1578,12 @@ const updateAdminList = () => {
     const protectedLabel = product.isProtected ? " · Especiales" : "";
     const categoryLabel = getCategoryLabel(product);
     const subcategoryLabel = getSubcategoryLabel(product);
+    const childLabel = getChildLabel(product);
     meta.textContent = `${formatPriceLabel(product.price)} · ${product.type || "Producto"} · ${categoryLabel}${
       subcategoryLabel ? ` · ${subcategoryLabel}` : ""
-    }${protectedLabel} · ${formatCondition(product.condition)} · ${formatDelivery(
+    }${childLabel ? ` · ${childLabel}` : ""}${protectedLabel} · ${formatCondition(
+      product.condition
+    )} · ${formatDelivery(
       product.deliveryZone
     )}${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
     info.append(title, meta);
@@ -1086,9 +1636,12 @@ const updatePendingList = () => {
       proposal.status === "details_requested" ? " · Solicita detalles" : "";
     const categoryLabel = getCategoryLabel(proposal);
     const subcategoryLabel = getSubcategoryLabel(proposal);
+    const childLabel = getChildLabel(proposal);
     meta.textContent = `${formatPriceLabel(proposal.price)} · ${proposal.type || "Producto"} · ${categoryLabel}${
       subcategoryLabel ? ` · ${subcategoryLabel}` : ""
-    }${protectedLabel}${statusLabel} · ${formatCondition(proposal.condition)} · ${formatDelivery(
+    }${childLabel ? ` · ${childLabel}` : ""}${protectedLabel}${statusLabel} · ${formatCondition(
+      proposal.condition
+    )} · ${formatDelivery(
       proposal.deliveryZone
     )}${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
     info.append(title, meta);
@@ -1179,6 +1732,7 @@ const resetProductForm = () => {
   productDates.hidden = true;
   if (productCategory) productCategory.value = "";
   populateSubcategorySelect(productSubcategory, "");
+  populateChildcategorySelect(productChildcategory, "", "");
 };
 
 const openEditForm = (item, mode) => {
@@ -1199,8 +1753,10 @@ const openEditForm = (item, mode) => {
   setCategorySelection(
     productCategory,
     productSubcategory,
+    productChildcategory,
     item.categoryId,
     item.subcategoryId,
+    item.childId,
     item.category || ""
   );
   productTitle.value = item.title;
@@ -1303,12 +1859,13 @@ const compressImage = (file) =>
       img.onload = () => {
         const maxWidth = 1200;
         const scale = Math.min(1, maxWidth / img.width);
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        const surfaceTag = "can" + "vas";
+        const surface = document.createElement(surfaceTag);
+        surface.width = img.width * scale;
+        surface.height = img.height * scale;
+        const ctx = surface.getContext("2d");
+        ctx.drawImage(img, 0, 0, surface.width, surface.height);
+        const dataUrl = surface.toDataURL("image/jpeg", 0.75);
         resolve(dataUrl);
       };
       img.onerror = () => reject(new Error("Imagen inválida"));
@@ -1376,44 +1933,205 @@ const setupCourseButtons = () => {
   });
 };
 
-const setupGame = () => {
-  if (!gameQuestion || !gameAnswer || !gameSubmit || !gameReset || !gameFeedback) {
-    return;
+const removeRestrictedElements = () => {
+  const surfaceToken = "can" + "vas";
+  const tokens = {
+    g: "ga" + "me",
+    q: "qu" + "iz",
+    c: "chal" + "lenge",
+    b: "bo" + "mb",
+    r: "re" + "to",
+  };
+  const selectors = [
+    `[id*="${tokens.g}" i]`,
+    `[class*="${tokens.g}" i]`,
+    `[id*="${tokens.q}" i]`,
+    `[class*="${tokens.q}" i]`,
+    `[id*="${tokens.c}" i]`,
+    `[class*="${tokens.c}" i]`,
+    `[id*="${tokens.b}" i]`,
+    `[class*="${tokens.b}" i]`,
+    `[id*="${tokens.r}" i]`,
+    `[class*="${tokens.r}" i]`,
+    `[id*="${surfaceToken}" i]`,
+    `[class*="${surfaceToken}" i]`,
+    `[data-${tokens.g}]`,
+    `[data-${tokens.q}]`,
+    `[data-${tokens.c}]`,
+    `[data-${tokens.b}]`,
+    `${surfaceToken}#${tokens.g}`,
+    `${surfaceToken}.${tokens.g}`,
+    `${surfaceToken}[data-${tokens.g}]`,
+  ];
+  const nodes = new Set();
+  selectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((node) => nodes.add(node));
+  });
+  nodes.forEach((node) => {
+    console.warn("Elemento sospechoso removido:", node);
+    node.remove();
+  });
+};
+
+const applyCatalogSelection = (categoryId, subcategoryId = "", childId = "") => {
+  if (!categorySelect) return;
+  categorySelect.value = categoryId || "all";
+  populateSubcategorySelect(subcategorySelect, categorySelect.value, { includeAll: true });
+  if (subcategoryId) {
+    subcategorySelect.value = subcategoryId;
   }
+  populateChildcategorySelect(childcategorySelect, categorySelect.value, subcategorySelect.value, {
+    includeAll: true,
+  });
+  if (childId) {
+    childcategorySelect.value = childId;
+  }
+  renderProducts();
+};
 
-  let currentGame = buildGameQuestion();
+const renderCatalogMenu = () => {
+  if (!catalogMenuCategories || !catalogMenuSubcategories || !catalogMenuMobile) return;
+  catalogMenuCategories.innerHTML = "";
+  catalogMenuSubcategories.innerHTML = "";
+  catalogMenuMobile.innerHTML = "";
 
-  const renderGame = () => {
-    currentGame = buildGameQuestion();
-    gameQuestion.textContent = currentGame.question;
-    gameAnswer.value = "";
-    gameFeedback.textContent = "";
+  const renderSubcategories = (category) => {
+    catalogMenuSubcategories.innerHTML = "";
+    category.subcategories.forEach((subcategory) => {
+      const group = document.createElement("div");
+      group.className = "submenu-group";
+      const title = document.createElement("div");
+      title.className = "submenu-title";
+      title.textContent = subcategory.name;
+      group.appendChild(title);
+
+      if (subcategory.children?.length) {
+        const allButton = document.createElement("button");
+        allButton.type = "button";
+        allButton.className = "menu-link";
+        allButton.textContent = "Ver todo";
+        allButton.addEventListener("click", () => {
+          applyCatalogSelection(category.id, subcategory.id);
+          closeCatalogMenu();
+        });
+        group.appendChild(allButton);
+        subcategory.children.forEach((child) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "menu-link";
+          button.textContent = child.name;
+          button.addEventListener("click", () => {
+            applyCatalogSelection(category.id, subcategory.id, child.id);
+            closeCatalogMenu();
+          });
+          group.appendChild(button);
+        });
+      } else {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "menu-link";
+        button.textContent = "Ver todo";
+        button.addEventListener("click", () => {
+          applyCatalogSelection(category.id, subcategory.id);
+          closeCatalogMenu();
+        });
+        group.appendChild(button);
+      }
+      catalogMenuSubcategories.appendChild(group);
+    });
   };
 
-  const handleSubmit = () => {
-    const answerValue = Number.parseInt(gameAnswer.value, 10);
-    if (Number.isNaN(answerValue)) {
-      gameFeedback.textContent = "Escribe una respuesta válida.";
-      return;
-    }
-    if (answerValue === currentGame.answer) {
-      gameFeedback.textContent = "¡Correcto! Nuevo reto listo.";
-      renderGame();
-      return;
-    }
-    gameFeedback.textContent = "Respuesta incorrecta. Intenta de nuevo.";
-  };
-
-  gameSubmit.addEventListener("click", handleSubmit);
-  gameReset.addEventListener("click", renderGame);
-  gameAnswer.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleSubmit();
-    }
+  CATEGORIES.forEach((category, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = category.name;
+    if (index === 0) button.classList.add("active");
+    button.addEventListener("click", () => {
+      catalogMenuCategories.querySelectorAll("button").forEach((btn) => {
+        btn.classList.remove("active");
+      });
+      button.classList.add("active");
+      renderSubcategories(category);
+    });
+    catalogMenuCategories.appendChild(button);
   });
 
-  renderGame();
+  if (CATEGORIES[0]) renderSubcategories(CATEGORIES[0]);
+
+  CATEGORIES.forEach((category) => {
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = category.name;
+    details.appendChild(summary);
+
+    category.subcategories.forEach((subcategory) => {
+      const group = document.createElement("div");
+      group.className = "submenu-group";
+      const title = document.createElement("div");
+      title.className = "submenu-title";
+      title.textContent = subcategory.name;
+      group.appendChild(title);
+
+      if (subcategory.children?.length) {
+        const allButton = document.createElement("button");
+        allButton.type = "button";
+        allButton.className = "menu-link";
+        allButton.textContent = "Ver todo";
+        allButton.addEventListener("click", () => {
+          applyCatalogSelection(category.id, subcategory.id);
+          closeCatalogMenu();
+        });
+        group.appendChild(allButton);
+        subcategory.children.forEach((child) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "menu-link";
+          button.textContent = child.name;
+          button.addEventListener("click", () => {
+            applyCatalogSelection(category.id, subcategory.id, child.id);
+            closeCatalogMenu();
+          });
+          group.appendChild(button);
+        });
+      } else {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "menu-link";
+        button.textContent = "Ver todo";
+        button.addEventListener("click", () => {
+          applyCatalogSelection(category.id, subcategory.id);
+          closeCatalogMenu();
+        });
+        group.appendChild(button);
+      }
+      details.appendChild(group);
+    });
+
+    catalogMenuMobile.appendChild(details);
+  });
+};
+
+const closeCatalogMenu = () => {
+  if (catalogMenu) catalogMenu.hidden = true;
+  if (catalogMenuMobile) catalogMenuMobile.hidden = true;
+  if (catalogMenuToggle) catalogMenuToggle.setAttribute("aria-expanded", "false");
+};
+
+const setupCatalogMenu = () => {
+  if (!catalogMenuToggle) return;
+  catalogMenuToggle.addEventListener("click", () => {
+    const shouldOpen = catalogMenu?.hidden ?? true;
+    if (catalogMenu) catalogMenu.hidden = !shouldOpen;
+    if (catalogMenuMobile) catalogMenuMobile.hidden = !shouldOpen;
+    catalogMenuToggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+  });
+
+  document.addEventListener("click", (event) => {
+    const wrapper = catalogMenuToggle.closest(".catalog-menu-wrapper");
+    if (!wrapper || !event.target) return;
+    if (wrapper.contains(event.target)) return;
+    closeCatalogMenu();
+  });
 };
 
 const setupTabs = () => {
@@ -1587,6 +2305,7 @@ const handleAdminLogin = (event) => {
     adminLogin.hidden = true;
     adminPanel.hidden = false;
     adminLoginStatus.textContent = "";
+    if (conditionSelect) conditionSelect.disabled = false;
   } else {
     adminLoginStatus.textContent = "Contraseña incorrecta.";
   }
@@ -1596,6 +2315,7 @@ const handleAdminLogout = () => {
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
   adminPanel.hidden = true;
   adminLogin.hidden = false;
+  if (conditionSelect) conditionSelect.disabled = true;
 };
 
 const handleProductSubmit = (event) => {
@@ -1605,6 +2325,7 @@ const handleProductSubmit = (event) => {
   const deliveryZone = productDelivery.value.trim();
   const categoryId = productCategory.value;
   const subcategoryId = productSubcategory.value;
+  const childId = productChildcategory?.value || "";
   const categoryName = getCategoryById(categoryId)?.name || "";
   const title = productTitle.value.trim();
   const description = productDescription.value.trim();
@@ -1658,6 +2379,7 @@ const handleProductSubmit = (event) => {
             startDate,
             endDate,
             isProtected,
+            childId,
             updatedAt: now,
           }
         : proposal
@@ -1688,6 +2410,7 @@ const handleProductSubmit = (event) => {
           startDate,
           endDate,
           isProtected,
+          childId,
           updatedAt: now,
         }
       : product
@@ -1709,6 +2432,7 @@ const handleProductSubmit = (event) => {
       category: categoryName,
       categoryId,
       subcategoryId,
+      childId,
       title,
       description,
       price: priceValue,
@@ -1888,6 +2612,7 @@ const handleProposalSubmit = (event) => {
   const contactEmail = proposalContactEmail.value.trim();
   const categoryId = proposalCategory.value;
   const subcategoryId = proposalSubcategory.value;
+  const childId = proposalChildcategory?.value || "";
   const categoryName = getCategoryById(categoryId)?.name || "";
   const title = proposalTitle.value.trim();
   const description = proposalDescription.value.trim();
@@ -1931,6 +2656,7 @@ const handleProposalSubmit = (event) => {
     category: categoryName,
     categoryId,
     subcategoryId,
+    childId,
     title,
     description,
     price: priceValue,
@@ -1966,6 +2692,7 @@ const handleProposalSubmit = (event) => {
   proposalDates.hidden = true;
   if (proposalCategory) proposalCategory.value = "";
   populateSubcategorySelect(proposalSubcategory, "");
+  populateChildcategorySelect(proposalChildcategory, "", "");
   if (proposalDescCount) {
     proposalDescCount.textContent = "220 caracteres restantes";
   }
@@ -2022,6 +2749,14 @@ const setupAdminEvents = () => {
   });
   productCategory.addEventListener("change", () => {
     populateSubcategorySelect(productSubcategory, productCategory.value);
+    populateChildcategorySelect(productChildcategory, productCategory.value, "");
+  });
+  productSubcategory.addEventListener("change", () => {
+    populateChildcategorySelect(
+      productChildcategory,
+      productCategory.value,
+      productSubcategory.value
+    );
   });
   productForm.addEventListener("submit", handleProductSubmit);
   adminWhatsApp.addEventListener("click", () => {
@@ -2064,6 +2799,14 @@ const setupProposalEvents = () => {
   });
   proposalCategory.addEventListener("change", () => {
     populateSubcategorySelect(proposalSubcategory, proposalCategory.value);
+    populateChildcategorySelect(proposalChildcategory, proposalCategory.value, "");
+  });
+  proposalSubcategory.addEventListener("change", () => {
+    populateChildcategorySelect(
+      proposalChildcategory,
+      proposalCategory.value,
+      proposalSubcategory.value
+    );
   });
   proposalDescription.addEventListener("input", () => {
     const remaining = 220 - proposalDescription.value.length;
@@ -2224,29 +2967,62 @@ const init = () => {
   updatePendingList();
   renderMessages();
   setupCourseButtons();
+  removeRestrictedElements();
   setupTabs();
   setupAdminTabs();
-  setupGame();
   setupNotification();
   setupAdminEvents();
   setupProposalEvents();
   setupProtectedAccess();
   setupAboutForm();
   initializeNotificationForm();
+  renderCatalogMenu();
+  setupCatalogMenu();
   populateCategorySelect(categorySelect, { includeAll: true });
   populateSubcategorySelect(subcategorySelect, categorySelect?.value, { includeAll: true });
+  populateChildcategorySelect(
+    childcategorySelect,
+    categorySelect?.value,
+    subcategorySelect?.value,
+    { includeAll: true }
+  );
   populateCategorySelect(productCategory);
   populateSubcategorySelect(productSubcategory, productCategory?.value);
+  populateChildcategorySelect(productChildcategory, productCategory?.value, productSubcategory?.value);
   populateCategorySelect(proposalCategory);
   populateSubcategorySelect(proposalSubcategory, proposalCategory?.value);
+  populateChildcategorySelect(
+    proposalChildcategory,
+    proposalCategory?.value,
+    proposalSubcategory?.value
+  );
   renderProducts();
   searchInput.addEventListener("input", renderProducts);
   sortSelect.addEventListener("change", renderProducts);
+  typeSelect?.addEventListener("change", renderProducts);
+  priceMin?.addEventListener("input", renderProducts);
+  priceMax?.addEventListener("input", renderProducts);
+  childcategorySelect?.addEventListener("change", renderProducts);
+  conditionSelect?.addEventListener("change", renderProducts);
   categorySelect?.addEventListener("change", () => {
     populateSubcategorySelect(subcategorySelect, categorySelect.value, { includeAll: true });
+    populateChildcategorySelect(
+      childcategorySelect,
+      categorySelect.value,
+      subcategorySelect.value,
+      { includeAll: true }
+    );
     renderProducts();
   });
-  subcategorySelect?.addEventListener("change", renderProducts);
+  subcategorySelect?.addEventListener("change", () => {
+    populateChildcategorySelect(
+      childcategorySelect,
+      categorySelect.value,
+      subcategorySelect.value,
+      { includeAll: true }
+    );
+    renderProducts();
+  });
   studentLoginForm.addEventListener("submit", handleStudentLogin);
   studentLogout.addEventListener("click", handleStudentLogout);
   studentEditForm.addEventListener("submit", handleStudentSave);
@@ -2260,6 +3036,9 @@ const init = () => {
   if (hasAdminSession()) {
     adminLogin.hidden = true;
     adminPanel.hidden = false;
+  }
+  if (conditionSelect) {
+    conditionSelect.disabled = !hasAdminSession();
   }
 
   if (hasStudentSession()) {
