@@ -467,12 +467,12 @@
     </div>
   </footer>
 
-  <div id="notificationToast" class="toast" role="status" aria-live="polite" hidden>
+  <div id="notificationToast" class="toast" role="status" aria-live="polite" data-toast="welcome" hidden>
     <div>
       <h4>Notificación</h4>
       <p id="notificationMessage"></p>
     </div>
-    <button class="btn btn-ghost" id="closeNotification" type="button">Cerrar</button>
+    <button class="btn btn-ghost" id="closeNotification" type="button" data-toast-close="1" aria-label="Cerrar notificación">Cerrar</button>
   </div>
 
   <div id="adminModal" class="modal" aria-hidden="true">
