@@ -125,19 +125,13 @@ const aboutForm = document.getElementById("aboutForm");
 const aboutInput = document.getElementById("aboutInput");
 const aboutStatus = document.getElementById("aboutStatus");
 
-const mathProblem = document.getElementById("mathProblem");
-const mathAnswer = document.getElementById("mathAnswer");
-const checkMath = document.getElementById("checkMath");
-const newMath = document.getElementById("newMath");
-const mathStatus = document.getElementById("mathStatus");
-
 let approvedProducts = [];
 let pendingProposals = [];
 let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
 let storedMessages = [];
-let currentMathAnswer = null;
+let revealObserver = null;
 
 const currencyFormatter = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -200,22 +194,6 @@ const formatCondition = (value) => (value ? `Estado: ${value}` : "Estado: Sin es
 
 const formatDelivery = (value) =>
   value ? `Entrega: ${value}` : "Entrega: Sin especificar";
-
-const createMathChallenge = () => {
-  const a = Math.floor(Math.random() * 20) + 1;
-  const b = Math.floor(Math.random() * 20) + 1;
-  const operators = ["+", "-", "×"];
-  const operator = operators[Math.floor(Math.random() * operators.length)];
-  let answer = 0;
-  if (operator === "+") {
-    answer = a + b;
-  } else if (operator === "-") {
-    answer = a - b;
-  } else {
-    answer = a * b;
-  }
-  return { question: `${a} ${operator} ${b} = ?`, answer };
-};
 
 const setCategoryInputs = (selectEl, customField, customInput, category) => {
   const options = Array.from(selectEl.options).map((option) => option.value);
@@ -448,6 +426,7 @@ const renderProducts = () => {
   filtered.forEach((product) => {
     const card = document.createElement("article");
     card.className = "card product-card";
+    card.classList.add("reveal");
 
     const img = document.createElement("img");
     img.loading = "lazy";
@@ -618,6 +597,8 @@ const renderProducts = () => {
       ? "Hay productos privados disponibles. Ingresa la contraseña para verlos."
       : "";
   }
+
+  registerReveals(productGrid);
 };
 
 const updateAdminList = () => {
@@ -923,7 +904,10 @@ const setupTabs = () => {
       panels.forEach((panel) => (panel.hidden = true));
       button.setAttribute("aria-selected", "true");
       const activePanel = container.querySelector(`#${panelId}`);
-      if (activePanel) activePanel.hidden = false;
+      if (activePanel) {
+        activePanel.hidden = false;
+        registerReveals(activePanel);
+      }
     });
   });
 };
@@ -940,6 +924,36 @@ const setupAdminTabs = () => {
       const panel = document.getElementById(panelId);
       if (panel) panel.hidden = false;
     });
+  });
+};
+
+const setupReveal = () => {
+  if (!("IntersectionObserver" in window)) {
+    document.querySelectorAll(".reveal").forEach((el) => {
+      el.classList.add("is-visible");
+    });
+    return;
+  }
+
+  revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.18, rootMargin: "0px 0px -10% 0px" }
+  );
+
+  registerReveals();
+};
+
+const registerReveals = (root = document) => {
+  if (!revealObserver) return;
+  root.querySelectorAll(".reveal:not(.is-visible)").forEach((el) => {
+    revealObserver.observe(el);
   });
 };
 
@@ -1240,6 +1254,7 @@ const handleStudentLogin = (event) => {
     studentPanel.hidden = false;
     studentLoginStatus.textContent = "Acceso correcto.";
     loadStudentContent();
+    registerReveals(studentPanel);
   } else {
     studentLoginStatus.textContent = "Contraseña incorrecta.";
   }
@@ -1480,34 +1495,6 @@ const setupAboutForm = () => {
   });
 };
 
-const setupMathGame = () => {
-  if (!mathProblem || !mathAnswer || !checkMath || !newMath || !mathStatus) return;
-
-  const setNewChallenge = () => {
-    const challenge = createMathChallenge();
-    currentMathAnswer = challenge.answer;
-    mathProblem.textContent = challenge.question;
-    mathAnswer.value = "";
-    mathStatus.textContent = "";
-  };
-
-  checkMath.addEventListener("click", () => {
-    const userAnswer = Number.parseFloat(mathAnswer.value);
-    if (Number.isNaN(userAnswer)) {
-      mathStatus.textContent = "Ingresa una respuesta válida.";
-      return;
-    }
-    if (userAnswer === currentMathAnswer) {
-      mathStatus.textContent = "¡Correcto! Puedes generar un nuevo reto.";
-    } else {
-      mathStatus.textContent = "Respuesta incorrecta. Intenta nuevamente.";
-    }
-  });
-
-  newMath.addEventListener("click", setNewChallenge);
-  setNewChallenge();
-};
-
 const initializeNotificationForm = () => {
   notificationInput.value = loadFromStorage(
     NOTIFICATION_TEXT_KEY,
@@ -1521,6 +1508,7 @@ const init = () => {
   loadPending();
   loadMessages();
   renderAbout();
+  setupReveal();
   renderProducts();
   updateAdminList();
   updatePendingList();
@@ -1533,7 +1521,6 @@ const init = () => {
   setupProposalEvents();
   setupPrivateAccess();
   setupAboutForm();
-  setupMathGame();
   initializeNotificationForm();
   searchInput.addEventListener("input", renderProducts);
   sortSelect.addEventListener("change", renderProducts);

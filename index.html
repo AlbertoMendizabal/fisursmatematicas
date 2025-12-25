@@ -12,7 +12,7 @@
     <div class="brand-banner">
       <div class="container brand-banner-inner">
         <span class="brand-kicker">Tienda &amp; Servicios</span>
-        <h1><span>LA TIENDA</span><span>DE ALBERTO</span></h1>
+        <h1>LA TIENDA DE ALBERTO</h1>
         <p class="brand-subtitle">Productos y servicios verificados en un solo lugar.</p>
       </div>
     </div>
@@ -42,7 +42,7 @@
   <main id="contenido">
     <section id="inicio" class="hero">
       <div class="container hero-grid">
-        <div>
+        <div class="reveal">
           <p class="eyebrow">Confianza y claridad para aprender y vender</p>
           <h2>Tu tienda confiable para anunciar productos y servicios.</h2>
           <p class="lead">Publica tus propuestas, recibe solicitudes y coordina ventas con claridad. Comunicación directa por WhatsApp en cada paso.</p>
@@ -50,12 +50,12 @@
             <a class="btn btn-primary" href="#cursos">Ver cursos</a>
             <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
           </div>
-          <div class="trust-box">
+          <div class="trust-box reveal">
             <p><strong>Comisión: 20% por venta</strong></p>
             <p class="muted">El vendedor conserva su producto. Tras el pago, comprador y vendedor acuerdan día y hora de entrega directamente; Alberto no interviene en esa coordinación.</p>
           </div>
         </div>
-        <div class="hero-card">
+        <div class="hero-card reveal">
           <h3>Atención inmediata</h3>
           <p>Respuestas rápidas y proceso transparente. Productos y servicios listos para mostrarse.</p>
           <ul>
@@ -69,48 +69,38 @@
 
     <section id="como-funciona" class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Cómo ofrecer tu producto o servicio</h2>
           <p>Proceso directo, claro y sin pasos ocultos.</p>
         </div>
-        <div class="flow-banner" aria-hidden="true">
-          <div class="flow-track">
-            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · Reglas claras de publicación ·</span>
-            <span>Sube fotos · Describe tu producto o servicio · Revisión y aprobación · Contacto directo por WhatsApp · Reglas claras de publicación ·</span>
-          </div>
-        </div>
         <div class="steps-grid">
-          <article class="step-card">
-            <h3>1. Envía tu propuesta</h3>
-            <p>Sube una o más fotos, agrega una descripción clara (máx 220) y elige si es producto o servicio.</p>
+          <article class="step-card reveal">
+            <span class="step-icon" aria-hidden="true">📸</span>
+            <h3>Envía tu propuesta</h3>
+            <p>Comparte fotos y una descripción breve y clara de lo que ofreces.</p>
           </article>
-          <article class="step-card">
-            <h3>2. Se revisa y aprueba</h3>
-            <p>Tu propuesta pasa por revisión y aprobación antes de publicarse.</p>
+          <article class="step-card reveal">
+            <span class="step-icon" aria-hidden="true">✅</span>
+            <h3>Se revisa y aprueba</h3>
+            <p>Cuidamos la curación y la calidad antes de publicarlo.</p>
           </article>
-          <article class="step-card">
-            <h3>3. Contacto directo</h3>
-            <p>Los interesados se comunican por WhatsApp y coordinan entrega contigo.</p>
+          <article class="step-card reveal">
+            <span class="step-icon" aria-hidden="true">💬</span>
+            <h3>Contacto directo</h3>
+            <p>Coordina por WhatsApp con interesados de manera rápida.</p>
           </article>
-          <article class="step-card">
-            <h3>4. Comisión transparente</h3>
-            <p>Se aplica una comisión por la exhibición del producto o servicio. No cubrimos envíos.</p>
-          </article>
-        </div>
-        <div class="note-card">
-          <p>También puedes enviar tus imágenes y descripción por correo. Si no deseas hacerlo tú mismo, contáctame y yo me encargo de subir tu producto o servicio.</p>
         </div>
       </div>
     </section>
 
     <section id="propuestas" class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Propón tu producto o servicio</h2>
           <p>Envía tu propuesta y se revisa para aprobación. Solo el administrador publica.</p>
         </div>
         <div class="publica-grid">
-          <form id="proposalForm" class="card form-grid">
+          <form id="proposalForm" class="card form-grid reveal">
             <div class="dropzone" id="proposalDropzone">
               <p><strong>Arrastra y suelta tus imágenes</strong></p>
               <p class="muted">o</p>
@@ -214,7 +204,7 @@
             <button class="btn btn-primary" type="submit">Enviar propuesta</button>
             <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
           </form>
-          <div class="publica-info">
+          <div class="publica-info reveal">
             <h3>¿Qué sucede después?</h3>
             <ul>
               <li>Tu propuesta queda en revisión</li>
@@ -229,26 +219,26 @@
 
     <section id="cursos" class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Mis cursos en línea</h2>
           <p>8 sesiones de 1 hora · Atención personalizada · Precio fijo</p>
         </div>
         <div class="card-grid">
-          <article class="card course-card">
+          <article class="card course-card reveal">
             <h3>Álgebra</h3>
             <p>8 sesiones de 1 hora</p>
             <p class="muted">Inicio: 15 de marzo · Fin: 15 de abril</p>
             <p class="price">$2400 MXN</p>
             <button class="btn btn-whatsapp" data-course="Álgebra">Solicitar por WhatsApp</button>
           </article>
-          <article class="card course-card">
+          <article class="card course-card reveal">
             <h3>Cálculo Diferencial</h3>
             <p>8 sesiones de 1 hora</p>
             <p class="muted">Inicio: 2 de abril · Fin: 2 de mayo</p>
             <p class="price">$2400 MXN</p>
             <button class="btn btn-whatsapp" data-course="Cálculo Diferencial">Solicitar por WhatsApp</button>
           </article>
-          <article class="card course-card">
+          <article class="card course-card reveal">
             <h3>Cálculo Integral</h3>
             <p>8 sesiones de 1 hora</p>
             <p class="muted">Inicio: 20 de abril · Fin: 20 de mayo</p>
@@ -261,7 +251,7 @@
 
     <section id="catalogo" class="section alt-section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Catálogo</h2>
           <p>Productos y servicios aprobados, listos para comprar.</p>
         </div>
@@ -327,11 +317,11 @@
 
     <section id="conoceme" class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Conóceme</h2>
           <p>Un espacio para saber quién está detrás de La Tienda de Alberto.</p>
         </div>
-        <div class="card">
+        <div class="card reveal">
           <div id="aboutContent" class="about-content"></div>
         </div>
       </div>
@@ -339,20 +329,20 @@
 
     <section id="confianza" class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Confianza y transparencia</h2>
           <p>Coordinación directa para entregas y procesos claros.</p>
         </div>
         <div class="trust-grid">
-          <article class="card">
+          <article class="card reveal">
             <h3>Comisión visible</h3>
             <p>La comisión está clara desde el inicio, sin costos ocultos.</p>
           </article>
-          <article class="card">
+          <article class="card reveal">
             <h3>Entrega coordinada</h3>
             <p>Después del pago, comprador y vendedor coordinan día y hora directamente.</p>
           </article>
-          <article class="card">
+          <article class="card reveal">
             <h3>Catálogo curado</h3>
             <p>Solo se publican productos aprobados por el administrador.</p>
           </article>
@@ -362,19 +352,19 @@
 
     <section id="proximos" class="section alt-section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <h2>Próximos cursos</h2>
-          <p>Próximos cursos, juego matemático, acceso de estudiantes y contacto.</p>
+          <p>Agenda de cursos, acceso de estudiantes y contacto directo.</p>
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Acceso</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
-          <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn">
+          <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn">
             <div class="panel-grid">
-              <div class="upcoming-card">
+              <div class="upcoming-card card reveal">
                 <h3>Próximos cursos</h3>
                 <ul class="timeline">
                   <li><strong>Álgebra intensiva</strong><span>Inicio: 15 de marzo · Fin: 15 de abril</span></li>
@@ -383,24 +373,11 @@
                 </ul>
                 <p class="muted">Solicita tu lugar con anticipación.</p>
               </div>
-              <div class="card">
-                <h3>Juego rápido de matemáticas</h3>
-                <p>Resuelve el reto y genera uno nuevo para practicar.</p>
-                <div class="math-game">
-                  <p class="math-problem" id="mathProblem">¿Listo para iniciar?</p>
-                  <div class="math-actions">
-                    <input type="number" id="mathAnswer" placeholder="Tu respuesta">
-                    <button class="btn btn-primary" id="checkMath" type="button">Verificar</button>
-                    <button class="btn btn-ghost" id="newMath" type="button">Nuevo reto</button>
-                  </div>
-                  <p class="muted" id="mathStatus" aria-live="polite"></p>
-                </div>
-              </div>
             </div>
           </div>
           <div id="tab-estudiantes" class="tab-panel" role="tabpanel" aria-labelledby="tab-estudiantes-btn" hidden>
             <div class="student-grid">
-              <div class="card">
+              <div class="card reveal">
                 <h3>Acceso al panel</h3>
                 <p>Ingresa tu contraseña para editar contenido rápido.</p>
                 <form id="studentLoginForm">
@@ -412,7 +389,7 @@
                   <p id="studentLoginStatus" class="muted" aria-live="polite"></p>
                 </form>
               </div>
-              <div class="card" id="studentPanel" hidden>
+              <div class="card reveal" id="studentPanel" hidden>
                 <div class="panel-header">
                   <h3>Edición rápida</h3>
                   <button class="btn btn-ghost" id="studentLogout" type="button">Cerrar sesión</button>
@@ -444,7 +421,7 @@
           </div>
           <div id="tab-contacto" class="tab-panel" role="tabpanel" aria-labelledby="tab-contacto-btn" hidden>
             <div class="contact-grid">
-              <form id="contactForm" class="card">
+              <form id="contactForm" class="card reveal">
                 <h3>Enviar mensaje</h3>
                 <label class="field">
                   <span>Nombre</span>
@@ -461,7 +438,7 @@
                 <button class="btn btn-primary" type="submit">Enviar</button>
                 <p id="contactStatus" class="muted" aria-live="polite"></p>
               </form>
-              <div class="card">
+              <div class="card reveal">
                 <h3>Información básica</h3>
                 <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
                 <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
