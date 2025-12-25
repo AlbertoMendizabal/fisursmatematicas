@@ -30,7 +30,7 @@ if(isset($_SESSION['auth'])){
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mensajes</title>
-<link rel="stylesheet" href="styles.min.css">
+<link rel="stylesheet" href="css/styles.css?v=20251225-01">
 </head>
 <body>
 <header class="sticky">
