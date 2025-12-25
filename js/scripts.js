@@ -6,7 +6,7 @@ const LEGACY_APPROVED_KEY = "LTA_APPROVED_V1";
 const LEGACY_PENDING_KEY = "LTA_PENDING_V1";
 const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
 const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
-const WELCOME_DISMISSED_KEY = "welcomeToastDismissed";
+const WELCOME_DISMISSED_KEY = "toastDismissed";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
 const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
@@ -119,6 +119,12 @@ const studentNumber = document.getElementById("studentNumber");
 const studentSaveStatus = document.getElementById("studentSaveStatus");
 const studentPreview = document.getElementById("studentPreview");
 
+const gameQuestion = document.getElementById("gameQuestion");
+const gameAnswer = document.getElementById("gameAnswer");
+const gameSubmit = document.getElementById("gameSubmit");
+const gameReset = document.getElementById("gameReset");
+const gameFeedback = document.getElementById("gameFeedback");
+
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
 const categorySelect = document.getElementById("categorySelect");
@@ -160,6 +166,22 @@ const parsePrice = (value) => {
 const formatPrice = (value) => currencyFormatter.format(value ?? 0);
 
 const safeText = (value) => (value ?? "").toString();
+
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+const buildGameQuestion = () => {
+  const operators = ["+", "−", "×"];
+  const operator = operators[randomInt(0, operators.length - 1)];
+  let a = randomInt(2, 15);
+  let b = randomInt(2, 12);
+  if (operator === "−" && b > a) {
+    [a, b] = [b, a];
+  }
+  const answer =
+    operator === "+" ? a + b : operator === "−" ? a - b : a * b;
+  return { question: `${a} ${operator} ${b} = ?`, answer };
+};
 
 const hasPrivateAccess = () =>
   sessionStorage.getItem(PRIVATE_ACCESS_KEY) === "true";
@@ -1007,6 +1029,46 @@ const setupCourseButtons = () => {
   });
 };
 
+const setupGame = () => {
+  if (!gameQuestion || !gameAnswer || !gameSubmit || !gameReset || !gameFeedback) {
+    return;
+  }
+
+  let currentGame = buildGameQuestion();
+
+  const renderGame = () => {
+    currentGame = buildGameQuestion();
+    gameQuestion.textContent = currentGame.question;
+    gameAnswer.value = "";
+    gameFeedback.textContent = "";
+  };
+
+  const handleSubmit = () => {
+    const answerValue = Number.parseInt(gameAnswer.value, 10);
+    if (Number.isNaN(answerValue)) {
+      gameFeedback.textContent = "Escribe una respuesta válida.";
+      return;
+    }
+    if (answerValue === currentGame.answer) {
+      gameFeedback.textContent = "¡Correcto! Nuevo reto listo.";
+      renderGame();
+      return;
+    }
+    gameFeedback.textContent = "Respuesta incorrecta. Intenta de nuevo.";
+  };
+
+  gameSubmit.addEventListener("click", handleSubmit);
+  gameReset.addEventListener("click", renderGame);
+  gameAnswer.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSubmit();
+    }
+  });
+
+  renderGame();
+};
+
 const setupTabs = () => {
   tabButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -1103,11 +1165,11 @@ const setupNotification = () => {
     if (!(event.target instanceof Element)) return;
     const target = event.target.closest("[data-toast-close]");
     if (!target) return;
-    const toast = target.closest("[data-toast]");
+    const toast = target.closest("[data-toast]") || document.querySelector("[data-toast]");
     if (!toast) return;
-    if (toast.dataset.toast === "welcome") {
-      sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
-    }
+    sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
+    event.preventDefault();
+    event.stopPropagation();
     toast.remove();
   };
 
@@ -1124,11 +1186,9 @@ const setupNotification = () => {
       const target = event.target.closest("[data-toast-close]");
       if (!target) return;
       event.preventDefault();
-      const toast = target.closest("[data-toast]");
+      const toast = target.closest("[data-toast]") || document.querySelector("[data-toast]");
       if (!toast) return;
-      if (toast.dataset.toast === "welcome") {
-        sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
-      }
+      sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
       toast.remove();
     },
     { capture: true }
@@ -1701,6 +1761,7 @@ const init = () => {
   setupCourseButtons();
   setupTabs();
   setupAdminTabs();
+  setupGame();
   setupNotification();
   setupAdminEvents();
   setupProposalEvents();

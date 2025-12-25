@@ -540,6 +540,23 @@ a:focus-visible {
   gap: 0.3rem;
 }
 
+.game-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.game-question {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold-4);
+}
+
+.game-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .panel-header {
   display: flex;
   align-items: center;
