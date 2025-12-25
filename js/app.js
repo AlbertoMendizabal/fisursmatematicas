@@ -3,6 +3,7 @@ const APPROVED_KEY = "LTA_APPROVED_V1";
 const PENDING_KEY = "LTA_PENDING_V1";
 const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
 const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
+const NOTIFICATION_DISMISSED_KEY = "LTA_NOTIFICATION_DISMISSED_AT_V1";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
 const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
@@ -22,7 +23,6 @@ const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 const notificationToast = document.getElementById("notificationToast");
 const notificationMessage = document.getElementById("notificationMessage");
-const closeNotification = document.getElementById("closeNotification");
 
 const proposalForm = document.getElementById("proposalForm");
 const proposalDropzone = document.getElementById("proposalDropzone");
@@ -957,18 +957,55 @@ const registerReveals = (root = document) => {
   });
 };
 
+const isNotificationDismissed = () => {
+  const dismissedAt = loadFromStorage(NOTIFICATION_DISMISSED_KEY, 0);
+  if (!dismissedAt) return false;
+  return Date.now() - dismissedAt < 24 * 60 * 60 * 1000;
+};
+
+const dismissNotification = () => {
+  if (!notificationToast) return;
+  notificationToast.hidden = true;
+  notificationToast.remove();
+  saveToStorage(NOTIFICATION_DISMISSED_KEY, Date.now());
+};
+
 const showNotification = () => {
+  if (!notificationToast || !notificationMessage) return;
   const enabled = loadFromStorage(NOTIFICATION_ENABLED_KEY, true);
-  if (!enabled) return;
+  if (!enabled || isNotificationDismissed()) return;
   const message = loadFromStorage(NOTIFICATION_TEXT_KEY, DEFAULT_NOTIFICATION);
   notificationMessage.textContent = safeText(message);
   notificationToast.hidden = false;
 };
 
 const setupNotification = () => {
-  closeNotification.addEventListener("click", () => {
-    notificationToast.hidden = true;
+  if (!notificationToast) return;
+  const handleDismiss = (event) => {
+    if (!(event.target instanceof Element)) return;
+    const target = event.target.closest("[data-toast-close]");
+    if (!target) return;
+    dismissNotification();
+  };
+
+  document.addEventListener("click", handleDismiss, { capture: true });
+  document.addEventListener("touchstart", handleDismiss, {
+    capture: true,
+    passive: true,
   });
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (!(event.target instanceof Element)) return;
+      const target = event.target.closest("[data-toast-close]");
+      if (!target) return;
+      event.preventDefault();
+      dismissNotification();
+    },
+    { capture: true }
+  );
+
   showNotification();
 };
 
