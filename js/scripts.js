@@ -11,8 +11,8 @@ const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
 const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
-const PRIVATE_ACCESS_KEY = "LTA_PRIVATE_ACCESS_V1";
-const PRIVATE_ACCESS_CODES = ["2025", "2010"];
+const PROTECTED_CATALOG_KEY = "protectedCatalogUnlocked";
+const PROTECTED_CATALOG_PASSWORD = "420";
 const ADMIN_ACCESS_CODES = ["2025", "1991"];
 const ABOUT_KEY = "LTA_ABOUT_V1";
 
@@ -20,6 +20,56 @@ const DEFAULT_NOTIFICATION =
   "Bienvenido a LA TIENDA DE ALBERTO. Consulta cursos y productos disponibles.";
 const DEFAULT_ABOUT =
   "Soy Alberto, creador de La Tienda de Alberto: un espacio pensado para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nMe enfoco en revisar cada propuesta para mantener calidad y confianza. Trabajo de cerca con los vendedores para que sus productos se muestren de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y estudiantes que desean promover asesorías, cursos o artículos especializados. Mi prioridad es que el proceso sea simple, directo y seguro para ambas partes.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarme y con gusto te acompaño en el proceso.";
+
+const CATEGORIES = [
+  {
+    id: "inmuebles",
+    name: "Inmuebles",
+    subcategories: [
+      { id: "venta-casas", name: "Venta · Casas" },
+      { id: "venta-departamentos", name: "Venta · Departamentos" },
+      { id: "venta-cuartos", name: "Venta · Cuartos" },
+      { id: "venta-terrenos", name: "Venta · Terrenos" },
+      { id: "renta-casas", name: "Renta · Casas" },
+      { id: "renta-departamentos", name: "Renta · Departamentos" },
+      { id: "renta-cuartos", name: "Renta · Cuartos" },
+      { id: "renta-oficinas", name: "Renta · Oficinas" },
+    ],
+  },
+  {
+    id: "vehiculos",
+    name: "Vehículos",
+    subcategories: [
+      { id: "coches", name: "Coches" },
+      { id: "motos", name: "Motos" },
+    ],
+  },
+  {
+    id: "electronica",
+    name: "Electrónica",
+    subcategories: [
+      { id: "celulares", name: "Celulares" },
+      { id: "computo", name: "Cómputo" },
+      { id: "audio", name: "Audio" },
+    ],
+  },
+  {
+    id: "servicios",
+    name: "Servicios",
+    subcategories: [
+      { id: "asesoria", name: "Asesoría" },
+      { id: "otros", name: "Otros" },
+    ],
+  },
+  {
+    id: "cursos",
+    name: "Cursos",
+    subcategories: [
+      { id: "matematicas", name: "Matemáticas" },
+      { id: "tecnologia", name: "Tecnología" },
+    ],
+  },
+];
 
 const courseButtons = document.querySelectorAll("[data-course]");
 const productGrid = document.getElementById("productGrid");
@@ -39,8 +89,7 @@ const proposalDelivery = document.getElementById("proposalDelivery");
 const proposalContactPhone = document.getElementById("proposalContactPhone");
 const proposalContactEmail = document.getElementById("proposalContactEmail");
 const proposalCategory = document.getElementById("proposalCategory");
-const proposalCustomCategoryField = document.getElementById("proposalCustomCategoryField");
-const proposalCustomCategory = document.getElementById("proposalCustomCategory");
+const proposalSubcategory = document.getElementById("proposalSubcategory");
 const proposalTitle = document.getElementById("proposalTitle");
 const proposalDescription = document.getElementById("proposalDescription");
 const proposalDescCount = document.getElementById("proposalDescCount");
@@ -78,8 +127,7 @@ const productType = document.getElementById("productType");
 const productCondition = document.getElementById("productCondition");
 const productDelivery = document.getElementById("productDelivery");
 const productCategory = document.getElementById("productCategory");
-const productCustomCategoryField = document.getElementById("productCustomCategoryField");
-const productCustomCategory = document.getElementById("productCustomCategory");
+const productSubcategory = document.getElementById("productSubcategory");
 const productTitle = document.getElementById("productTitle");
 const productDescription = document.getElementById("productDescription");
 const productPrice = document.getElementById("productPrice");
@@ -128,10 +176,16 @@ const gameFeedback = document.getElementById("gameFeedback");
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
 const categorySelect = document.getElementById("categorySelect");
-const privateAccessForm = document.getElementById("privateAccessForm");
-const privateAccessInput = document.getElementById("privateAccessInput");
-const privateAccessStatus = document.getElementById("privateAccessStatus");
-const privateAccessNote = document.getElementById("privateAccessNote");
+const subcategorySelect = document.getElementById("subcategorySelect");
+const protectedModal = document.getElementById("protectedModal");
+const openProtectedCatalog = document.getElementById("openProtectedCatalog");
+const closeProtectedModal = document.getElementById("closeProtectedModal");
+const protectedAccessForm = document.getElementById("protectedAccessForm");
+const protectedPassword = document.getElementById("protectedPassword");
+const protectedAccessStatus = document.getElementById("protectedAccessStatus");
+const protectedCatalog = document.getElementById("protectedCatalog");
+const protectedGrid = document.getElementById("protectedGrid");
+const closeProtectedCatalog = document.getElementById("closeProtectedCatalog");
 const aboutContent = document.getElementById("aboutContent");
 const aboutForm = document.getElementById("aboutForm");
 const aboutInput = document.getElementById("aboutInput");
@@ -183,11 +237,14 @@ const buildGameQuestion = () => {
   return { question: `${a} ${operator} ${b} = ?`, answer };
 };
 
-const hasPrivateAccess = () =>
-  sessionStorage.getItem(PRIVATE_ACCESS_KEY) === "true";
+const hasProtectedAccess = () =>
+  sessionStorage.getItem(PROTECTED_CATALOG_KEY) === "1";
 
-const setPrivateAccess = () =>
-  sessionStorage.setItem(PRIVATE_ACCESS_KEY, "true");
+const setProtectedAccess = () =>
+  sessionStorage.setItem(PROTECTED_CATALOG_KEY, "1");
+
+const clearProtectedAccess = () =>
+  sessionStorage.removeItem(PROTECTED_CATALOG_KEY);
 
 const updatePriceBreakdown = (priceValue, commissionEl, payoutEl) => {
   if (!commissionEl || !payoutEl) return;
@@ -202,40 +259,115 @@ const updatePriceBreakdown = (priceValue, commissionEl, payoutEl) => {
   payoutEl.textContent = formatPrice(payout);
 };
 
-const updateCustomCategoryField = (selectEl, customField) => {
-  if (!selectEl || !customField) return;
-  customField.hidden = selectEl.value !== "Otra (especifica)";
-  if (customField.hidden) {
-    const input = customField.querySelector("input");
-    if (input) input.value = "";
-  }
-};
-
-const getCategoryValue = (selectEl, customEl) => {
-  const selected = selectEl.value.trim();
-  if (selected === "Otra (especifica)") {
-    return customEl.value.trim();
-  }
-  return selected;
-};
-
 const formatCondition = (value) => (value ? `Estado: ${value}` : "Estado: Sin especificar");
 
 const formatDelivery = (value) =>
   value ? `Entrega: ${value}` : "Entrega: Sin especificar";
 
-const setCategoryInputs = (selectEl, customField, customInput, category) => {
-  const options = Array.from(selectEl.options).map((option) => option.value);
-  if (options.includes(category)) {
-    selectEl.value = category;
-    if (customField) customField.hidden = true;
-    if (customInput) customInput.value = "";
+const formatPriceLabel = (value) =>
+  value === null || value === undefined ? "Precio: a consultar" : formatPrice(value);
+
+const getCategoryById = (id) => CATEGORIES.find((category) => category.id === id);
+
+const getSubcategoryById = (categoryId, subcategoryId) => {
+  const category = getCategoryById(categoryId);
+  return category?.subcategories.find((subcategory) => subcategory.id === subcategoryId);
+};
+
+const populateCategorySelect = (selectEl, { includeAll = false } = {}) => {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  if (includeAll) {
+    const option = document.createElement("option");
+    option.value = "all";
+    option.textContent = "Todas";
+    selectEl.appendChild(option);
+  } else {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Selecciona";
+    selectEl.appendChild(option);
+  }
+
+  CATEGORIES.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category.id;
+    option.textContent = category.name;
+    selectEl.appendChild(option);
+  });
+};
+
+const populateSubcategorySelect = (selectEl, categoryId, { includeAll = false } = {}) => {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  if (!categoryId || categoryId === "all") {
+    selectEl.disabled = true;
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Selecciona";
+    selectEl.appendChild(option);
     return;
   }
-  selectEl.value = "Otra (especifica)";
-  if (customField) customField.hidden = false;
-  if (customInput) customInput.value = category;
+  selectEl.disabled = false;
+  if (includeAll) {
+    const option = document.createElement("option");
+    option.value = "all";
+    option.textContent = "Todas";
+    selectEl.appendChild(option);
+  } else {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "Selecciona";
+    selectEl.appendChild(option);
+  }
+  const category = getCategoryById(categoryId);
+  if (!category) return;
+  category.subcategories.forEach((subcategory) => {
+    const option = document.createElement("option");
+    option.value = subcategory.id;
+    option.textContent = subcategory.name;
+    selectEl.appendChild(option);
+  });
 };
+
+const setCategorySelection = (selectEl, subSelectEl, categoryId, subcategoryId, fallbackName = "") => {
+  const resolvedCategoryId = categoryId || guessCategoryIdFromName(fallbackName);
+  if (selectEl) {
+    selectEl.value = resolvedCategoryId || "";
+  }
+  populateSubcategorySelect(subSelectEl, resolvedCategoryId || "");
+  if (subSelectEl && subcategoryId) {
+    subSelectEl.value = subcategoryId;
+  }
+};
+
+const normalizeCategoryName = (name) => safeText(name).toLowerCase();
+
+const guessCategoryIdFromName = (name) => {
+  const normalized = normalizeCategoryName(name);
+  if (normalized.includes("inmueble")) return "inmuebles";
+  if (normalized.includes("veh")) return "vehiculos";
+  if (normalized.includes("electr")) return "electronica";
+  if (normalized.includes("serv")) return "servicios";
+  if (normalized.includes("curso")) return "cursos";
+  return "";
+};
+
+const ensureCategoryData = (item) => {
+  if (item.categoryId) return item;
+  const categoryId = guessCategoryIdFromName(item.category);
+  return {
+    ...item,
+    categoryId,
+    subcategoryId: item.subcategoryId || "",
+  };
+};
+
+const getCategoryLabel = (product) =>
+  getCategoryById(product.categoryId)?.name || product.category || "Otros";
+
+const getSubcategoryLabel = (product) =>
+  getSubcategoryById(product.categoryId, product.subcategoryId)?.name || "";
 
 const generateId = () =>
   typeof crypto !== "undefined" && crypto.randomUUID
@@ -264,10 +396,14 @@ const defaultProducts = () => [
     title: "Calculadora científica",
     description: "Ideal para bachillerato y primeros semestres. Incluye manual.",
     price: 650,
+    priceMXN: 650,
     images: [demoImage("Calculadora")],
     category: "Electrónica",
+    categoryId: "electronica",
+    subcategoryId: "computo",
     type: "Producto",
-    isPrivate: false,
+    status: "publicado",
+    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now(),
@@ -278,10 +414,14 @@ const defaultProducts = () => [
     title: "Asesoría personalizada",
     description: "Sesión 1 a 1 para resolver dudas y reforzar conceptos.",
     price: 450,
+    priceMXN: 450,
     images: [demoImage("Asesoría")],
-    category: "Servicios profesionales",
+    category: "Servicios",
+    categoryId: "servicios",
+    subcategoryId: "asesoria",
     type: "Servicio",
-    isPrivate: false,
+    status: "publicado",
+    isProtected: false,
     startDate: "2024-11-18",
     endDate: "2024-11-18",
     createdAt: Date.now() - 10000,
@@ -289,17 +429,201 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Guía de ejercicios",
-    description: "Colección de problemas con soluciones paso a paso.",
-    price: 220,
-    images: [demoImage("Guía")],
-    category: "Educación",
+    title: "Departamento en renta · Roma Norte",
+    description: "Departamento amueblado con servicios incluidos, ideal para estudiantes.",
+    price: 8500,
+    priceMXN: 8500,
+    images: [demoImage("Departamento")],
+    category: "Inmuebles",
+    categoryId: "inmuebles",
+    subcategoryId: "renta-departamentos",
     type: "Producto",
-    isPrivate: false,
+    status: "publicado",
+    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 20000,
     updatedAt: Date.now() - 20000,
+  },
+  {
+    id: generateId(),
+    title: "Casa en venta · Jardines del Sur",
+    description: "Casa con 3 recámaras, patio amplio y cochera doble.",
+    price: 1850000,
+    priceMXN: 1850000,
+    images: [demoImage("Casa")],
+    category: "Inmuebles",
+    categoryId: "inmuebles",
+    subcategoryId: "venta-casas",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 30000,
+    updatedAt: Date.now() - 30000,
+  },
+  {
+    id: generateId(),
+    title: "Auto compacto 2018",
+    description: "Excelente rendimiento, documentos al día y mantenimiento reciente.",
+    price: 165000,
+    priceMXN: 165000,
+    images: [demoImage("Auto")],
+    category: "Vehículos",
+    categoryId: "vehiculos",
+    subcategoryId: "coches",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 40000,
+    updatedAt: Date.now() - 40000,
+  },
+  {
+    id: generateId(),
+    title: "Moto urbana 150cc",
+    description: "Ideal para traslados rápidos, lista para entrega inmediata.",
+    price: 32000,
+    priceMXN: 32000,
+    images: [demoImage("Moto")],
+    category: "Vehículos",
+    categoryId: "vehiculos",
+    subcategoryId: "motos",
+    type: "Producto",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 50000,
+    updatedAt: Date.now() - 50000,
+  },
+  {
+    id: generateId(),
+    title: "Ecuaciones diferenciales",
+    description: "Curso enfocado en resolución de ecuaciones diferenciales con ejemplos guiados.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Ecuaciones")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 60000,
+    updatedAt: Date.now() - 60000,
+  },
+  {
+    id: generateId(),
+    title: "Álgebra lineal",
+    description: "Matrices, vectores y espacios vectoriales con práctica aplicada.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Álgebra")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 70000,
+    updatedAt: Date.now() - 70000,
+  },
+  {
+    id: generateId(),
+    title: "Asistencia en exámenes",
+    description: "Preparación y acompañamiento para exámenes de matemáticas.",
+    price: 500,
+    priceMXN: 500,
+    images: [demoImage("Exámenes")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 80000,
+    updatedAt: Date.now() - 80000,
+  },
+  {
+    id: generateId(),
+    title: "Aprende a sumar, restar, multiplicar y dividir",
+    description: "Curso base para dominar operaciones fundamentales.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Operaciones")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 90000,
+    updatedAt: Date.now() - 90000,
+  },
+  {
+    id: generateId(),
+    title: "Curso de ChatGPT Plus",
+    description: "Aprende a usar ChatGPT Plus para tareas, estudio y productividad.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("ChatGPT")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "tecnologia",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 100000,
+    updatedAt: Date.now() - 100000,
+  },
+  {
+    id: generateId(),
+    title: "Cómo crear tu página web desde cero",
+    description: "Curso intensivo de un día para crear tu sitio paso a paso.",
+    price: 2000,
+    priceMXN: 2000,
+    images: [demoImage("Web")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "tecnologia",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 110000,
+    updatedAt: Date.now() - 110000,
+  },
+  {
+    id: generateId(),
+    title: "Paquete premium de asesoría financiera",
+    description: "Servicio integral con seguimiento personalizado.",
+    price: 3500,
+    priceMXN: 3500,
+    images: [demoImage("Premium")],
+    category: "Servicios",
+    categoryId: "servicios",
+    subcategoryId: "asesoria",
+    type: "Servicio",
+    status: "publicado",
+    isProtected: true,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 120000,
+    updatedAt: Date.now() - 120000,
   },
 ];
 
@@ -322,25 +646,38 @@ const loadFromStorage = (key, fallback) => {
   }
 };
 
-const normalizeItem = (item) => ({
-  ...item,
-  images: item.images || (item.imageDataUrl ? [item.imageDataUrl] : []),
-  type: item.type || "Producto",
-  category: item.category || "Otros",
-  isPrivate: Boolean(item.isPrivate),
-  startDate: item.startDate || "",
-  endDate: item.endDate || "",
-});
+const normalizeItem = (item) => {
+  const normalized = {
+    ...item,
+    images: item.images || (item.imageDataUrl ? [item.imageDataUrl] : []),
+    type: item.type || "Producto",
+    categoryId: item.categoryId || "",
+    subcategoryId: item.subcategoryId || "",
+    category: item.category || "",
+    price: item.price ?? item.priceMXN ?? null,
+    priceMXN: item.priceMXN ?? item.price ?? null,
+    isProtected: Boolean(item.isProtected ?? item.isPrivate),
+    status: item.status || "publicado",
+    startDate: item.startDate || "",
+    endDate: item.endDate || "",
+  };
+  const ensured = ensureCategoryData(normalized);
+  if (!ensured.category && ensured.categoryId) {
+    const category = getCategoryById(ensured.categoryId);
+    return { ...ensured, category: category?.name || "" };
+  }
+  return ensured;
+};
 
 const sanitizeApprovedProduct = (item) => {
   const normalized = normalizeItem(item);
-  const { contact, detailsRequest, status, ...rest } = normalized;
+  const { contact, detailsRequest, ...rest } = normalized;
   return rest;
 };
 
 const normalizeProposal = (item) => ({
   ...normalizeItem(item),
-  status: item.status || "pending",
+  status: item.status || "pendiente",
   detailsRequest: item.detailsRequest || "",
   contact: {
     phone: item.contact?.phone || "",
@@ -463,24 +800,30 @@ const renderProducts = () => {
   const query = safeText(searchInput.value).toLowerCase();
   const sort = sortSelect.value;
   const selectedCategory = categorySelect?.value ?? "all";
-  const allowPrivate = hasPrivateAccess();
-  let hiddenPrivateCount = 0;
+  const selectedSubcategory = subcategorySelect?.value ?? "";
 
   let filtered = approvedProducts.filter((product) => {
-    if (product.isPrivate && !allowPrivate) {
-      hiddenPrivateCount += 1;
-      return false;
-    }
     const text = `${product.title} ${product.description}`.toLowerCase();
+    if (product.isProtected) return false;
     const matchesCategory =
-      selectedCategory === "all" || product.category === selectedCategory;
-    return text.includes(query) && matchesCategory;
+      selectedCategory === "all" || product.categoryId === selectedCategory;
+    const matchesSubcategory =
+      !selectedCategory ||
+      selectedCategory === "all" ||
+      !selectedSubcategory ||
+      selectedSubcategory === "all" ||
+      product.subcategoryId === selectedSubcategory;
+    return text.includes(query) && matchesCategory && matchesSubcategory;
   });
 
   if (sort === "price-asc") {
-    filtered.sort((a, b) => a.price - b.price);
+    filtered.sort(
+      (a, b) => (a.price ?? Number.POSITIVE_INFINITY) - (b.price ?? Number.POSITIVE_INFINITY)
+    );
   } else if (sort === "price-desc") {
-    filtered.sort((a, b) => b.price - a.price);
+    filtered.sort(
+      (a, b) => (b.price ?? Number.NEGATIVE_INFINITY) - (a.price ?? Number.NEGATIVE_INFINITY)
+    );
   } else {
     filtered.sort((a, b) => b.createdAt - a.createdAt);
   }
@@ -506,13 +849,14 @@ const renderProducts = () => {
     typeTag.textContent = product.type || "Producto";
     const categoryTag = document.createElement("span");
     categoryTag.className = "tag tag-alt";
-    categoryTag.textContent = product.category || "Otros";
+    categoryTag.textContent = getCategoryLabel(product);
     meta.append(typeTag, categoryTag);
-    if (product.isPrivate) {
-      const privateTag = document.createElement("span");
-      privateTag.className = "tag";
-      privateTag.textContent = "Privado";
-      meta.append(privateTag);
+    const subcategoryLabel = getSubcategoryLabel(product);
+    if (subcategoryLabel) {
+      const subTag = document.createElement("span");
+      subTag.className = "tag";
+      subTag.textContent = subcategoryLabel;
+      meta.append(subTag);
     }
 
     const details = document.createElement("p");
@@ -526,7 +870,7 @@ const renderProducts = () => {
 
     const price = document.createElement("p");
     price.className = "price";
-    price.textContent = formatPrice(product.price);
+    price.textContent = formatPriceLabel(product.price);
 
     const schedule = document.createElement("p");
     schedule.className = "muted small";
@@ -550,9 +894,13 @@ const renderProducts = () => {
     button.target = "_blank";
     button.rel = "noopener";
     button.textContent = "Comprar por WhatsApp";
+    const priceText =
+      product.price === null || product.price === undefined
+        ? "Precio a consultar"
+        : `Precio: $${product.price} MXN`;
     const message = `Hola Alberto. Me interesa este ${
       product.type?.toLowerCase() || "producto"
-    }: ${product.title}. Precio: $${product.price} MXN. ${formatCondition(
+    }: ${product.title}. ${priceText}. ${formatCondition(
       product.condition
     )}. ${formatDelivery(product.deliveryZone)}. ¿Sigue disponible? ¿Cómo procedemos?`;
     button.href = createWhatsAppUrl(message);
@@ -653,14 +1001,6 @@ const renderProducts = () => {
     productGrid.appendChild(card);
   });
 
-  if (privateAccessNote) {
-    privateAccessNote.textContent = allowPrivate
-      ? "Acceso privado activado. Estás viendo productos con contraseña."
-      : hiddenPrivateCount
-      ? "Hay productos privados disponibles. Ingresa la contraseña para verlos."
-      : "";
-  }
-
   registerReveals(productGrid);
 };
 
@@ -688,10 +1028,12 @@ const updateAdminList = () => {
     const meta = document.createElement("p");
     meta.className = "muted";
     const dates = [product.startDate, product.endDate].filter(Boolean).join(" · ");
-    const privateLabel = product.isPrivate ? " · Privado" : "";
-    meta.textContent = `${formatPrice(product.price)} · ${product.type || "Producto"} · ${
-      product.category || "Otros"
-    }${privateLabel} · ${formatCondition(product.condition)} · ${formatDelivery(
+    const protectedLabel = product.isProtected ? " · Especiales" : "";
+    const categoryLabel = getCategoryLabel(product);
+    const subcategoryLabel = getSubcategoryLabel(product);
+    meta.textContent = `${formatPriceLabel(product.price)} · ${product.type || "Producto"} · ${categoryLabel}${
+      subcategoryLabel ? ` · ${subcategoryLabel}` : ""
+    }${protectedLabel} · ${formatCondition(product.condition)} · ${formatDelivery(
       product.deliveryZone
     )}${dates ? ` · ${dates}` : ""} · ${safeText(product.description)}`;
     info.append(title, meta);
@@ -739,12 +1081,14 @@ const updatePendingList = () => {
     const meta = document.createElement("p");
     meta.className = "muted";
     const dates = [proposal.startDate, proposal.endDate].filter(Boolean).join(" · ");
-    const privateLabel = proposal.isPrivate ? " · Privado" : "";
+    const protectedLabel = proposal.isProtected ? " · Especiales" : "";
     const statusLabel =
       proposal.status === "details_requested" ? " · Solicita detalles" : "";
-    meta.textContent = `${formatPrice(proposal.price)} · ${proposal.type || "Producto"} · ${
-      proposal.category || "Otros"
-    }${privateLabel}${statusLabel} · ${formatCondition(proposal.condition)} · ${formatDelivery(
+    const categoryLabel = getCategoryLabel(proposal);
+    const subcategoryLabel = getSubcategoryLabel(proposal);
+    meta.textContent = `${formatPriceLabel(proposal.price)} · ${proposal.type || "Producto"} · ${categoryLabel}${
+      subcategoryLabel ? ` · ${subcategoryLabel}` : ""
+    }${protectedLabel}${statusLabel} · ${formatCondition(proposal.condition)} · ${formatDelivery(
       proposal.deliveryZone
     )}${dates ? ` · ${dates}` : ""} · ${safeText(proposal.description)}`;
     info.append(title, meta);
@@ -833,7 +1177,8 @@ const resetProductForm = () => {
   productFormStatus.textContent = "";
   descCount.textContent = "0/220";
   productDates.hidden = true;
-  productCustomCategoryField.hidden = true;
+  if (productCategory) productCategory.value = "";
+  populateSubcategorySelect(productSubcategory, "");
 };
 
 const openEditForm = (item, mode) => {
@@ -851,21 +1196,22 @@ const openEditForm = (item, mode) => {
   productType.value = item.type || "";
   productCondition.value = item.condition || "";
   productDelivery.value = item.deliveryZone || "";
-  setCategoryInputs(
+  setCategorySelection(
     productCategory,
-    productCustomCategoryField,
-    productCustomCategory,
+    productSubcategory,
+    item.categoryId,
+    item.subcategoryId,
     item.category || ""
   );
   productTitle.value = item.title;
   productDescription.value = item.description;
-  productPrice.value = item.price;
+  productPrice.value = item.price ?? "";
   descCount.textContent = `${item.description.length}/220`;
   productStartDate.value = item.startDate || "";
   productEndDate.value = item.endDate || "";
   productSchedule.checked = Boolean(item.startDate || item.endDate);
   productDates.hidden = !productSchedule.checked;
-  productPrivate.checked = Boolean(item.isPrivate);
+  productPrivate.checked = Boolean(item.isProtected);
   renderPreviewGrid(productPreview, item.images || []);
 
   const adminProductsTab = document.getElementById("admin-products-btn");
@@ -932,6 +1278,7 @@ const persistApproved = () => {
   }
   adminStorageStatus.textContent = "";
   renderProducts();
+  renderProtectedCatalog();
   updateAdminList();
 };
 
@@ -1256,30 +1603,33 @@ const handleProductSubmit = (event) => {
   const type = productType.value.trim();
   const condition = productCondition.value.trim();
   const deliveryZone = productDelivery.value.trim();
-  const category = getCategoryValue(productCategory, productCustomCategory);
+  const categoryId = productCategory.value;
+  const subcategoryId = productSubcategory.value;
+  const categoryName = getCategoryById(categoryId)?.name || "";
   const title = productTitle.value.trim();
   const description = productDescription.value.trim();
-  const priceValue = parsePrice(productPrice.value);
+  const rawPrice = productPrice.value.trim();
+  const priceValue = parsePrice(rawPrice);
   const images = getPreviewImages(productPreview);
   const startDate = productSchedule.checked ? productStartDate.value : "";
   const endDate = productSchedule.checked ? productEndDate.value : "";
-  const isPrivate = productPrivate.checked;
-
-  if (productCategory.value === "Otra (especifica)" && !category) {
-    productFormStatus.textContent = "Escribe una categoría personalizada.";
-    return;
-  }
+  const isProtected = productPrivate.checked;
 
   if (
     !type ||
     !condition ||
     !deliveryZone ||
-    !category ||
+    !categoryId ||
+    !subcategoryId ||
     !title ||
-    !description ||
-    priceValue === null
+    !description
   ) {
     productFormStatus.textContent = "Completa todos los campos con datos válidos.";
+    return;
+  }
+
+  if (rawPrice && priceValue === null) {
+    productFormStatus.textContent = "Ingresa un precio válido o deja el campo vacío.";
     return;
   }
 
@@ -1297,14 +1647,17 @@ const handleProductSubmit = (event) => {
             type,
             condition,
             deliveryZone,
-            category,
+            category: categoryName,
+            categoryId,
+            subcategoryId,
             title,
             description,
             price: priceValue,
+            priceMXN: priceValue,
             images,
             startDate,
             endDate,
-            isPrivate,
+            isProtected,
             updatedAt: now,
           }
         : proposal
@@ -1319,22 +1672,25 @@ const handleProductSubmit = (event) => {
   } else if (editingApprovedId) {
     approvedProducts = approvedProducts.map((product) =>
       product.id === editingApprovedId
-        ? {
-            ...product,
-            type,
-            condition,
-            deliveryZone,
-            category,
-            title,
-            description,
-            price: priceValue,
-            images,
-            startDate,
-            endDate,
-            isPrivate,
-            updatedAt: now,
-          }
-        : product
+      ? {
+          ...product,
+          type,
+          condition,
+          deliveryZone,
+          category: categoryName,
+          categoryId,
+          subcategoryId,
+          title,
+          description,
+          price: priceValue,
+          priceMXN: priceValue,
+          images,
+          startDate,
+          endDate,
+          isProtected,
+          updatedAt: now,
+        }
+      : product
     );
     const saved = saveToStorage(APPROVED_KEY, approvedProducts);
     if (!saved) {
@@ -1350,14 +1706,18 @@ const handleProductSubmit = (event) => {
       type,
       condition,
       deliveryZone,
-      category,
+      category: categoryName,
+      categoryId,
+      subcategoryId,
       title,
       description,
       price: priceValue,
+      priceMXN: priceValue,
       images,
       startDate,
       endDate,
-      isPrivate,
+      isProtected,
+      status: "publicado",
       createdAt: now,
       updatedAt: now,
     });
@@ -1420,6 +1780,7 @@ const handleImport = (event) => {
         approvedProducts = data.approved.map(sanitizeApprovedProduct);
         saveToStorage(APPROVED_KEY, approvedProducts);
         renderProducts();
+        renderProtectedCatalog();
         updateAdminList();
       }
       if (Array.isArray(data.pending)) {
@@ -1525,19 +1886,17 @@ const handleProposalSubmit = (event) => {
   const deliveryZone = proposalDelivery.value.trim();
   const contactPhone = proposalContactPhone.value.trim();
   const contactEmail = proposalContactEmail.value.trim();
-  const category = getCategoryValue(proposalCategory, proposalCustomCategory);
+  const categoryId = proposalCategory.value;
+  const subcategoryId = proposalSubcategory.value;
+  const categoryName = getCategoryById(categoryId)?.name || "";
   const title = proposalTitle.value.trim();
   const description = proposalDescription.value.trim();
-  const priceValue = parsePrice(proposalPrice.value);
+  const rawPrice = proposalPrice.value.trim();
+  const priceValue = parsePrice(rawPrice);
   const images = getPreviewImages(proposalPreview);
   const startDate = proposalSchedule.checked ? proposalStartDate.value : "";
   const endDate = proposalSchedule.checked ? proposalEndDate.value : "";
-  const isPrivate = proposalPrivate.checked;
-
-  if (proposalCategory.value === "Otra (especifica)" && !category) {
-    proposalStatus.textContent = "Escribe una categoría personalizada.";
-    return;
-  }
+  const isProtected = proposalPrivate.checked;
 
   if (
     !type ||
@@ -1545,12 +1904,17 @@ const handleProposalSubmit = (event) => {
     !deliveryZone ||
     !contactPhone ||
     !contactEmail ||
-    !category ||
+    !categoryId ||
+    !subcategoryId ||
     !title ||
-    !description ||
-    priceValue === null
+    !description
   ) {
     proposalStatus.textContent = "Completa los campos con datos válidos.";
+    return;
+  }
+
+  if (rawPrice && priceValue === null) {
+    proposalStatus.textContent = "Ingresa un precio válido o deja el campo vacío.";
     return;
   }
 
@@ -1564,15 +1928,18 @@ const handleProposalSubmit = (event) => {
     type,
     condition,
     deliveryZone,
-    category,
+    category: categoryName,
+    categoryId,
+    subcategoryId,
     title,
     description,
     price: priceValue,
+    priceMXN: priceValue,
     images,
     startDate,
     endDate,
-    isPrivate,
-    status: "pending",
+    isProtected,
+    status: "pendiente",
     detailsRequest: "",
     contact: {
       phone: contactPhone,
@@ -1597,7 +1964,8 @@ const handleProposalSubmit = (event) => {
   proposalPreview.innerHTML = "";
   proposalPreview.dataset.images = "";
   proposalDates.hidden = true;
-  proposalCustomCategoryField.hidden = true;
+  if (proposalCategory) proposalCategory.value = "";
+  populateSubcategorySelect(proposalSubcategory, "");
   if (proposalDescCount) {
     proposalDescCount.textContent = "220 caracteres restantes";
   }
@@ -1652,14 +2020,15 @@ const setupAdminEvents = () => {
   productSchedule.addEventListener("change", () => {
     productDates.hidden = !productSchedule.checked;
   });
-  productCategory.addEventListener("change", () =>
-    updateCustomCategoryField(productCategory, productCustomCategoryField)
-  );
+  productCategory.addEventListener("change", () => {
+    populateSubcategorySelect(productSubcategory, productCategory.value);
+  });
   productForm.addEventListener("submit", handleProductSubmit);
   adminWhatsApp.addEventListener("click", () => {
     const title = productTitle.value.trim() || "Sin título";
-    const priceValue = parsePrice(productPrice.value) ?? 0;
-    const message = `Hola Alberto. Estoy publicando/actualizando un producto en LA TIENDA DE ALBERTO. Producto: ${title}. Precio: $${priceValue} MXN. (Adjunto imagen si aplica).`;
+    const priceValue = parsePrice(productPrice.value);
+    const priceText = priceValue === null ? "Precio a consultar" : `$${priceValue} MXN`;
+    const message = `Hola Alberto. Estoy publicando/actualizando un producto en LA TIENDA DE ALBERTO. Producto: ${title}. ${priceText}. (Adjunto imagen si aplica).`;
     window.open(createWhatsAppUrl(message), "_blank", "noopener");
   });
   notificationForm.addEventListener("submit", handleNotificationSave);
@@ -1693,9 +2062,9 @@ const setupProposalEvents = () => {
   proposalSchedule.addEventListener("change", () => {
     proposalDates.hidden = !proposalSchedule.checked;
   });
-  proposalCategory.addEventListener("change", () =>
-    updateCustomCategoryField(proposalCategory, proposalCustomCategoryField)
-  );
+  proposalCategory.addEventListener("change", () => {
+    populateSubcategorySelect(proposalSubcategory, proposalCategory.value);
+  });
   proposalDescription.addEventListener("input", () => {
     const remaining = 220 - proposalDescription.value.length;
     proposalDescCount.textContent = `${Math.max(remaining, 0)} caracteres restantes`;
@@ -1707,20 +2076,117 @@ const setupProposalEvents = () => {
   proposalForm.addEventListener("submit", handleProposalSubmit);
 };
 
-const setupPrivateAccess = () => {
-  if (!privateAccessForm) return;
-  privateAccessForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const value = privateAccessInput.value.trim();
-    if (PRIVATE_ACCESS_CODES.includes(value)) {
-      setPrivateAccess();
-      privateAccessStatus.textContent = "Acceso privado activado.";
-      privateAccessInput.value = "";
-      renderProducts();
-    } else {
-      privateAccessStatus.textContent = "Contraseña incorrecta.";
+const openProtectedModal = () => {
+  if (!protectedModal) return;
+  protectedModal.classList.add("show");
+  protectedModal.setAttribute("aria-hidden", "false");
+  if (protectedAccessStatus) protectedAccessStatus.textContent = "";
+  if (protectedPassword) protectedPassword.value = "";
+};
+
+const closeProtectedModalHandler = () => {
+  if (!protectedModal) return;
+  protectedModal.classList.remove("show");
+  protectedModal.setAttribute("aria-hidden", "true");
+};
+
+const renderProtectedCatalog = () => {
+  if (!protectedGrid || !protectedCatalog) return;
+  const unlocked = hasProtectedAccess();
+  protectedCatalog.hidden = !unlocked;
+  protectedGrid.innerHTML = "";
+  if (!unlocked) return;
+  const protectedItems = approvedProducts.filter((product) => product.isProtected);
+  if (!protectedItems.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No hay productos especiales disponibles.";
+    protectedGrid.appendChild(empty);
+    return;
+  }
+  protectedItems.forEach((product) => {
+    const card = document.createElement("article");
+    card.className = "card product-card protected-card-item";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.src = product.images?.[0] || demoImage("Especial");
+    img.alt = safeText(product.title);
+
+    const title = document.createElement("h3");
+    title.textContent = safeText(product.title);
+
+    const meta = document.createElement("div");
+    meta.className = "tag-row";
+    const typeTag = document.createElement("span");
+    typeTag.className = "tag";
+    typeTag.textContent = product.type || "Producto";
+    const categoryTag = document.createElement("span");
+    categoryTag.className = "tag tag-alt";
+    categoryTag.textContent = getCategoryLabel(product);
+    meta.append(typeTag, categoryTag);
+    const subcategoryLabel = getSubcategoryLabel(product);
+    if (subcategoryLabel) {
+      const subTag = document.createElement("span");
+      subTag.className = "tag";
+      subTag.textContent = subcategoryLabel;
+      meta.append(subTag);
     }
+
+    const desc = document.createElement("p");
+    desc.className = "muted";
+    desc.textContent = safeText(product.description);
+
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = formatPriceLabel(product.price);
+
+    card.append(img, meta, title, desc, price);
+    protectedGrid.appendChild(card);
   });
+  registerReveals(protectedGrid);
+};
+
+const setupProtectedAccess = () => {
+  if (openProtectedCatalog) {
+    openProtectedCatalog.addEventListener("click", () => {
+      if (hasProtectedAccess()) {
+        renderProtectedCatalog();
+        protectedCatalog?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      openProtectedModal();
+    });
+  }
+  if (closeProtectedModal) {
+    closeProtectedModal.addEventListener("click", closeProtectedModalHandler);
+  }
+  if (protectedModal) {
+    protectedModal.addEventListener("click", (event) => {
+      if (event.target === protectedModal) closeProtectedModalHandler();
+    });
+  }
+  if (protectedAccessForm) {
+    protectedAccessForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const value = protectedPassword.value.trim();
+      if (value === PROTECTED_CATALOG_PASSWORD) {
+        setProtectedAccess();
+        if (protectedAccessStatus) {
+          protectedAccessStatus.textContent = "Acceso concedido.";
+        }
+        closeProtectedModalHandler();
+        renderProtectedCatalog();
+      } else if (protectedAccessStatus) {
+        protectedAccessStatus.textContent = "Contraseña incorrecta.";
+      }
+    });
+  }
+  if (closeProtectedCatalog) {
+    closeProtectedCatalog.addEventListener("click", () => {
+      clearProtectedAccess();
+      renderProtectedCatalog();
+    });
+  }
 };
 
 const setupAboutForm = () => {
@@ -1754,7 +2220,6 @@ const init = () => {
   loadMessages();
   renderAbout();
   setupReveal();
-  renderProducts();
   updateAdminList();
   updatePendingList();
   renderMessages();
@@ -1765,22 +2230,32 @@ const init = () => {
   setupNotification();
   setupAdminEvents();
   setupProposalEvents();
-  setupPrivateAccess();
+  setupProtectedAccess();
   setupAboutForm();
   initializeNotificationForm();
+  populateCategorySelect(categorySelect, { includeAll: true });
+  populateSubcategorySelect(subcategorySelect, categorySelect?.value, { includeAll: true });
+  populateCategorySelect(productCategory);
+  populateSubcategorySelect(productSubcategory, productCategory?.value);
+  populateCategorySelect(proposalCategory);
+  populateSubcategorySelect(proposalSubcategory, proposalCategory?.value);
+  renderProducts();
   searchInput.addEventListener("input", renderProducts);
   sortSelect.addEventListener("change", renderProducts);
-  categorySelect?.addEventListener("change", renderProducts);
+  categorySelect?.addEventListener("change", () => {
+    populateSubcategorySelect(subcategorySelect, categorySelect.value, { includeAll: true });
+    renderProducts();
+  });
+  subcategorySelect?.addEventListener("change", renderProducts);
   studentLoginForm.addEventListener("submit", handleStudentLogin);
   studentLogout.addEventListener("click", handleStudentLogout);
   studentEditForm.addEventListener("submit", handleStudentSave);
   setupContactForm();
-  updateCustomCategoryField(productCategory, productCustomCategoryField);
-  updateCustomCategoryField(proposalCategory, proposalCustomCategoryField);
   if (proposalDescCount) {
     proposalDescCount.textContent = "220 caracteres restantes";
   }
   updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
+  renderProtectedCatalog();
 
   if (hasAdminSession()) {
     adminLogin.hidden = true;
@@ -1792,9 +2267,6 @@ const init = () => {
     loadStudentContent();
   }
 
-  if (hasPrivateAccess() && privateAccessStatus) {
-    privateAccessStatus.textContent = "Acceso privado activado.";
-  }
 };
 
 init();
