@@ -21,7 +21,7 @@ const ABOUT_KEY = "LTA_ABOUT_V1";
 const DEFAULT_NOTIFICATION =
   "Bienvenida a LA TIENDA DE ALBERTO. Aquí puedes consultar cursos y productos disponibles.";
 const DEFAULT_ABOUT =
-  "El instructor y responsable de La Tienda de Alberto creó este espacio para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nCada propuesta se revisa para mantener calidad y confianza. Los productos se muestran de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y personas que desean promover asesorías, cursos o artículos especializados. La prioridad es que el proceso sea simple, directo y seguro.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarte para recibir apoyo en el proceso.";
+  "Soy Alberto. Aquí encontrarás cursos en línea y asesorías, además de un catálogo para vender o rentar productos y servicios.\n\nCada propuesta se revisa para mantener calidad y confianza. Los productos se muestran de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y personas que desean promover asesorías, cursos o artículos especializados. La prioridad es que el proceso sea simple, directo y seguro.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarte para recibir apoyo en el proceso.";
 
 const CATEGORIES = [
   {
@@ -675,11 +675,11 @@ const demoImage = (label) => {
 const defaultProducts = () => [
   {
     id: generateId(),
-    title: "Calculadora científica",
+    title: "Asistencia en exámenes",
     description: "Ideal para bachillerato y primeros semestres. Incluye manual.",
-    price: 650,
-    priceMXN: 650,
-    images: [demoImage("Calculadora")],
+    price: 250,
+    priceMXN: 250,
+    images: [demoImage("Asistencia")],
     category: "Electrónica",
     categoryId: "electronica",
     subcategoryId: "computo",
@@ -1059,10 +1059,10 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Asesoría personalizada",
+    title: "Asesoría en matemáticas presencial",
     description: "Sesión 1 a 1 para resolver dudas y reforzar conceptos.",
-    price: 450,
-    priceMXN: 450,
+    price: 600,
+    priceMXN: 600,
     images: [demoImage("Asesoría")],
     category: "Servicios",
     categoryId: "servicios",
@@ -1344,7 +1344,7 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Lectura guiada: te explico un libro",
+    title: "Te leo un libro (Círculo de lectura)",
     description: "Sesiones en línea: explicación guiada del libro y resolución de dudas.",
     price: null,
     priceMXN: null,
@@ -1721,7 +1721,7 @@ const buildCommissionNote = () => {
   const note = document.createElement("p");
   note.className = "muted small";
   note.textContent =
-    "La coordinación se realiza directamente entre las partes. Comisión 20% al confirmarse el trato.";
+    "Entrega y pago del resto: acuerdo directo entre interesado y proveedor. Comisión 20% al confirmarse por WhatsApp.";
   return note;
 };
 
@@ -1765,7 +1765,7 @@ const buildContactSection = (product) => {
       <input type="text" name="name" required>
     </label>
     <label class="field">
-      <span>WhatsApp o email</span>
+      <span>WhatsApp de contacto</span>
       <input type="text" name="contact" required>
     </label>
     <label class="field">
@@ -2128,8 +2128,8 @@ const updatePendingList = () => {
     contactLabel.textContent = "Contacto: ";
     const contactValue = document.createElement("span");
     const phone = proposal.contact?.phone || "Sin teléfono";
-    const email = proposal.contact?.email || "Sin correo";
-    contactValue.textContent = `${phone} · ${email}`;
+    const contactAlt = proposal.contact?.email || "Sin contacto alterno";
+    contactValue.textContent = `${phone} · ${contactAlt}`;
     contact.append(contactLabel, contactValue);
 
     const detailNote = document.createElement("p");
@@ -2999,7 +2999,7 @@ const setupContactForm = () => {
   if (!contactForm || !contactStatus) return;
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    contactStatus.textContent = "Mensaje enviado. Se responderá pronto.";
+    contactStatus.textContent = "Mensaje enviado. Se responderá por WhatsApp.";
     contactForm.reset();
   });
 };
