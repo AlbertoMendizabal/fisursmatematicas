@@ -30,9 +30,10 @@ if(isset($_SESSION['auth'])){
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mensajes</title>
-<link rel="stylesheet" href="css/styles.css?v=20251225-01">
+<!-- build-id: GOLDLOCK_20250308_1200 -->
+<link rel="stylesheet" href="css/styles.css?v=20250308-1200">
 </head>
-<body>
+<body data-build="GOLDLOCK_20250308_1200">
 <header class="sticky">
   <div class="container">
     <h1>Mensajes</h1>
