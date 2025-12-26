@@ -1079,7 +1079,9 @@ a:focus-visible {
 }
 
 .chip-scroller {
-  overflow-x: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding-bottom: 0.5rem;
   margin: 1rem 0 2rem;
 }
@@ -1089,11 +1091,44 @@ a:focus-visible {
   gap: 0.75rem;
   scroll-snap-type: x mandatory;
   padding: 0.25rem 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  flex: 1;
+  min-width: 0;
+}
+
+.chip-nav {
+  border: 1px solid var(--gold-2);
+  background: #ffffff;
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition), border var(--transition),
+    background var(--transition);
+}
+
+.chip-nav:hover,
+.chip-nav:focus-visible {
+  background: var(--gold-3);
+  border-color: var(--gold-2);
+  transform: translateY(-1px);
 }
 
 .chip-track .chip {
   scroll-snap-align: start;
   white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .chip-nav {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
