@@ -12,6 +12,9 @@ const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
 const PROTECTED_CATALOG_KEY = "protectedCatalogUnlocked";
 const PROTECTED_CATALOG_HASH = "db55da3fc3098e9c42311c6013304ff36b19ef73d12ea932054b5ad51df4f49d";
+const STUDENT_ACCESS_KEY = "LTA_STUDENT_ACCESS_V1";
+const STUDENT_DATA_KEY = "LTA_STUDENT_DATA_V1";
+const STUDENT_PASSWORDS = new Set(["2025", "1991"]);
 const ADMIN_ACCESS_HASHES = new Set([
   "7d12ba56e9f8b3dc64f77c87318c4f37bc12cfbf1a37573cdf3e4fa683f20155",
   "b2b2f104d32c638903e151a9b20d6e27b41d8c0c84cf8458738f83ca2f1dd744",
@@ -19,9 +22,9 @@ const ADMIN_ACCESS_HASHES = new Set([
 const ABOUT_KEY = "LTA_ABOUT_V1";
 
 const DEFAULT_NOTIFICATION =
-  "Yo te doy la bienvenida a LA TIENDA DE ALBERTO. Aquí puedes consultar cursos y productos disponibles.";
+  "Bienvenida a LA TIENDA DE ALBERTO. Aquí puedes consultar cursos y productos disponibles.";
 const DEFAULT_ABOUT =
-  "Soy Alberto, creador de La Tienda de Alberto: un espacio pensado para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nYo reviso cada propuesta para mantener calidad y confianza. Trabajo de cerca con los vendedores para que sus productos se muestren de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y personas que desean promover asesorías, cursos o artículos especializados. Mi prioridad es que el proceso sea simple, directo y seguro.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarme y con gusto te acompaño en el proceso.";
+  "El instructor y responsable de La Tienda de Alberto creó este espacio para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nCada propuesta se revisa para mantener calidad y confianza. Los productos se muestran de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y personas que desean promover asesorías, cursos o artículos especializados. La prioridad es que el proceso sea simple, directo y seguro.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarte para recibir apoyo en el proceso.";
 
 const CATEGORIES = [
   {
@@ -166,6 +169,22 @@ const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 const notificationToast = document.getElementById("notificationToast");
 const notificationMessage = document.getElementById("notificationMessage");
+const mathQuestion = document.getElementById("mathQuestion");
+const mathAnswer = document.getElementById("mathAnswer");
+const mathPracticeForm = document.getElementById("mathPracticeForm");
+const mathPracticeStatus = document.getElementById("mathPracticeStatus");
+const newMathQuestionBtn = document.getElementById("newMathQuestion");
+const studentLoginForm = document.getElementById("studentLoginForm");
+const studentPassword = document.getElementById("studentPassword");
+const studentLoginStatus = document.getElementById("studentLoginStatus");
+const studentEditor = document.getElementById("studentEditor");
+const studentEditForm = document.getElementById("studentEditForm");
+const studentContent = document.getElementById("studentContent");
+const studentDate = document.getElementById("studentDate");
+const studentNumber = document.getElementById("studentNumber");
+const studentEditStatus = document.getElementById("studentEditStatus");
+const studentPreviewContent = document.getElementById("studentPreviewContent");
+const studentPreviewMeta = document.getElementById("studentPreviewMeta");
 
 const proposalForm = document.getElementById("proposalForm");
 const proposalDropzone = document.getElementById("proposalDropzone");
@@ -443,6 +462,26 @@ const setupCategoryChips = () => {
     updateChipSelection(categoryChips, "category", value);
     renderProducts();
   });
+};
+
+const setupCategoryScroller = () => {
+  const scroller = document.querySelector(".chip-scroller");
+  if (!scroller || !categoryChips) return;
+  const scrollTarget = categoryChips;
+  scroller.querySelectorAll("[data-chip-nav]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const direction = button.dataset.chipNav === "left" ? -1 : 1;
+      scrollTarget.scrollBy({ left: direction * 260, behavior: "smooth" });
+    });
+  });
+  scroller.addEventListener(
+    "wheel",
+    (event) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      scrollTarget.scrollBy({ left: event.deltaY, behavior: "smooth" });
+    },
+    { passive: true }
+  );
 };
 
 const setupOperationChips = () => {
@@ -1020,7 +1059,7 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Renta de sonido para eventos (5 horas)",
     description:
-      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para celebraciones y reuniones. Yo te notificaré por WhatsApp cuando haya interesados y coordinaremos los detalles.",
+      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para celebraciones y reuniones. Se notificará por WhatsApp cuando haya interesados para coordinar los detalles.",
     price: 5000,
     priceMXN: 5000,
     images: [demoImage("Sonido")],
@@ -1325,7 +1364,7 @@ const defaultProducts = () => [
   {
     id: generateId(),
     title: "Lectura guiada: te explico un libro",
-    description: "Sesiones en línea: yo te explico el libro y resolvemos dudas.",
+    description: "Sesiones en línea: explicación guiada del libro y resolución de dudas.",
     price: null,
     priceMXN: null,
     images: [demoImage("Lectura")],
@@ -1486,7 +1525,7 @@ const renderMessages = () => {
   if (!storedMessages.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "Yo no tengo mensajes privados aún.";
+    empty.textContent = "No hay mensajes privados aún.";
     adminMessagesList.appendChild(empty);
     return;
   }
@@ -1564,7 +1603,7 @@ const renderNotifications = () => {
   if (!storedNotifications.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "Yo no tengo notificaciones acumuladas.";
+    empty.textContent = "No hay notificaciones acumuladas.";
     adminNotificationList.appendChild(empty);
     return;
   }
@@ -1766,7 +1805,7 @@ const buildContactSection = (product) => {
     saveToStorage(MESSAGE_KEY, storedMessages);
     const status = messageForm.querySelector("[data-status]");
     if (status) {
-      status.textContent = "Mensaje enviado. Yo te responderé pronto.";
+      status.textContent = "Mensaje enviado. Se responderá pronto.";
     }
     messageForm.reset();
     renderMessages();
@@ -1802,7 +1841,7 @@ const buildContactSection = (product) => {
     storedMessages.unshift(payload);
     saveToStorage(MESSAGE_KEY, storedMessages);
     const status = requestForm.querySelector("[data-status]");
-    if (status) status.textContent = "Solicitud enviada. Yo te contactaré.";
+    if (status) status.textContent = "Solicitud enviada. Se contactará pronto.";
     requestForm.reset();
     renderMessages();
   });
@@ -1965,7 +2004,7 @@ const updateAdminList = () => {
   if (!approvedProducts.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "Yo no tengo productos aprobados aún.";
+    empty.textContent = "No hay productos aprobados aún.";
     adminProductList.appendChild(empty);
     return;
   }
@@ -2023,7 +2062,7 @@ const updatePendingList = () => {
   if (!pendingProposals.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "Yo no tengo propuestas pendientes.";
+    empty.textContent = "No hay propuestas pendientes.";
     adminPendingList.appendChild(empty);
     return;
   }
@@ -2367,8 +2406,13 @@ const getPreviewImages = (previewEl) => {
 
 const handleImageDrop = async ({ files, previewEl, statusEl }) => {
   if (!files || !files.length) return;
+  const imageFiles = Array.from(files).filter((file) => file.type.startsWith("image/"));
+  if (!imageFiles.length) {
+    if (statusEl) statusEl.textContent = "Selecciona imágenes válidas.";
+    return;
+  }
   try {
-    const images = await compressImages(files);
+    const images = await compressImages(imageFiles);
     renderPreviewGrid(previewEl, images);
     if (statusEl) statusEl.textContent = "";
   } catch (error) {
@@ -2376,6 +2420,118 @@ const handleImageDrop = async ({ files, previewEl, statusEl }) => {
       statusEl.textContent = "No se pudo procesar la imagen.";
     }
   }
+};
+
+const setupMathGame = () => {
+  if (!mathQuestion || !mathAnswer || !mathPracticeForm || !mathPracticeStatus || !newMathQuestionBtn) {
+    return;
+  }
+  const createQuestion = () => {
+    const a = Math.floor(Math.random() * 41) + 5;
+    const b = Math.floor(Math.random() * 31) + 5;
+    mathQuestion.textContent = `${a} + ${b} = ?`;
+    mathQuestion.dataset.answer = String(a + b);
+    mathAnswer.value = "";
+    mathPracticeStatus.textContent = "";
+  };
+
+  newMathQuestionBtn.addEventListener("click", createQuestion);
+  mathPracticeForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const expected = Number(mathQuestion.dataset.answer || "");
+    const provided = Number(mathAnswer.value);
+    if (Number.isNaN(provided)) {
+      mathPracticeStatus.textContent = "Ingresa un número válido.";
+      return;
+    }
+    if (provided === expected) {
+      mathPracticeStatus.textContent = "¡Correcto! Se generó una nueva operación.";
+      createQuestion();
+      return;
+    }
+    mathPracticeStatus.textContent = "Respuesta incorrecta. Intenta de nuevo.";
+  });
+
+  createQuestion();
+};
+
+const loadStudentData = () => {
+  const raw = localStorage.getItem(STUDENT_DATA_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (error) {
+    return null;
+  }
+};
+
+const updateStudentPreview = (data) => {
+  if (!studentPreviewContent || !studentPreviewMeta) return;
+  const contentText = data?.content?.trim() ? data.content.trim() : "-";
+  const dateText = data?.date?.trim() ? data.date.trim() : "-";
+  const numberText = data?.number?.toString().trim() ? data.number.toString().trim() : "-";
+  studentPreviewContent.textContent = `Contenido: ${contentText}`;
+  studentPreviewMeta.textContent = `Fecha: ${dateText} · Número: ${numberText}`;
+};
+
+const setupStudentAccess = () => {
+  if (
+    !studentLoginForm ||
+    !studentPassword ||
+    !studentLoginStatus ||
+    !studentEditor ||
+    !studentEditForm ||
+    !studentContent ||
+    !studentDate ||
+    !studentNumber ||
+    !studentEditStatus
+  ) {
+    return;
+  }
+
+  const showEditor = () => {
+    studentEditor.hidden = false;
+  };
+
+  const savedData = loadStudentData();
+  if (savedData) {
+    studentContent.value = savedData.content || "";
+    studentDate.value = savedData.date || "";
+    studentNumber.value = savedData.number || "";
+    updateStudentPreview(savedData);
+  } else {
+    updateStudentPreview({});
+  }
+
+  if (sessionStorage.getItem(STUDENT_ACCESS_KEY) === "1") {
+    showEditor();
+  }
+
+  studentLoginForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const password = studentPassword.value.trim();
+    if (STUDENT_PASSWORDS.has(password)) {
+      sessionStorage.setItem(STUDENT_ACCESS_KEY, "1");
+      studentLoginStatus.textContent = "Acceso habilitado.";
+      studentPassword.value = "";
+      showEditor();
+      return;
+    }
+    studentLoginStatus.textContent = "Clave incorrecta.";
+  });
+
+  studentEditForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const payload = {
+      content: studentContent.value.trim(),
+      date: studentDate.value,
+      number: studentNumber.value.trim(),
+    };
+    localStorage.setItem(STUDENT_DATA_KEY, JSON.stringify(payload));
+    updateStudentPreview(payload);
+    studentEditStatus.textContent = "Edición actualizada.";
+  });
 };
 
 const setupCourseButtons = () => {
@@ -2668,7 +2824,7 @@ const ensureToastElement = () => {
 const showToast = (message, toastType = "notice") => {
   const toast = ensureToastElement();
   if (!toast || !notificationMessage) return;
-  toast.dataset.toast = toastType;
+  toast.dataset.toastType = toastType;
   notificationMessage.textContent = safeText(message);
   toast.hidden = false;
 };
@@ -2690,13 +2846,13 @@ const setupNotification = () => {
     sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
     event.preventDefault();
     event.stopPropagation();
-    toast.hidden = true;
+    toast.remove();
   };
 
   document.addEventListener("click", handleDismiss, { capture: true });
   document.addEventListener("touchstart", handleDismiss, {
     capture: true,
-    passive: true,
+    passive: false,
   });
   document.addEventListener(
     "keydown",
@@ -2709,7 +2865,7 @@ const setupNotification = () => {
       const toast = target.closest("[data-toast]") || document.querySelector("[data-toast]");
       if (!toast) return;
       sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
-      toast.hidden = true;
+      toast.remove();
     },
     { capture: true }
   );
@@ -3005,7 +3161,7 @@ const setupContactForm = () => {
   if (!contactForm || !contactStatus) return;
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    contactStatus.textContent = "Mensaje enviado. Yo te responderé pronto.";
+    contactStatus.textContent = "Mensaje enviado. Se responderá pronto.";
     contactForm.reset();
   });
 };
@@ -3250,7 +3406,7 @@ const handleProposalSubmit = (event) => {
     return;
   }
 
-  proposalStatus.textContent = "Propuesta enviada. Yo la revisaré.";
+  proposalStatus.textContent = "Propuesta enviada. Se revisará.";
   proposalForm.reset();
   proposalPreview.hidden = true;
   proposalPreview.innerHTML = "";
@@ -3269,7 +3425,7 @@ const handleProposalSubmit = (event) => {
 
   addNotification({
     type: "Nueva publicación pendiente",
-    message: `Yo recibí una propuesta pendiente: ${proposal.title}.`,
+    message: `Se recibió una propuesta pendiente: ${proposal.title}.`,
     itemId: proposal.id,
   });
 
@@ -3315,6 +3471,10 @@ const setupAdminEvents = () => {
     resetProductForm();
   });
   productImageBtn.addEventListener("click", () => productImage.click());
+  adminDropzone.addEventListener("click", (event) => {
+    if (event.target.closest("button")) return;
+    productImage.click();
+  });
   productImage.addEventListener("change", (event) =>
     handleImageDrop({
       files: event.target.files,
@@ -3322,6 +3482,10 @@ const setupAdminEvents = () => {
       statusEl: productFormStatus,
     })
   );
+  adminDropzone.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    adminDropzone.classList.add("is-dragging");
+  });
   adminDropzone.addEventListener("dragover", (event) => {
     event.preventDefault();
     adminDropzone.classList.add("is-dragging");
@@ -3382,6 +3546,10 @@ const setupProposalEvents = () => {
     return;
   }
   proposalImageBtn.addEventListener("click", () => proposalImage.click());
+  proposalDropzone.addEventListener("click", (event) => {
+    if (event.target.closest("button")) return;
+    proposalImage.click();
+  });
   proposalImage.addEventListener("change", (event) =>
     handleImageDrop({
       files: event.target.files,
@@ -3389,6 +3557,10 @@ const setupProposalEvents = () => {
       statusEl: proposalStatus,
     })
   );
+  proposalDropzone.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    proposalDropzone.classList.add("is-dragging");
+  });
   proposalDropzone.addEventListener("dragover", (event) => {
     event.preventDefault();
     proposalDropzone.classList.add("is-dragging");
@@ -3451,7 +3623,7 @@ const renderProtectedCatalog = () => {
   if (!protectedItems.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "Yo no tengo productos especiales disponibles.";
+    empty.textContent = "No hay productos especiales disponibles.";
     protectedGrid.appendChild(empty);
     return;
   }
@@ -3591,6 +3763,8 @@ const init = () => {
   setupCourseButtons();
   removeRestrictedElements();
   setupTabs();
+  setupMathGame();
+  setupStudentAccess();
   setupAdminTabs();
   setupNotification();
   setupAdminEvents();
@@ -3623,6 +3797,7 @@ const init = () => {
   );
   renderCategoryChips();
   setupCategoryChips();
+  setupCategoryScroller();
   setupOperationChips();
   updateChipSelection(operationChips, "operation", operationSelect?.value || "all");
   renderProducts();
