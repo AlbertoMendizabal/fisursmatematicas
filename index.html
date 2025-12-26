@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
-  <!-- build-id: GOLD_RENT_KEEPUI_20251226_0530 -->
-  <link rel="stylesheet" href="css/styles.css?v=20251226-0620">
+  <!-- build-id: GOLD_RENT_KEEPUI_20251226_0708 -->
+  <link rel="stylesheet" href="css/styles.css?v=20251226-0708">
 </head>
-<body data-build="GOLD_RENT_KEEPUI_20251226_0530">
+<body data-build="GOLD_RENT_KEEPUI_20251226_0708">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
   <header class="site-header">
     <div class="brand-banner">
@@ -52,8 +52,8 @@
             <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
           </div>
           <div class="trust-box reveal">
-            <p><strong>Comisión del 20% por venta</strong></p>
-            <p class="muted">El vendedor conserva su producto. Tras el pago, comprador y vendedor acuerdan día y hora de entrega directamente.</p>
+            <p><strong>Comisión del 20% al confirmarse el trato</strong></p>
+            <p class="muted">La plataforma conecta a las partes. La entrega, revisión y acuerdos se coordinan directamente.</p>
           </div>
         </div>
         <div class="hero-card reveal">
@@ -61,7 +61,7 @@
           <p>Atención rápida y proceso transparente. Productos y servicios listos para mostrarse.</p>
           <ul>
             <li>Catálogo actualizado</li>
-            <li>Pago seguro por acuerdo directo</li>
+            <li>Acuerdos claros por WhatsApp</li>
             <li>Soporte personalizado</li>
           </ul>
         </div>
@@ -90,6 +90,17 @@
             <h3>Contacto directo</h3>
             <p>Notificación por WhatsApp al recibir interés para coordinar detalles.</p>
           </article>
+        </div>
+        <div class="commission-block card reveal" id="commission-info">
+          <h3>Cómo funciona la comisión</h3>
+          <ol class="commission-steps">
+            <li>Publica tu anuncio con fotos, precio y detalles (venta o renta).</li>
+            <li>Cuando alguien muestre interés, se comparte el contacto para que ambas partes coordinen directamente.</li>
+            <li>Vendedor y comprador acuerdan lugar, fecha y condiciones (o modalidad de entrega/renta) por WhatsApp.</li>
+            <li>La comisión es del 20% sobre el monto acordado y se aplica únicamente cuando el trato se confirma.</li>
+            <li>Cursos: sesiones en línea; la coordinación y agenda se define por WhatsApp.</li>
+          </ol>
+          <p class="muted">La plataforma funciona como canal de publicación y conexión. La entrega, revisión del producto y acuerdos se realizan directamente entre las partes.</p>
         </div>
       </div>
     </section>
@@ -204,6 +215,10 @@
                 <input type="date" id="proposalEndDate">
               </label>
             </div>
+            <label class="checkbox">
+              <input type="checkbox" id="proposalTerms" required>
+              <span>Acepto los términos de publicación y comisión (20%). <a href="#commission-info">Ver cómo funciona</a></span>
+            </label>
             <button class="btn btn-primary" type="submit">Enviar propuesta</button>
             <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
           </form>
@@ -212,7 +227,7 @@
             <ul>
               <li>La propuesta queda en revisión</li>
               <li>Se confirma cuando se apruebe</li>
-              <li>Se aplica la comisión acordada al publicarse</li>
+              <li>La comisión del 20% se aplica cuando se confirma el trato</li>
             </ul>
             <p class="muted">Si lo prefieres, envía imágenes y descripción por correo. Si no deseas hacerlo tú mismo, solicita apoyo para subir el producto o servicio.</p>
           </div>
@@ -494,7 +509,7 @@
           </article>
           <article class="card reveal">
             <h3>Entrega coordinada</h3>
-            <p>Después del pago, comprador y vendedor coordinan día y hora directamente.</p>
+            <p>Tras confirmarse el trato, comprador y vendedor coordinan día y hora directamente.</p>
           </article>
           <article class="card reveal">
             <h3>Catálogo curado</h3>
@@ -508,13 +523,11 @@
       <div class="container">
         <div class="section-head reveal">
           <h2>Próximos cursos</h2>
-          <p>Agenda de cursos, juego matemático, acceso estudiantil y contacto directo.</p>
+          <p>Agenda de cursos y contacto directo.</p>
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
             <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-juego" id="tab-juego-btn">Juego matemático</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Acceso estudiantes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn">
@@ -526,67 +539,7 @@
                   <li><strong>Cálculo diferencial</strong><span>Inicio: 19 de enero · Fin: 19 de febrero</span></li>
                   <li><strong>Cálculo integral</strong><span>Inicio: 19 de enero · Fin: 19 de febrero</span></li>
                 </ul>
-                <p class="muted">Solicítame tu lugar con anticipación.</p>
-              </div>
-            </div>
-          </div>
-          <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn" hidden>
-            <div class="panel-grid">
-              <div class="card reveal">
-                <h3>Juego matemático rápido</h3>
-                <p class="muted">Resuelve la operación y comprueba tu resultado.</p>
-                <div class="inline-field">
-                  <span id="mathQuestion" class="chip-inline" aria-live="polite"></span>
-                  <button class="btn btn-ghost" id="newMathQuestion" type="button">Nueva</button>
-                </div>
-                <form id="mathPracticeForm" class="form-grid">
-                  <label class="field">
-                    <span>Tu respuesta</span>
-                    <input type="number" id="mathAnswer" inputmode="numeric" required>
-                  </label>
-                  <button class="btn btn-primary" type="submit">Verificar</button>
-                  <p id="mathPracticeStatus" class="muted" aria-live="polite"></p>
-                </form>
-              </div>
-            </div>
-          </div>
-          <div id="tab-estudiantes" class="tab-panel" role="tabpanel" aria-labelledby="tab-estudiantes-btn" hidden>
-            <div class="panel-grid">
-              <div class="card reveal">
-                <h3>Acceso de estudiantes</h3>
-                <p class="muted">Ingresa la clave para editar contenido rápido.</p>
-                <form id="studentLoginForm" class="form-grid">
-                  <label class="field">
-                    <span>Clave</span>
-                    <input type="password" id="studentPassword" required>
-                  </label>
-                  <button class="btn btn-primary" type="submit">Entrar</button>
-                  <p id="studentLoginStatus" class="muted" aria-live="polite"></p>
-                </form>
-              </div>
-              <div class="card reveal" id="studentEditor" hidden>
-                <h3>Edición rápida</h3>
-                <form id="studentEditForm" class="form-grid">
-                  <label class="field">
-                    <span>Contenido</span>
-                    <input type="text" id="studentContent" placeholder="Tema o nota clave" required>
-                  </label>
-                  <label class="field">
-                    <span>Fecha</span>
-                    <input type="date" id="studentDate" required>
-                  </label>
-                  <label class="field">
-                    <span>Número</span>
-                    <input type="number" id="studentNumber" inputmode="numeric" required>
-                  </label>
-                  <button class="btn btn-ghost" type="submit">Actualizar</button>
-                  <p id="studentEditStatus" class="muted" aria-live="polite"></p>
-                </form>
-                <div class="note-card">
-                  <p><strong>Vista rápida</strong></p>
-                  <p id="studentPreviewContent" class="muted"></p>
-                  <p id="studentPreviewMeta" class="muted"></p>
-                </div>
+                <p class="muted">Solicita tu lugar con anticipación.</p>
               </div>
             </div>
           </div>
@@ -621,6 +574,37 @@
         </div>
       </div>
     </section>
+
+    <section id="faq" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2>Preguntas frecuentes</h2>
+          <p>Respuestas rápidas sobre la publicación y coordinación.</p>
+        </div>
+        <div class="faq-grid">
+          <article class="card reveal">
+            <h3>¿La tienda guarda productos?</h3>
+            <p class="muted">No. La plataforma solo publica y conecta a las partes; no almacena ni retiene bienes.</p>
+          </article>
+          <article class="card reveal">
+            <h3>¿Cómo se entrega o renta?</h3>
+            <p class="muted">Vendedor y comprador acuerdan lugar, fecha y condiciones directamente por WhatsApp.</p>
+          </article>
+          <article class="card reveal">
+            <h3>¿Cuándo se cobra comisión?</h3>
+            <p class="muted">La comisión del 20% se aplica únicamente cuando el trato se confirma.</p>
+          </article>
+          <article class="card reveal">
+            <h3>¿Qué pasa en renta?</h3>
+            <p class="muted">Las condiciones y tiempos de renta se definen entre las partes y se confirman por WhatsApp.</p>
+          </article>
+          <article class="card reveal">
+            <h3>¿Qué pasa con cursos en línea?</h3>
+            <p class="muted">Las sesiones son en línea y la coordinación de agenda se realiza por WhatsApp.</p>
+          </article>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer" id="contacto">
@@ -628,7 +612,7 @@
       <div>
         <h3>LA TIENDA DE ALBERTO</h3>
         <p class="muted">Productos, servicios y asesoría directa.</p>
-        <p class="muted"><strong>Comisión del 20% por venta.</strong> Coordinación directa entre comprador y vendedor.</p>
+        <p class="muted"><strong>Comisión del 20% al confirmarse el trato.</strong> Coordinación directa entre comprador y vendedor.</p>
       </div>
       <div class="footer-contact">
         <span>WhatsApp</span>
@@ -849,6 +833,6 @@
     </div>
   </div>
 
-  <script src="js/scripts.js?v=20251226-0620"></script>
+  <script src="js/scripts.js?v=20251226-0708"></script>
 </body>
 </html>
