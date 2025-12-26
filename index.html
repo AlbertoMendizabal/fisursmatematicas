@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
-  <!-- build-id: GOLD_RENT_KEEPUI_20251226_0708 -->
-  <link rel="stylesheet" href="css/styles.css?v=20251226-0708">
+  <!-- build-id: GOLD_RENT_KEEPUI_20251226_0759 -->
+  <link rel="stylesheet" href="css/styles.css?v=20251226-0759">
 </head>
-<body data-build="GOLD_RENT_KEEPUI_20251226_0708">
+<body data-build="GOLD_RENT_KEEPUI_20251226_0759">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
   <header class="site-header">
     <div class="brand-banner">
@@ -94,13 +94,13 @@
         <div class="commission-block card reveal" id="commission-info">
           <h3>Cómo funciona la comisión</h3>
           <ol class="commission-steps">
-            <li>Publica tu anuncio con fotos, precio y detalles (venta o renta).</li>
-            <li>Cuando alguien muestre interés, se comparte el contacto para que ambas partes coordinen directamente.</li>
-            <li>Vendedor y comprador acuerdan lugar, fecha y condiciones (o modalidad de entrega/renta) por WhatsApp.</li>
-            <li>La comisión es del 20% sobre el monto acordado y se aplica únicamente cuando el trato se confirma.</li>
-            <li>Cursos: sesiones en línea; la coordinación y agenda se define por WhatsApp.</li>
+            <li>Publica tu anuncio (venta o renta) con fotos, precio y detalles.</li>
+            <li>Si alguien se interesa, se realiza el contacto por WhatsApp para coordinar.</li>
+            <li>Cuando la persona interesada confirma por WhatsApp que quiere adquirir o rentar, se solicita la comisión del 20%.</li>
+            <li>El resto del pago y la entrega o reunión se acuerdan directamente entre la persona interesada y el proveedor.</li>
+            <li>La plataforma no recibe productos ni participa en el pago total o la entrega; únicamente conecta a ambas partes.</li>
           </ol>
-          <p class="muted">La plataforma funciona como canal de publicación y conexión. La entrega, revisión del producto y acuerdos se realizan directamente entre las partes.</p>
+          <p class="muted">La página facilita el contacto entre interesado y proveedor, y el acuerdo final se define entre ellos.</p>
         </div>
       </div>
     </section>
@@ -157,8 +157,8 @@
                 <small class="muted">Este contacto solo es visible en ADMIN.</small>
               </label>
               <label class="field">
-                <span>Correo de contacto</span>
-                <input type="email" id="proposalContactEmail" placeholder="correo@ejemplo.com" required>
+                <span>Contacto alterno (WhatsApp)</span>
+                <input type="tel" id="proposalContactEmail" placeholder="Ej. 55 0000 0000" required>
                 <small class="muted">Este contacto solo es visible en ADMIN.</small>
               </label>
             </div>
@@ -217,7 +217,7 @@
             </div>
             <label class="checkbox">
               <input type="checkbox" id="proposalTerms" required>
-              <span>Acepto los términos de publicación y comisión (20%). <a href="#commission-info">Ver cómo funciona</a></span>
+              <span>Entiendo que la plataforma solo publica y conecta; la entrega y el resto del pago se acuerdan entre las partes. Comisión 20% al confirmarse interés por WhatsApp.</span>
             </label>
             <button class="btn btn-primary" type="submit">Enviar propuesta</button>
             <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
@@ -229,7 +229,7 @@
               <li>Se confirma cuando se apruebe</li>
               <li>La comisión del 20% se aplica cuando se confirma el trato</li>
             </ul>
-            <p class="muted">Si lo prefieres, envía imágenes y descripción por correo. Si no deseas hacerlo tú mismo, solicita apoyo para subir el producto o servicio.</p>
+            <p class="muted">Si lo prefieres, envía imágenes y descripción por WhatsApp. Si no deseas hacerlo tú mismo, solicita apoyo para subir el producto o servicio.</p>
           </div>
         </div>
       </div>
@@ -360,13 +360,13 @@
             <button class="btn btn-whatsapp" data-course="Curso intensivo de ChatGPT Plus">Solicitar por WhatsApp</button>
           </article>
           <article class="card course-card reveal">
-            <h3>Lectura guiada: te explico un libro</h3>
+            <h3>Te leo un libro (Círculo de lectura)</h3>
             <p class="muted">Sesiones en línea</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
             </div>
-            <button class="btn btn-whatsapp" data-course="Lectura guiada: te explico un libro">Solicitar por WhatsApp</button>
+            <button class="btn btn-whatsapp" data-course="Te leo un libro (Círculo de lectura)">Solicitar por WhatsApp</button>
           </article>
         </div>
       </div>
@@ -546,14 +546,14 @@
           <div id="tab-contacto" class="tab-panel" role="tabpanel" aria-labelledby="tab-contacto-btn" hidden>
             <div class="contact-grid">
               <form id="contactForm" class="card reveal">
-                <h3>Enviar mensaje</h3>
+                <h3>Mensaje para WhatsApp</h3>
                 <label class="field">
                   <span>Nombre</span>
                   <input type="text" id="contactName" required>
                 </label>
                 <label class="field">
-                  <span>Email</span>
-                  <input type="email" id="contactEmail" required>
+                  <span>WhatsApp</span>
+                  <input type="tel" id="contactWhatsapp" required>
                 </label>
                 <label class="field">
                   <span>Mensaje</span>
@@ -563,7 +563,7 @@
                 <p id="contactStatus" class="muted" aria-live="polite"></p>
               </form>
               <div class="card reveal">
-                <h3>Información básica</h3>
+                <h3>Contáctame por WhatsApp</h3>
                 <p><strong>WhatsApp:</strong> +52 56 1088 5357</p>
                 <p><strong>Horario:</strong> Lunes a sábado, 9:00 - 19:00</p>
                 <p><strong>Ubicación:</strong> Ciudad de México</p>
@@ -583,24 +583,24 @@
         </div>
         <div class="faq-grid">
           <article class="card reveal">
-            <h3>¿La tienda guarda productos?</h3>
-            <p class="muted">No. La plataforma solo publica y conecta a las partes; no almacena ni retiene bienes.</p>
+            <h3>¿La tienda recibe o guarda productos?</h3>
+            <p class="muted">No. Los productos y bienes permanecen con el proveedor. La plataforma solo publica y conecta.</p>
           </article>
           <article class="card reveal">
-            <h3>¿Cómo se entrega o renta?</h3>
-            <p class="muted">Vendedor y comprador acuerdan lugar, fecha y condiciones directamente por WhatsApp.</p>
+            <h3>¿Quién coordina la entrega o la reunión?</h3>
+            <p class="muted">La persona interesada y el proveedor acuerdan lugar, fecha y hora por WhatsApp.</p>
           </article>
           <article class="card reveal">
-            <h3>¿Cuándo se cobra comisión?</h3>
-            <p class="muted">La comisión del 20% se aplica únicamente cuando el trato se confirma.</p>
+            <h3>¿Cuándo se cobra la comisión?</h3>
+            <p class="muted">Solo cuando la persona interesada confirma por WhatsApp que sí desea cerrar el trato. La comisión es del 20%.</p>
           </article>
           <article class="card reveal">
-            <h3>¿Qué pasa en renta?</h3>
-            <p class="muted">Las condiciones y tiempos de renta se definen entre las partes y se confirman por WhatsApp.</p>
+            <h3>¿Cómo funciona el pago del producto o servicio?</h3>
+            <p class="muted">El resto del pago se acuerda y se entrega directamente al proveedor. La plataforma no interviene en ese pago.</p>
           </article>
           <article class="card reveal">
-            <h3>¿Qué pasa con cursos en línea?</h3>
-            <p class="muted">Las sesiones son en línea y la coordinación de agenda se realiza por WhatsApp.</p>
+            <h3>¿Y los cursos?</h3>
+            <p class="muted">Las sesiones son en línea; la agenda y detalles se coordinan por WhatsApp.</p>
           </article>
         </div>
       </div>
@@ -833,6 +833,6 @@
     </div>
   </div>
 
-  <script src="js/scripts.js?v=20251226-0708"></script>
+  <script src="js/scripts.js?v=20251226-0759"></script>
 </body>
 </html>
