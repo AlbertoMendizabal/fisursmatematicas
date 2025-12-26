@@ -1,6 +1,6 @@
 <?php
 session_start();
-$codes=['1991','2025'];
+$codes=['2010','2025'];
 if(isset($_POST['code']) && in_array($_POST['code'],$codes)){
   $_SESSION['auth']=true;
 }
@@ -30,10 +30,10 @@ if(isset($_SESSION['auth'])){
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mensajes</title>
-<!-- build-id: GOLDLOCK_20250308_1200 -->
-<link rel="stylesheet" href="css/styles.css?v=20250308-1200">
+<!-- build-id: GOLD_RENT_KEEPUI_20251226_0530 -->
+<link rel="stylesheet" href="css/styles.css?v=20251226-0530">
 </head>
-<body data-build="GOLDLOCK_20250308_1200">
+<body data-build="GOLD_RENT_KEEPUI_20251226_0530">
 <header class="sticky">
   <div class="container">
     <h1>Mensajes</h1>
@@ -104,7 +104,6 @@ if(isset($_SESSION['auth'])){
   </table>
   <?php if($hasNew): ?>
   <div id="toast" class="toast" aria-live="polite">Nuevas solicitudes</div>
-  <script>setTimeout(()=>document.getElementById('toast').style.display='none',4000);</script>
   <?php endif; ?>
 
 <?php endif; ?>

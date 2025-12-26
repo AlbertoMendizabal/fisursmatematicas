@@ -6,20 +6,22 @@ const LEGACY_APPROVED_KEY = "LTA_APPROVED_V1";
 const LEGACY_PENDING_KEY = "LTA_PENDING_V1";
 const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
 const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
+const NOTIFICATION_LOG_KEY = "LTA_NOTIFICATIONS_V1";
 const WELCOME_DISMISSED_KEY = "toastDismissed";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
-const STUDENT_SESSION_KEY = "LTA_STUDENT_SESSION_V1";
-const STUDENT_CONTENT_KEY = "LTA_STUDENT_CONTENT_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
 const PROTECTED_CATALOG_KEY = "protectedCatalogUnlocked";
-const PROTECTED_CATALOG_PASSWORD = "420";
-const ADMIN_ACCESS_CODES = ["2025", "1991"];
+const PROTECTED_CATALOG_HASH = "db55da3fc3098e9c42311c6013304ff36b19ef73d12ea932054b5ad51df4f49d";
+const ADMIN_ACCESS_HASHES = new Set([
+  "7d12ba56e9f8b3dc64f77c87318c4f37bc12cfbf1a37573cdf3e4fa683f20155",
+  "b2b2f104d32c638903e151a9b20d6e27b41d8c0c84cf8458738f83ca2f1dd744",
+]);
 const ABOUT_KEY = "LTA_ABOUT_V1";
 
 const DEFAULT_NOTIFICATION =
-  "Bienvenido a LA TIENDA DE ALBERTO. Consulta cursos y productos disponibles.";
+  "Yo te doy la bienvenida a LA TIENDA DE ALBERTO. Aquí puedes consultar cursos y productos disponibles.";
 const DEFAULT_ABOUT =
-  "Soy Alberto, creador de La Tienda de Alberto: un espacio pensado para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nMe enfoco en revisar cada propuesta para mantener calidad y confianza. Trabajo de cerca con los vendedores para que sus productos se muestren de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y estudiantes que desean promover asesorías, cursos o artículos especializados. Mi prioridad es que el proceso sea simple, directo y seguro para ambas partes.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarme y con gusto te acompaño en el proceso.";
+  "Soy Alberto, creador de La Tienda de Alberto: un espacio pensado para conectar a personas que ofrecen productos o servicios con quienes buscan soluciones claras y confiables.\n\nYo reviso cada propuesta para mantener calidad y confianza. Trabajo de cerca con los vendedores para que sus productos se muestren de forma profesional, con precios transparentes y fechas claras.\n\nEste proyecto nació para dar visibilidad a emprendedores y personas que desean promover asesorías, cursos o artículos especializados. Mi prioridad es que el proceso sea simple, directo y seguro.\n\nSi tienes dudas o necesitas ayuda para subir tu producto, puedes contactarme y con gusto te acompaño en el proceso.";
 
 const CATEGORIES = [
   {
@@ -32,7 +34,6 @@ const CATEGORIES = [
         children: [
           { id: "venta-casas", name: "Casas" },
           { id: "venta-departamentos", name: "Departamentos" },
-          { id: "venta-cuartos", name: "Cuartos" },
           { id: "venta-terrenos", name: "Terrenos" },
           { id: "venta-oficinas", name: "Oficinas" },
           { id: "venta-locales", name: "Locales" },
@@ -45,8 +46,6 @@ const CATEGORIES = [
         children: [
           { id: "renta-casas", name: "Casas" },
           { id: "renta-departamentos", name: "Departamentos" },
-          { id: "renta-cuartos", name: "Cuartos" },
-          { id: "renta-terrenos", name: "Terrenos" },
           { id: "renta-oficinas", name: "Oficinas" },
           { id: "renta-locales", name: "Locales" },
           { id: "renta-bodegas", name: "Bodegas" },
@@ -65,7 +64,6 @@ const CATEGORIES = [
           { id: "venta-coches", name: "Coches" },
           { id: "venta-motos", name: "Motos" },
           { id: "venta-camionetas", name: "Camionetas" },
-          { id: "venta-transporte", name: "Transporte de trabajo" },
         ],
       },
       {
@@ -74,7 +72,6 @@ const CATEGORIES = [
         children: [
           { id: "renta-coches", name: "Coches" },
           { id: "renta-motos", name: "Motos" },
-          { id: "renta-camionetas", name: "Camionetas" },
         ],
       },
       {
@@ -93,7 +90,6 @@ const CATEGORIES = [
         children: [
           { id: "refacciones", name: "Refacciones" },
           { id: "llantas", name: "Llantas" },
-          { id: "audio-auto", name: "Audio para auto" },
           { id: "cascos-equipo", name: "Cascos y equipo" },
         ],
       },
@@ -107,11 +103,7 @@ const CATEGORIES = [
       { id: "tablets", name: "Tablets" },
       { id: "laptops", name: "Laptops" },
       { id: "computo", name: "Cómputo" },
-      { id: "desktop", name: "Computadoras de escritorio" },
-      { id: "monitores", name: "Monitores" },
-      { id: "consolas", name: "Consolas" },
-      { id: "accesorios", name: "Accesorios" },
-      { id: "audio", name: "Audio y audífonos" },
+      { id: "audio", name: "Audio" },
     ],
   },
   {
@@ -154,7 +146,7 @@ const CATEGORIES = [
       { id: "eventos", name: "Eventos" },
       { id: "asesorias", name: "Asesorías" },
       { id: "reparaciones", name: "Reparaciones" },
-      { id: "otros", name: "Otros servicios" },
+      { id: "otros", name: "Otros" },
     ],
   },
   {
@@ -247,6 +239,7 @@ const notificationForm = document.getElementById("notificationForm");
 const notificationInput = document.getElementById("notificationInput");
 const notificationEnabled = document.getElementById("notificationEnabled");
 const notificationStatus = document.getElementById("notificationStatus");
+const adminNotificationList = document.getElementById("adminNotificationList");
 
 const exportDataBtn = document.getElementById("exportData");
 const importDataBtn = document.getElementById("importDataBtn");
@@ -255,18 +248,6 @@ const settingsStatus = document.getElementById("settingsStatus");
 
 const tabButtons = document.querySelectorAll("[data-tabs] .tab");
 const adminTabButtons = document.querySelectorAll("#adminPanel .tab");
-
-const studentLoginForm = document.getElementById("studentLoginForm");
-const studentPassword = document.getElementById("studentPassword");
-const studentLoginStatus = document.getElementById("studentLoginStatus");
-const studentPanel = document.getElementById("studentPanel");
-const studentLogout = document.getElementById("studentLogout");
-const studentEditForm = document.getElementById("studentEditForm");
-const studentContent = document.getElementById("studentContent");
-const studentDate = document.getElementById("studentDate");
-const studentNumber = document.getElementById("studentNumber");
-const studentSaveStatus = document.getElementById("studentSaveStatus");
-const studentPreview = document.getElementById("studentPreview");
 
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
@@ -306,6 +287,7 @@ let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
 let storedMessages = [];
+let storedNotifications = [];
 let revealObserver = null;
 
 const currencyFormatter = new Intl.NumberFormat("es-MX", {
@@ -328,6 +310,18 @@ const parsePrice = (value) => {
 const formatPrice = (value) => currencyFormatter.format(value ?? 0);
 
 const safeText = (value) => (value ?? "").toString();
+
+const hashText = async (value) => {
+  if (!value || !window.crypto?.subtle) return null;
+  const data = new TextEncoder().encode(value);
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
+
+const isCourseItem = (product) =>
+  product?.type === "Curso" || product?.categoryId === "cursos";
 
 const hasProtectedAccess = () =>
   sessionStorage.getItem(PROTECTED_CATALOG_KEY) === "1";
@@ -360,7 +354,7 @@ const formatOperation = (value) => {
   const labels = {
     venta: "Venta",
     renta: "Renta",
-    venta_renta: "Venta/Renta",
+    venta_renta: "Venta y renta",
   };
   return labels[value] || "Venta";
 };
@@ -584,7 +578,11 @@ const mapLegacySubcategory = (categoryId, subcategoryId, childId = "") => {
       motos: { subcategoryId: "venta", childId: "venta-motos" },
     },
     electronica: {
-      computo: { subcategoryId: "desktop", childId: "" },
+      computo: { subcategoryId: "computo", childId: "" },
+      accesorios: { subcategoryId: "computo", childId: "" },
+      monitores: { subcategoryId: "computo", childId: "" },
+      consolas: { subcategoryId: "computo", childId: "" },
+      audio: { subcategoryId: "audio", childId: "" },
     },
     servicios: {
       asesoria: { subcategoryId: "asesorias", childId: "" },
@@ -664,7 +662,7 @@ const defaultProducts = () => [
     images: [demoImage("Calculadora")],
     category: "Electrónica",
     categoryId: "electronica",
-    subcategoryId: "accesorios",
+    subcategoryId: "computo",
     childId: "",
     type: "Producto",
     status: "publicado",
@@ -702,7 +700,7 @@ const defaultProducts = () => [
     images: [demoImage("Monitor")],
     category: "Electrónica",
     categoryId: "electronica",
-    subcategoryId: "monitores",
+    subcategoryId: "computo",
     childId: "",
     type: "Producto",
     status: "publicado",
@@ -721,7 +719,7 @@ const defaultProducts = () => [
     images: [demoImage("Consola")],
     category: "Electrónica",
     categoryId: "electronica",
-    subcategoryId: "consolas",
+    subcategoryId: "computo",
     childId: "",
     type: "Producto",
     status: "publicado",
@@ -867,7 +865,7 @@ const defaultProducts = () => [
   {
     id: generateId(),
     title: "Departamento en renta · Roma Norte",
-    description: "Departamento amueblado con servicios incluidos, ideal para estudiantes.",
+    description: "Departamento amueblado con servicios incluidos, ideal para quien busca comodidad.",
     price: 8500,
     priceMXN: 8500,
     images: [demoImage("Departamento")],
@@ -1006,10 +1004,10 @@ const defaultProducts = () => [
     price: 4200,
     priceMXN: 4200,
     images: [demoImage("Audio auto")],
-    category: "Vehículos",
-    categoryId: "vehiculos",
-    subcategoryId: "refacciones",
-    childId: "audio-auto",
+    category: "Electrónica",
+    categoryId: "electronica",
+    subcategoryId: "audio",
+    childId: "",
     type: "Producto",
     status: "publicado",
     isProtected: false,
@@ -1022,7 +1020,7 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Renta de sonido para eventos (5 horas)",
     description:
-      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para reuniones, cumpleaños y celebraciones. Coordinamos contigo para que tu evento se escuche claro y con buena presencia.",
+      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para celebraciones y reuniones. Yo te notificaré por WhatsApp cuando haya interesados y coordinaremos los detalles.",
     price: 5000,
     priceMXN: 5000,
     images: [demoImage("Sonido")],
@@ -1079,32 +1077,11 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Renta de sonido para eventos (5 horas)",
-    description:
-      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para reuniones, cumpleaños y celebraciones. Coordinamos contigo para que tu evento se escuche claro y con buena presencia.",
-    price: 5000,
-    priceMXN: 5000,
-    images: [demoImage("Sonido")],
-    category: "Servicios",
-    categoryId: "servicios",
-    subcategoryId: "eventos",
-    childId: "",
-    operation: "renta",
-    type: "Servicio",
-    status: "publicado",
-    isProtected: false,
-    startDate: "",
-    endDate: "",
-    createdAt: Date.now() - 67000,
-    updatedAt: Date.now() - 67000,
-  },
-  {
-    id: generateId(),
-    title: "Ecuaciones diferenciales",
-    description: "Curso enfocado en resolución de ecuaciones diferenciales con ejemplos guiados.",
-    price: 2400,
-    priceMXN: 2400,
-    images: [demoImage("Ecuaciones")],
+    title: "Contar y sumar desde cero",
+    description: "Sesiones en línea con explicación clara y práctica guiada.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Sumar")],
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
@@ -1119,11 +1096,11 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Álgebra lineal",
-    description: "Matrices, vectores y espacios vectoriales con práctica aplicada.",
-    price: 2400,
-    priceMXN: 2400,
-    images: [demoImage("Álgebra")],
+    title: "Sumar, restar, multiplicar y dividir",
+    description: "Sesiones en línea para dominar operaciones fundamentales.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Operaciones")],
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
@@ -1138,11 +1115,30 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Asistencia en exámenes",
-    description: "Preparación y acompañamiento para exámenes de matemáticas.",
-    price: 500,
-    priceMXN: 500,
-    images: [demoImage("Exámenes")],
+    title: "Aritmética",
+    description: "Sesiones en línea con ejemplos paso a paso.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Aritmética")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 76000,
+    updatedAt: Date.now() - 76000,
+  },
+  {
+    id: generateId(),
+    title: "Álgebra",
+    description: "Sesiones en línea con práctica guiada.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Álgebra")],
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
@@ -1157,11 +1153,30 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Aprende a sumar, restar, multiplicar y dividir",
-    description: "Curso base para dominar operaciones fundamentales.",
-    price: 2400,
-    priceMXN: 2400,
-    images: [demoImage("Operaciones")],
+    title: "Cálculo",
+    description: "Sesiones en línea para afianzar conceptos clave.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Cálculo")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 80000,
+    updatedAt: Date.now() - 80000,
+  },
+  {
+    id: generateId(),
+    title: "Cálculo diferencial",
+    description: "Sesiones en línea con ejercicios guiados.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Diferencial")],
     category: "Cursos",
     categoryId: "cursos",
     subcategoryId: "matematicas",
@@ -1176,8 +1191,122 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
-    title: "Curso de ChatGPT Plus",
-    description: "Aprende a usar ChatGPT Plus para tareas, estudio y productividad.",
+    title: "Cálculo integral",
+    description: "Sesiones en línea con resolución detallada.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Integral")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 84000,
+    updatedAt: Date.now() - 84000,
+  },
+  {
+    id: generateId(),
+    title: "Probabilidad",
+    description: "Sesiones en línea con ejemplos prácticos.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Probabilidad")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 86000,
+    updatedAt: Date.now() - 86000,
+  },
+  {
+    id: generateId(),
+    title: "Álgebra lineal",
+    description: "Sesiones en línea con matrices y vectores.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Lineal")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 88000,
+    updatedAt: Date.now() - 88000,
+  },
+  {
+    id: generateId(),
+    title: "Análisis matemático",
+    description: "Sesiones en línea con enfoque conceptual.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Análisis")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 90000,
+    updatedAt: Date.now() - 90000,
+  },
+  {
+    id: generateId(),
+    title: "Ecuaciones diferenciales",
+    description: "Sesiones en línea con ejemplos guiados.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Ecuaciones")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "matematicas",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 92000,
+    updatedAt: Date.now() - 92000,
+  },
+  {
+    id: generateId(),
+    title: "Básicos de ajedrez",
+    description: "Sesiones en línea para aprender movimientos y estrategia básica.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Ajedrez")],
+    category: "Cursos",
+    categoryId: "cursos",
+    subcategoryId: "otros",
+    childId: "",
+    type: "Curso",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 94000,
+    updatedAt: Date.now() - 94000,
+  },
+  {
+    id: generateId(),
+    title: "Curso intensivo de ChatGPT Plus",
+    description: "Sesiones en línea para usar ChatGPT Plus de forma práctica.",
     price: null,
     priceMXN: null,
     images: [demoImage("ChatGPT")],
@@ -1190,27 +1319,27 @@ const defaultProducts = () => [
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 86000,
-    updatedAt: Date.now() - 86000,
+    createdAt: Date.now() - 96000,
+    updatedAt: Date.now() - 96000,
   },
   {
     id: generateId(),
-    title: "Cómo crear tu página web desde cero",
-    description: "Curso intensivo de un día para crear tu sitio paso a paso.",
-    price: 2000,
-    priceMXN: 2000,
-    images: [demoImage("Web")],
+    title: "Lectura guiada: te explico un libro",
+    description: "Sesiones en línea: yo te explico el libro y resolvemos dudas.",
+    price: null,
+    priceMXN: null,
+    images: [demoImage("Lectura")],
     category: "Cursos",
     categoryId: "cursos",
-    subcategoryId: "tecnologia",
+    subcategoryId: "otros",
     childId: "",
     type: "Curso",
     status: "publicado",
     isProtected: false,
     startDate: "",
     endDate: "",
-    createdAt: Date.now() - 90000,
-    updatedAt: Date.now() - 90000,
+    createdAt: Date.now() - 98000,
+    updatedAt: Date.now() - 98000,
   },
   {
     id: generateId(),
@@ -1357,7 +1486,7 @@ const renderMessages = () => {
   if (!storedMessages.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "No hay mensajes privados aún.";
+    empty.textContent = "Yo no tengo mensajes privados aún.";
     adminMessagesList.appendChild(empty);
     return;
   }
@@ -1405,6 +1534,288 @@ const renderMessages = () => {
     if (!message.read) item.classList.add("is-unread");
     adminMessagesList.appendChild(item);
   });
+};
+
+const loadNotifications = () => {
+  const stored = loadFromStorage(NOTIFICATION_LOG_KEY, []);
+  storedNotifications = Array.isArray(stored) ? stored : [];
+};
+
+const saveNotifications = () => {
+  saveToStorage(NOTIFICATION_LOG_KEY, storedNotifications);
+  renderNotifications();
+};
+
+const addNotification = ({ type, message, itemId }) => {
+  const payload = {
+    id: generateId(),
+    type,
+    message,
+    itemId: itemId || "",
+    createdAt: Date.now(),
+  };
+  storedNotifications.unshift(payload);
+  saveNotifications();
+};
+
+const renderNotifications = () => {
+  if (!adminNotificationList) return;
+  adminNotificationList.innerHTML = "";
+  if (!storedNotifications.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "Yo no tengo notificaciones acumuladas.";
+    adminNotificationList.appendChild(empty);
+    return;
+  }
+
+  storedNotifications.forEach((notification) => {
+    const item = document.createElement("div");
+    item.className = "admin-item";
+
+    const info = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = notification.type || "Notificación";
+    const meta = document.createElement("p");
+    meta.className = "muted";
+    const dateText = new Date(notification.createdAt).toLocaleString("es-MX");
+    meta.textContent = `${dateText}${notification.itemId ? ` · ${notification.itemId}` : ""}`;
+    const message = document.createElement("p");
+    message.textContent = notification.message;
+    info.append(title, meta, message);
+
+    const actions = document.createElement("div");
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-ghost";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Eliminar";
+    deleteBtn.addEventListener("click", () => {
+      storedNotifications = storedNotifications.filter((item) => item.id !== notification.id);
+      saveNotifications();
+    });
+    actions.append(deleteBtn);
+
+    item.append(info, actions);
+    adminNotificationList.appendChild(item);
+  });
+};
+
+const buildCarousel = (images, title) => {
+  const list = images?.length ? images : [demoImage("Producto")];
+  const carousel = document.createElement("div");
+  carousel.className = "carousel";
+  carousel.dataset.index = "0";
+  carousel.dataset.images = JSON.stringify(list);
+
+  const img = document.createElement("img");
+  img.className = "carousel-image";
+  img.loading = "lazy";
+  img.src = list[0];
+  img.alt = safeText(title);
+
+  const prev = document.createElement("button");
+  prev.type = "button";
+  prev.className = "carousel-control prev";
+  prev.setAttribute("aria-label", "Imagen anterior");
+  prev.textContent = "‹";
+
+  const next = document.createElement("button");
+  next.type = "button";
+  next.className = "carousel-control next";
+  next.setAttribute("aria-label", "Imagen siguiente");
+  next.textContent = "›";
+
+  const dots = document.createElement("div");
+  dots.className = "carousel-dots";
+  list.forEach((_, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "carousel-dot";
+    dot.dataset.index = index.toString();
+    dot.setAttribute("aria-label", `Ir a imagen ${index + 1}`);
+    if (index === 0) dot.classList.add("active");
+    dots.appendChild(dot);
+  });
+
+  carousel.append(img);
+  if (list.length > 1) {
+    carousel.append(prev, next, dots);
+  }
+
+  const updateCarousel = (nextIndex) => {
+    const imagesRaw = carousel.dataset.images;
+    if (!imagesRaw) return;
+    const parsed = JSON.parse(imagesRaw);
+    if (!parsed.length) return;
+    const length = parsed.length;
+    const normalized = (nextIndex + length) % length;
+    carousel.dataset.index = normalized.toString();
+    img.src = parsed[normalized];
+    dots.querySelectorAll(".carousel-dot").forEach((dot) => {
+      dot.classList.toggle("active", dot.dataset.index === normalized.toString());
+    });
+  };
+
+  carousel.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const index = Number.parseInt(carousel.dataset.index || "0", 10);
+    if (target.classList.contains("prev")) {
+      updateCarousel(index - 1);
+    }
+    if (target.classList.contains("next")) {
+      updateCarousel(index + 1);
+    }
+    if (target.classList.contains("carousel-dot")) {
+      const dotIndex = Number.parseInt(target.dataset.index || "0", 10);
+      updateCarousel(dotIndex);
+    }
+  });
+
+  let touchStartX = 0;
+  carousel.addEventListener("touchstart", (event) => {
+    touchStartX = event.touches[0]?.clientX || 0;
+  });
+  carousel.addEventListener("touchend", (event) => {
+    const endX = event.changedTouches[0]?.clientX || 0;
+    const delta = endX - touchStartX;
+    if (Math.abs(delta) < 40) return;
+    const index = Number.parseInt(carousel.dataset.index || "0", 10);
+    updateCarousel(delta < 0 ? index + 1 : index - 1);
+  });
+
+  return carousel;
+};
+
+const buildCoursePricing = () => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "course-pricing-block";
+  wrapper.innerHTML = `
+    <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
+    <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
+  `;
+  return wrapper;
+};
+
+const buildContactSection = (product) => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "contact-section";
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "btn btn-ghost";
+  toggle.textContent = "Contactarme";
+  const panelId = `contact-${product.id}`;
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-controls", panelId);
+
+  const panel = document.createElement("div");
+  panel.className = "contact-panel";
+  panel.id = panelId;
+  panel.hidden = true;
+
+  const button = document.createElement("a");
+  button.className = "btn btn-whatsapp";
+  button.target = "_blank";
+  button.rel = "noopener";
+  button.textContent = "Contactar por WhatsApp";
+  const priceText = isCourseItem(product)
+    ? "Tarifa: $350 MXN por sesión de 1 hora. Promo: $2,400 MXN por 8 sesiones de 1 hora."
+    : product.price === null || product.price === undefined
+    ? "Precio a consultar."
+    : `Precio: $${product.price} MXN.`;
+  const message = `Hola Alberto. Me interesa este ${
+    product.type?.toLowerCase() || "producto"
+  }: ${product.title}. ${priceText} ¿Cómo procedemos?`;
+  button.href = createWhatsAppUrl(message);
+
+  const messageForm = document.createElement("form");
+  messageForm.className = "message-form";
+  messageForm.innerHTML = `
+    <label class="field">
+      <span>Nombre</span>
+      <input type="text" name="name" required>
+    </label>
+    <label class="field">
+      <span>WhatsApp o email</span>
+      <input type="text" name="contact" required>
+    </label>
+    <label class="field">
+      <span>Mensaje</span>
+      <textarea name="message" rows="3" required></textarea>
+    </label>
+    <button class="btn btn-primary" type="submit">Enviar mensaje</button>
+    <p class="muted small" data-status></p>
+  `;
+
+  messageForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(messageForm);
+    const payload = {
+      id: generateId(),
+      productId: product.id,
+      productTitle: product.title,
+      name: formData.get("name")?.toString().trim() || "",
+      contact: formData.get("contact")?.toString().trim() || "",
+      message: formData.get("message")?.toString().trim() || "",
+      createdAt: Date.now(),
+      read: false,
+    };
+    if (!payload.name || !payload.contact || !payload.message) return;
+    storedMessages.unshift(payload);
+    saveToStorage(MESSAGE_KEY, storedMessages);
+    const status = messageForm.querySelector("[data-status]");
+    if (status) {
+      status.textContent = "Mensaje enviado. Yo te responderé pronto.";
+    }
+    messageForm.reset();
+    renderMessages();
+  });
+
+  const requestForm = document.createElement("form");
+  requestForm.className = "message-form";
+  requestForm.innerHTML = `
+    <label class="field">
+      <span>Solicitar fecha específica</span>
+      <input type="date" name="requestedDate" required>
+    </label>
+    <button class="btn btn-primary" type="submit">Enviar solicitud</button>
+    <p class="muted small" data-status></p>
+  `;
+
+  requestForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(requestForm);
+    const requestedDate = formData.get("requestedDate")?.toString() || "";
+    if (!requestedDate) return;
+    const payload = {
+      id: generateId(),
+      productId: product.id,
+      productTitle: product.title,
+      name: "Solicitud de fecha",
+      contact: "Pendiente de contacto",
+      requestedDate,
+      message: `Solicitud de fecha para ${product.title}.`,
+      createdAt: Date.now(),
+      read: false,
+    };
+    storedMessages.unshift(payload);
+    saveToStorage(MESSAGE_KEY, storedMessages);
+    const status = requestForm.querySelector("[data-status]");
+    if (status) status.textContent = "Solicitud enviada. Yo te contactaré.";
+    requestForm.reset();
+    renderMessages();
+  });
+
+  toggle.addEventListener("click", () => {
+    const isOpen = !panel.hidden;
+    panel.hidden = isOpen;
+    toggle.setAttribute("aria-expanded", (!isOpen).toString());
+  });
+
+  panel.append(button, messageForm, requestForm);
+  wrapper.append(toggle, panel);
+  return wrapper;
 };
 
 const renderProducts = () => {
@@ -1482,10 +1893,7 @@ const renderProducts = () => {
     card.className = "card product-card";
     card.classList.add("reveal");
 
-    const img = document.createElement("img");
-    img.loading = "lazy";
-    img.src = product.images?.[0] || demoImage("Producto");
-    img.alt = safeText(product.title);
+    const carousel = buildCarousel(product.images, product.title);
 
     const title = document.createElement("h3");
     title.textContent = safeText(product.title);
@@ -1519,16 +1927,18 @@ const renderProducts = () => {
 
     const details = document.createElement("p");
     details.className = "muted small";
-    details.textContent = `${formatCondition(product.condition)} · ${formatDelivery(
-      product.deliveryZone
-    )}`;
+    details.textContent = isCourseItem(product)
+      ? "Sesiones en línea"
+      : `${formatCondition(product.condition)} · ${formatDelivery(product.deliveryZone)}`;
 
     const desc = document.createElement("p");
     desc.textContent = safeText(product.description);
 
-    const price = document.createElement("p");
-    price.className = "price";
-    price.textContent = formatPriceLabel(product.price);
+    const priceBlock = isCourseItem(product) ? buildCoursePricing() : document.createElement("p");
+    if (!isCourseItem(product)) {
+      priceBlock.className = "price";
+      priceBlock.textContent = formatPriceLabel(product.price);
+    }
 
     const schedule = document.createElement("p");
     schedule.className = "muted small";
@@ -1538,124 +1948,11 @@ const renderProducts = () => {
       schedule.textContent = [start, end].filter(Boolean).join(" · ");
     }
 
-    const gallery = document.createElement("div");
-    gallery.className = "mini-gallery";
-    (product.images || []).slice(0, 4).forEach((image) => {
-      const thumb = document.createElement("img");
-      thumb.src = image;
-      thumb.alt = `Vista de ${product.title}`;
-      gallery.appendChild(thumb);
-    });
+    const contactSection = buildContactSection(product);
 
-    const button = document.createElement("a");
-    button.className = "btn btn-whatsapp";
-    button.target = "_blank";
-    button.rel = "noopener";
-    button.textContent = "Comprar por WhatsApp";
-    const priceText =
-      product.price === null || product.price === undefined
-        ? "Precio a consultar"
-        : `Precio: $${product.price} MXN`;
-    const message = `Hola Alberto. Me interesa este ${
-      product.type?.toLowerCase() || "producto"
-    }: ${product.title}. ${priceText}. ${formatCondition(
-      product.condition
-    )}. ${formatDelivery(product.deliveryZone)}. ¿Sigue disponible? ¿Cómo procedemos?`;
-    button.href = createWhatsAppUrl(message);
-
-    const messageToggle = document.createElement("button");
-    messageToggle.className = "btn btn-ghost";
-    messageToggle.type = "button";
-    messageToggle.textContent = "Enviar mensaje privado";
-
-    const messageForm = document.createElement("form");
-    messageForm.className = "message-form";
-    messageForm.hidden = true;
-    messageForm.innerHTML = `
-      <label class="field">
-        <span>Nombre</span>
-        <input type="text" name="name" required>
-      </label>
-      <label class="field">
-        <span>WhatsApp o email</span>
-        <input type="text" name="contact" required>
-      </label>
-      <label class="field">
-        <span>Mensaje</span>
-        <textarea name="message" rows="3" required></textarea>
-      </label>
-      <button class="btn btn-primary" type="submit">Enviar mensaje</button>
-      <p class="muted small" data-status></p>
-    `;
-
-    messageToggle.addEventListener("click", () => {
-      messageForm.hidden = !messageForm.hidden;
-    });
-
-    messageForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const formData = new FormData(messageForm);
-      const payload = {
-        id: generateId(),
-        productId: product.id,
-        productTitle: product.title,
-        name: formData.get("name")?.toString().trim() || "",
-        contact: formData.get("contact")?.toString().trim() || "",
-        message: formData.get("message")?.toString().trim() || "",
-        createdAt: Date.now(),
-        read: false,
-      };
-      if (!payload.name || !payload.contact || !payload.message) return;
-      storedMessages.unshift(payload);
-      saveToStorage(MESSAGE_KEY, storedMessages);
-      const status = messageForm.querySelector("[data-status]");
-      if (status) {
-        status.textContent = "Mensaje enviado. Te responderemos pronto.";
-      }
-      messageForm.reset();
-      renderMessages();
-    });
-
-    const requestForm = document.createElement("form");
-    requestForm.className = "message-form";
-    requestForm.innerHTML = `
-      <label class="field">
-        <span>Solicitar fecha específica</span>
-        <input type="date" name="requestedDate" required>
-      </label>
-      <button class="btn btn-primary" type="submit">Enviar solicitud</button>
-      <p class="muted small" data-status></p>
-    `;
-
-    requestForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const formData = new FormData(requestForm);
-      const requestedDate = formData.get("requestedDate")?.toString() || "";
-      if (!requestedDate) return;
-      const payload = {
-        id: generateId(),
-        productId: product.id,
-        productTitle: product.title,
-        name: "Solicitud de fecha",
-        contact: "Pendiente de contacto",
-        requestedDate,
-        message: `Solicitud de fecha para ${product.title}.`,
-        createdAt: Date.now(),
-        read: false,
-      };
-      storedMessages.unshift(payload);
-      saveToStorage(MESSAGE_KEY, storedMessages);
-      const status = requestForm.querySelector("[data-status]");
-      if (status) status.textContent = "Solicitud enviada. Te contactaremos.";
-      requestForm.reset();
-      renderMessages();
-    });
-
-    card.append(img);
-    if (gallery.childElementCount) card.append(gallery);
-    card.append(meta, title, details, desc, price);
+    card.append(carousel, meta, title, details, desc, priceBlock);
     if (schedule.textContent) card.append(schedule);
-    card.append(button, messageToggle, messageForm, requestForm);
+    card.append(contactSection);
     productGrid.appendChild(card);
   });
 
@@ -1668,7 +1965,7 @@ const updateAdminList = () => {
   if (!approvedProducts.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "No hay productos aprobados aún.";
+    empty.textContent = "Yo no tengo productos aprobados aún.";
     adminProductList.appendChild(empty);
     return;
   }
@@ -1726,7 +2023,7 @@ const updatePendingList = () => {
   if (!pendingProposals.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "No hay propuestas pendientes.";
+    empty.textContent = "Yo no tengo propuestas pendientes.";
     adminPendingList.appendChild(empty);
     return;
   }
@@ -2006,13 +2303,55 @@ const renderPreviewGrid = (previewEl, images) => {
   const list = images || [];
   previewEl.innerHTML = "";
   list.forEach((image, index) => {
+    const item = document.createElement("div");
+    item.className = "preview-item";
+
     const img = document.createElement("img");
     img.src = image;
     img.alt = `Imagen ${index + 1}`;
-    previewEl.appendChild(img);
+
+    const controls = document.createElement("div");
+    controls.className = "preview-controls";
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.className = "btn btn-ghost";
+    upBtn.dataset.move = "up";
+    upBtn.dataset.index = index.toString();
+    upBtn.textContent = "Subir";
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.className = "btn btn-ghost";
+    downBtn.dataset.move = "down";
+    downBtn.dataset.index = index.toString();
+    downBtn.textContent = "Bajar";
+    controls.append(upBtn, downBtn);
+
+    item.append(img, controls);
+    previewEl.appendChild(item);
   });
   previewEl.dataset.images = JSON.stringify(list);
   previewEl.hidden = list.length === 0;
+};
+
+const setupPreviewReorder = (previewEl) => {
+  if (!previewEl) return;
+  previewEl.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest("button[data-move]");
+    if (!button) return;
+    const direction = button.dataset.move;
+    const index = Number.parseInt(button.dataset.index || "0", 10);
+    const images = getPreviewImages(previewEl);
+    const nextIndex = direction === "up" ? index - 1 : index + 1;
+    if (Number.isNaN(nextIndex) || nextIndex < 0 || nextIndex >= images.length) {
+      return;
+    }
+    const updated = [...images];
+    const [moved] = updated.splice(index, 1);
+    updated.splice(nextIndex, 0, moved);
+    renderPreviewGrid(previewEl, updated);
+  });
 };
 
 const getPreviewImages = (previewEl) => {
@@ -2043,7 +2382,7 @@ const setupCourseButtons = () => {
   courseButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const course = button.dataset.course;
-      const message = `Hola Alberto. Quiero inscribirme al curso: ${course}. Paquete: 8 sesiones de 1 hora. Precio: $2400 MXN. ¿Me confirmas horarios y forma de pago?`;
+      const message = `Hola Alberto. Quiero inscribirme al curso: ${course}. Tarifa: $350 MXN por sesión de 1 hora. Promo: $2,400 MXN por 8 sesiones de 1 hora. ¿Me confirmas horarios y forma de pago?`;
       window.open(createWhatsAppUrl(message), "_blank", "noopener");
     });
   });
@@ -2351,7 +2690,7 @@ const setupNotification = () => {
     sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
     event.preventDefault();
     event.stopPropagation();
-    toast.remove();
+    toast.hidden = true;
   };
 
   document.addEventListener("click", handleDismiss, { capture: true });
@@ -2370,7 +2709,7 @@ const setupNotification = () => {
       const toast = target.closest("[data-toast]") || document.querySelector("[data-toast]");
       if (!toast) return;
       sessionStorage.setItem(WELCOME_DISMISSED_KEY, "1");
-      toast.remove();
+      toast.hidden = true;
     },
     { capture: true }
   );
@@ -2413,10 +2752,11 @@ const closeAdminModal = () => {
   adminPassword.value = "";
 };
 
-const handleAdminLogin = (event) => {
+const handleAdminLogin = async (event) => {
   event.preventDefault();
   const value = adminPassword.value.trim();
-  if (ADMIN_ACCESS_CODES.includes(value)) {
+  const hash = await hashText(value);
+  if (hash && ADMIN_ACCESS_HASHES.has(hash)) {
     setAdminSession();
     adminLogin.hidden = true;
     adminPanel.hidden = false;
@@ -2589,6 +2929,10 @@ const handleNotificationSave = (event) => {
   }
   saveToStorage(NOTIFICATION_TEXT_KEY, message);
   saveToStorage(NOTIFICATION_ENABLED_KEY, notificationEnabled.checked);
+  addNotification({
+    type: "Notificación manual",
+    message,
+  });
   notificationStatus.textContent = "Notificación actualizada.";
 };
 
@@ -2599,6 +2943,7 @@ const handleExport = () => {
     rejected: rejectedProposals,
     notification: loadFromStorage(NOTIFICATION_TEXT_KEY, DEFAULT_NOTIFICATION),
     notificationEnabled: loadFromStorage(NOTIFICATION_ENABLED_KEY, true),
+    notifications: storedNotifications,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {
     type: "application/json",
@@ -2644,6 +2989,10 @@ const handleImport = (event) => {
         saveToStorage(NOTIFICATION_ENABLED_KEY, data.notificationEnabled);
         notificationEnabled.checked = data.notificationEnabled;
       }
+      if (Array.isArray(data.notifications)) {
+        storedNotifications = data.notifications;
+        saveNotifications();
+      }
       settingsStatus.textContent = "Datos importados correctamente.";
     } catch (error) {
       settingsStatus.textContent = "Archivo inválido.";
@@ -2652,75 +3001,11 @@ const handleImport = (event) => {
   reader.readAsText(file);
 };
 
-const setStudentSession = () => {
-  const expiresAt = Date.now() + 2 * 60 * 60 * 1000;
-  sessionStorage.setItem(STUDENT_SESSION_KEY, JSON.stringify({ expiresAt }));
-};
-
-const hasStudentSession = () => {
-  const stored = sessionStorage.getItem(STUDENT_SESSION_KEY);
-  if (!stored) return false;
-  try {
-    const data = JSON.parse(stored);
-    return data.expiresAt > Date.now();
-  } catch (error) {
-    return false;
-  }
-};
-
-const loadStudentContent = () => {
-  const data = loadFromStorage(STUDENT_CONTENT_KEY, {
-    content: "Bienvenido al panel de estudiantes.",
-    date: "",
-    number: "",
-  });
-  studentContent.value = data.content;
-  studentDate.value = data.date;
-  studentNumber.value = data.number;
-  studentPreview.textContent = `${data.content} ${data.date ? `· ${data.date}` : ""} ${
-    data.number ? `· ${data.number}` : ""
-  }`;
-};
-
-const handleStudentLogin = (event) => {
-  event.preventDefault();
-  const value = studentPassword.value.trim();
-  if (value === "2025" || value === "1991") {
-    setStudentSession();
-    studentPanel.hidden = false;
-    studentLoginStatus.textContent = "Ingreso correcto.";
-    loadStudentContent();
-    registerReveals(studentPanel);
-  } else {
-    studentLoginStatus.textContent = "Contraseña incorrecta.";
-  }
-};
-
-const handleStudentLogout = () => {
-  sessionStorage.removeItem(STUDENT_SESSION_KEY);
-  studentPanel.hidden = true;
-  studentLoginStatus.textContent = "Sesión cerrada.";
-};
-
-const handleStudentSave = (event) => {
-  event.preventDefault();
-  const payload = {
-    content: studentContent.value.trim(),
-    date: studentDate.value,
-    number: studentNumber.value,
-  };
-  saveToStorage(STUDENT_CONTENT_KEY, payload);
-  studentPreview.textContent = `${payload.content} ${payload.date ? `· ${payload.date}` : ""} ${
-    payload.number ? `· ${payload.number}` : ""
-  }`;
-  studentSaveStatus.textContent = "Cambios guardados.";
-};
-
 const setupContactForm = () => {
   if (!contactForm || !contactStatus) return;
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    contactStatus.textContent = "Mensaje enviado. Te contactaremos pronto.";
+    contactStatus.textContent = "Mensaje enviado. Yo te responderé pronto.";
     contactForm.reset();
   });
 };
@@ -2965,7 +3250,7 @@ const handleProposalSubmit = (event) => {
     return;
   }
 
-  proposalStatus.textContent = "Propuesta enviada. Será revisada.";
+  proposalStatus.textContent = "Propuesta enviada. Yo la revisaré.";
   proposalForm.reset();
   proposalPreview.hidden = true;
   proposalPreview.innerHTML = "";
@@ -2982,8 +3267,14 @@ const handleProposalSubmit = (event) => {
   }
   updatePendingList();
 
+  addNotification({
+    type: "Nueva publicación pendiente",
+    message: `Yo recibí una propuesta pendiente: ${proposal.title}.`,
+    itemId: proposal.id,
+  });
+
   if (hasAdminSession()) {
-    showToast("Nuevo producto/servicio por validar", "admin");
+    showToast("Nueva propuesta pendiente por validar", "admin");
   }
 };
 
@@ -3160,17 +3451,14 @@ const renderProtectedCatalog = () => {
   if (!protectedItems.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
-    empty.textContent = "No hay productos especiales disponibles.";
+    empty.textContent = "Yo no tengo productos especiales disponibles.";
     protectedGrid.appendChild(empty);
     return;
   }
   protectedItems.forEach((product) => {
     const card = document.createElement("article");
     card.className = "card product-card protected-card-item";
-    const img = document.createElement("img");
-    img.loading = "lazy";
-    img.src = product.images?.[0] || demoImage("Especial");
-    img.alt = safeText(product.title);
+    const carousel = buildCarousel(product.images, product.title);
 
     const title = document.createElement("h3");
     title.textContent = safeText(product.title);
@@ -3180,10 +3468,13 @@ const renderProtectedCatalog = () => {
     const typeTag = document.createElement("span");
     typeTag.className = "tag";
     typeTag.textContent = product.type || "Producto";
+    const operationTag = document.createElement("span");
+    operationTag.className = "tag tag-highlight";
+    operationTag.textContent = formatOperation(product.operation);
     const categoryTag = document.createElement("span");
     categoryTag.className = "tag tag-alt";
     categoryTag.textContent = getCategoryLabel(product);
-    meta.append(typeTag, categoryTag);
+    meta.append(typeTag, operationTag, categoryTag);
     const subcategoryLabel = getSubcategoryLabel(product);
     if (subcategoryLabel) {
       const subTag = document.createElement("span");
@@ -3192,15 +3483,25 @@ const renderProtectedCatalog = () => {
       meta.append(subTag);
     }
 
+    const details = document.createElement("p");
+    details.className = "muted small";
+    details.textContent = isCourseItem(product)
+      ? "Sesiones en línea"
+      : `${formatCondition(product.condition)} · ${formatDelivery(product.deliveryZone)}`;
+
     const desc = document.createElement("p");
     desc.className = "muted";
     desc.textContent = safeText(product.description);
 
-    const price = document.createElement("p");
-    price.className = "price";
-    price.textContent = formatPriceLabel(product.price);
+    const priceBlock = isCourseItem(product) ? buildCoursePricing() : document.createElement("p");
+    if (!isCourseItem(product)) {
+      priceBlock.className = "price";
+      priceBlock.textContent = formatPriceLabel(product.price);
+    }
 
-    card.append(img, meta, title, desc, price);
+    const contactSection = buildContactSection(product);
+
+    card.append(carousel, meta, title, details, desc, priceBlock, contactSection);
     protectedGrid.appendChild(card);
   });
   registerReveals(protectedGrid);
@@ -3226,10 +3527,11 @@ const setupProtectedAccess = () => {
     });
   }
   if (protectedAccessForm) {
-    protectedAccessForm.addEventListener("submit", (event) => {
+    protectedAccessForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const value = protectedPassword.value.trim();
-      if (value === PROTECTED_CATALOG_PASSWORD) {
+      const hash = await hashText(value);
+      if (hash && hash === PROTECTED_CATALOG_HASH) {
         setProtectedAccess();
         if (protectedAccessStatus) {
           protectedAccessStatus.textContent = "Acceso concedido.";
@@ -3266,6 +3568,7 @@ const setupAboutForm = () => {
 };
 
 const initializeNotificationForm = () => {
+  if (!notificationInput || !notificationEnabled) return;
   notificationInput.value = loadFromStorage(
     NOTIFICATION_TEXT_KEY,
     DEFAULT_NOTIFICATION
@@ -3278,11 +3581,13 @@ const init = () => {
   loadPending();
   loadRejected();
   loadMessages();
+  loadNotifications();
   renderAbout();
   setupReveal();
   updateAdminList();
   updatePendingList();
   renderMessages();
+  renderNotifications();
   setupCourseButtons();
   removeRestrictedElements();
   setupTabs();
@@ -3294,6 +3599,8 @@ const init = () => {
   setupAboutForm();
   initCoursesPage();
   initializeNotificationForm();
+  setupPreviewReorder(productPreview);
+  setupPreviewReorder(proposalPreview);
   renderCatalogMenu();
   setupCatalogMenu();
   populateCategorySelect(categorySelect, { includeAll: true });
@@ -3350,9 +3657,6 @@ const init = () => {
     );
     renderProducts();
   });
-  studentLoginForm?.addEventListener("submit", handleStudentLogin);
-  studentLogout?.addEventListener("click", handleStudentLogout);
-  studentEditForm?.addEventListener("submit", handleStudentSave);
   setupContactForm();
   if (proposalDescCount) {
     proposalDescCount.textContent = "220 caracteres restantes";
@@ -3366,11 +3670,6 @@ const init = () => {
   }
   if (conditionSelect) {
     conditionSelect.disabled = !hasAdminSession();
-  }
-
-  if (hasStudentSession()) {
-    if (studentPanel) studentPanel.hidden = false;
-    loadStudentContent();
   }
 
 };
