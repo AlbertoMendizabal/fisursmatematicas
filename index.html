@@ -4,16 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
-  <link rel="stylesheet" href="css/styles.css?v=20250305-02">
+  <!-- build-id: GOLDLOCK_20250308_1200 -->
+  <link rel="stylesheet" href="css/styles.css?v=20250308-1200">
 </head>
-<body>
+<body data-build="GOLDLOCK_20250308_1200">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
   <header class="site-header">
     <div class="brand-banner">
       <div class="container brand-banner-inner">
         <span class="brand-kicker">Tienda &amp; Servicios</span>
         <h1>LA TIENDA DE ALBERTO</h1>
-        <p class="brand-subtitle">Productos y servicios verificados en un solo lugar.</p>
+        <p class="brand-subtitle">Cursos de matemáticas, productos y servicios verificados en un solo lugar.</p>
       </div>
     </div>
     <div class="container header-grid">
@@ -44,8 +45,8 @@
       <div class="container hero-grid">
         <div class="reveal">
           <p class="eyebrow">Confianza y claridad para aprender y vender</p>
-          <h2>Tu tienda confiable para anunciar productos y servicios.</h2>
-          <p class="lead">Publica tus propuestas, recibe solicitudes y coordina ventas con claridad. Comunicación directa por WhatsApp en cada paso.</p>
+          <h2>Tu tienda confiable para cursos de matemáticas, productos y servicios.</h2>
+          <p class="lead">Publica tus propuestas, recibe solicitudes y coordina ventas o rentas con claridad. Comunicación directa por WhatsApp en cada paso.</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="#cursos">Ver cursos</a>
             <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
@@ -115,6 +116,15 @@
                 <option value="Producto">Producto</option>
                 <option value="Servicio">Servicio</option>
                 <option value="Curso">Curso</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Operación</span>
+              <select id="proposalOperation" required>
+                <option value="">Selecciona</option>
+                <option value="venta">Venta</option>
+                <option value="renta">Renta</option>
+                <option value="venta_renta">Venta/Renta</option>
               </select>
             </label>
             <label class="field">
@@ -264,6 +274,12 @@
             <input type="search" id="searchInput" placeholder="Buscar por título o descripción">
           </label>
         </div>
+        <div class="filter-chips" id="operationChips" role="group" aria-label="Operación">
+          <button class="chip chip-active" type="button" data-operation="all">Todo</button>
+          <button class="chip" type="button" data-operation="venta">Venta</button>
+          <button class="chip" type="button" data-operation="renta">Renta</button>
+          <button class="chip" type="button" data-operation="venta_renta">Venta/Renta</button>
+        </div>
         <div class="filters">
           <label class="field">
             <span>Categoría</span>
@@ -284,6 +300,15 @@
               <option value="Producto">Producto</option>
               <option value="Servicio">Servicio</option>
               <option value="Curso">Curso</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Operación</span>
+            <select id="operationSelect">
+              <option value="all">Todo</option>
+              <option value="venta">Venta</option>
+              <option value="renta">Renta</option>
+              <option value="venta_renta">Venta/Renta</option>
             </select>
           </label>
           <label class="field">
@@ -311,11 +336,8 @@
             </select>
           </label>
         </div>
-        <div class="category-strip" aria-hidden="true">
-          <div class="category-track">
-            <span>Inmuebles · Vehículos · Electrónica · Hogar y muebles · Moda y accesorios · Salud y belleza · Servicios · Cursos ·</span>
-            <span>Inmuebles · Vehículos · Electrónica · Hogar y muebles · Moda y accesorios · Salud y belleza · Servicios · Cursos ·</span>
-          </div>
+        <div class="chip-scroller">
+          <div class="chip-track" id="categoryChips" role="list" aria-label="Categorías destacadas"></div>
         </div>
         <div id="productGrid" class="card-grid"></div>
         <div class="protected-section">
@@ -383,11 +405,44 @@
         </div>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="true" aria-controls="tab-juego" id="tab-juego-btn">Juego matemático</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-estudiantes" id="tab-estudiantes-btn">Estudiantes</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
-          <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn">
+          <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn">
+            <div class="panel-grid">
+              <div class="card reveal">
+                <h3>Juego rápido de matemáticas</h3>
+                <p>Resuelve operaciones para entrenar tu mente antes de clase.</p>
+                <form id="mathGameForm" class="math-game">
+                  <div class="math-question" id="mathGameQuestion" aria-live="polite"></div>
+                  <label class="field">
+                    <span>Respuesta</span>
+                    <input type="number" id="mathGameAnswer" required inputmode="numeric">
+                  </label>
+                  <div class="math-actions">
+                    <button class="btn btn-primary" type="submit">Comprobar</button>
+                    <button class="btn btn-ghost" id="mathGameNew" type="button">Nuevo reto</button>
+                  </div>
+                  <p id="mathGameFeedback" class="muted" aria-live="polite"></p>
+                </form>
+                <div class="game-score">
+                  <span>Racha:</span>
+                  <strong id="mathGameScore">0</strong>
+                </div>
+              </div>
+              <div class="card reveal">
+                <h3>¿Por qué jugar?</h3>
+                <ul>
+                  <li>Mejora velocidad mental.</li>
+                  <li>Refuerza operaciones básicas.</li>
+                  <li>Te prepara para los cursos de cálculo y álgebra.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn" hidden>
             <div class="panel-grid">
               <div class="upcoming-card card reveal">
                 <h3>Próximos cursos</h3>
@@ -404,7 +459,7 @@
             <div class="student-grid">
               <div class="card reveal">
                 <h3>Panel de estudiantes</h3>
-                <p>Ingresa tu contraseña para editar contenido rápido.</p>
+                <p>Ingresa tu contraseña (2025 o 1991) para editar contenido rápido.</p>
                 <form id="studentLoginForm">
                   <label class="field">
                     <span>Contraseña</span>
@@ -558,6 +613,15 @@
               </select>
             </label>
             <label class="field">
+              <span>Operación</span>
+              <select id="productOperation" required>
+                <option value="">Selecciona</option>
+                <option value="venta">Venta</option>
+                <option value="renta">Renta</option>
+                <option value="venta_renta">Venta/Renta</option>
+              </select>
+            </label>
+            <label class="field">
               <span>Estado del producto</span>
               <select id="productCondition" required>
                 <option value="">Selecciona</option>
@@ -689,6 +753,6 @@
     </div>
   </div>
 
-  <script src="js/scripts.js?v=20250305-02"></script>
+  <script src="js/scripts.js?v=20250308-1200"></script>
 </body>
 </html>

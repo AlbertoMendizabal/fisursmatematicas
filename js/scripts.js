@@ -46,6 +46,7 @@ const CATEGORIES = [
           { id: "renta-casas", name: "Casas" },
           { id: "renta-departamentos", name: "Departamentos" },
           { id: "renta-cuartos", name: "Cuartos" },
+          { id: "renta-terrenos", name: "Terrenos" },
           { id: "renta-oficinas", name: "Oficinas" },
           { id: "renta-locales", name: "Locales" },
           { id: "renta-bodegas", name: "Bodegas" },
@@ -73,6 +74,7 @@ const CATEGORIES = [
         children: [
           { id: "renta-coches", name: "Coches" },
           { id: "renta-motos", name: "Motos" },
+          { id: "renta-camionetas", name: "Camionetas" },
         ],
       },
       {
@@ -178,6 +180,7 @@ const proposalImageBtn = document.getElementById("proposalImageBtn");
 const proposalImage = document.getElementById("proposalImage");
 const proposalPreview = document.getElementById("proposalPreview");
 const proposalType = document.getElementById("proposalType");
+const proposalOperation = document.getElementById("proposalOperation");
 const proposalCondition = document.getElementById("proposalCondition");
 const proposalDelivery = document.getElementById("proposalDelivery");
 const proposalContactPhone = document.getElementById("proposalContactPhone");
@@ -219,6 +222,7 @@ const productPreview = document.getElementById("productPreview");
 const adminDropzone = document.getElementById("adminDropzone");
 const adminWhatsApp = document.getElementById("adminWhatsApp");
 const productType = document.getElementById("productType");
+const productOperation = document.getElementById("productOperation");
 const productCondition = document.getElementById("productCondition");
 const productDelivery = document.getElementById("productDelivery");
 const productCategory = document.getElementById("productCategory");
@@ -265,13 +269,22 @@ const studentPreview = document.getElementById("studentPreview");
 
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
+const mathGameForm = document.getElementById("mathGameForm");
+const mathGameQuestion = document.getElementById("mathGameQuestion");
+const mathGameAnswer = document.getElementById("mathGameAnswer");
+const mathGameFeedback = document.getElementById("mathGameFeedback");
+const mathGameScore = document.getElementById("mathGameScore");
+const mathGameNew = document.getElementById("mathGameNew");
 const categorySelect = document.getElementById("categorySelect");
 const subcategorySelect = document.getElementById("subcategorySelect");
 const childcategorySelect = document.getElementById("childcategorySelect");
 const typeSelect = document.getElementById("typeSelect");
+const operationSelect = document.getElementById("operationSelect");
 const priceMin = document.getElementById("priceMin");
 const priceMax = document.getElementById("priceMax");
 const conditionSelect = document.getElementById("conditionSelect");
+const operationChips = document.getElementById("operationChips");
+const categoryChips = document.getElementById("categoryChips");
 const catalogMenuToggle = document.getElementById("catalogMenuToggle");
 const catalogMenu = document.getElementById("catalogMenu");
 const catalogMenuCategories = document.getElementById("catalogMenuCategories");
@@ -348,6 +361,15 @@ const formatCondition = (value) => (value ? `Estado: ${value}` : "Estado: Sin es
 const formatDelivery = (value) =>
   value ? `Entrega: ${value}` : "Entrega: Sin especificar";
 
+const formatOperation = (value) => {
+  const labels = {
+    venta: "Venta",
+    renta: "Renta",
+    venta_renta: "Venta/Renta",
+  };
+  return labels[value] || "Venta";
+};
+
 const formatPriceLabel = (value) =>
   value === null || value === undefined ? "Precio: a consultar" : formatPrice(value);
 
@@ -383,6 +405,66 @@ const populateCategorySelect = (selectEl, { includeAll = false } = {}) => {
     option.value = category.id;
     option.textContent = category.name;
     selectEl.appendChild(option);
+  });
+};
+
+const updateChipSelection = (container, datasetKey, value) => {
+  if (!container) return;
+  const buttons = container.querySelectorAll(".chip");
+  buttons.forEach((button) => {
+    const matches = button.dataset[datasetKey] === value;
+    button.classList.toggle("chip-active", matches);
+  });
+};
+
+const renderCategoryChips = () => {
+  if (!categoryChips || !categorySelect) return;
+  categoryChips.innerHTML = "";
+  const allButton = document.createElement("button");
+  allButton.type = "button";
+  allButton.className = "chip";
+  allButton.dataset.category = "all";
+  allButton.textContent = "Todas";
+  categoryChips.appendChild(allButton);
+  CATEGORIES.forEach((category) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "chip";
+    button.dataset.category = category.id;
+    button.textContent = category.name;
+    categoryChips.appendChild(button);
+  });
+  updateChipSelection(categoryChips, "category", categorySelect.value || "all");
+};
+
+const setupCategoryChips = () => {
+  if (!categoryChips || !categorySelect) return;
+  categoryChips.addEventListener("click", (event) => {
+    const target = event.target.closest("button[data-category]");
+    if (!target) return;
+    const value = target.dataset.category || "all";
+    categorySelect.value = value;
+    populateSubcategorySelect(subcategorySelect, categorySelect.value, { includeAll: true });
+    populateChildcategorySelect(
+      childcategorySelect,
+      categorySelect.value,
+      subcategorySelect?.value,
+      { includeAll: true }
+    );
+    updateChipSelection(categoryChips, "category", value);
+    renderProducts();
+  });
+};
+
+const setupOperationChips = () => {
+  if (!operationChips) return;
+  operationChips.addEventListener("click", (event) => {
+    const target = event.target.closest("button[data-operation]");
+    if (!target) return;
+    const value = target.dataset.operation || "all";
+    if (operationSelect) operationSelect.value = value;
+    updateChipSelection(operationChips, "operation", value);
+    renderProducts();
   });
 };
 
@@ -999,6 +1081,27 @@ const defaultProducts = () => [
   },
   {
     id: generateId(),
+    title: "Renta de sonido para eventos (5 horas)",
+    description:
+      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para celebraciones y reuniones. Te notificamos y coordinamos contigo para que todo suene claro y con buena presencia.",
+    price: 5000,
+    priceMXN: 5000,
+    images: [demoImage("Sonido")],
+    category: "Servicios",
+    categoryId: "servicios",
+    subcategoryId: "eventos",
+    childId: "",
+    operation: "renta",
+    type: "Servicio",
+    status: "publicado",
+    isProtected: false,
+    startDate: "",
+    endDate: "",
+    createdAt: Date.now() - 67000,
+    updatedAt: Date.now() - 67000,
+  },
+  {
+    id: generateId(),
     title: "Ecuaciones diferenciales",
     description: "Curso enfocado en resolución de ecuaciones diferenciales con ejemplos guiados.",
     price: null,
@@ -1130,7 +1233,10 @@ const defaultProducts = () => [
     createdAt: Date.now() - 94000,
     updatedAt: Date.now() - 94000,
   },
-];
+].map((item) => ({
+  ...item,
+  operation: item.operation || "venta",
+}));
 
 const saveToStorage = (key, value) => {
   try {
@@ -1156,6 +1262,7 @@ const normalizeItem = (item) => {
     ...item,
     images: item.images || (item.imageDataUrl ? [item.imageDataUrl] : []),
     type: item.type || "Producto",
+    operation: item.operation || "venta",
     categoryId: item.categoryId || "",
     subcategoryId: item.subcategoryId || "",
     childId: item.childId || "",
@@ -1303,12 +1410,14 @@ const renderMessages = () => {
 };
 
 const renderProducts = () => {
-  const query = safeText(searchInput.value).toLowerCase();
-  const sort = sortSelect.value;
+  if (!productGrid) return;
+  const query = safeText(searchInput?.value).toLowerCase();
+  const sort = sortSelect?.value ?? "recent";
   const selectedCategory = categorySelect?.value ?? "all";
   const selectedSubcategory = subcategorySelect?.value ?? "";
   const selectedChild = childcategorySelect?.value ?? "";
   const selectedType = typeSelect?.value ?? "all";
+  const selectedOperation = operationSelect?.value ?? "all";
   const minPrice = parsePrice(priceMin?.value);
   const maxPrice = parsePrice(priceMax?.value);
   const selectedCondition = conditionSelect?.value ?? "all";
@@ -1329,6 +1438,13 @@ const renderProducts = () => {
       selectedChild === "all" ||
       product.childId === selectedChild;
     const matchesType = selectedType === "all" || product.type === selectedType;
+    const matchesOperation =
+      selectedOperation === "all" ||
+      (selectedOperation === "venta" &&
+        (product.operation === "venta" || product.operation === "venta_renta")) ||
+      (selectedOperation === "renta" &&
+        (product.operation === "renta" || product.operation === "venta_renta")) ||
+      (selectedOperation === "venta_renta" && product.operation === "venta_renta");
     const matchesMinPrice =
       minPrice === null || (product.price !== null && product.price >= minPrice);
     const matchesMaxPrice =
@@ -1343,6 +1459,7 @@ const renderProducts = () => {
       matchesSubcategory &&
       matchesChild &&
       matchesType &&
+      matchesOperation &&
       matchesMinPrice &&
       matchesMaxPrice &&
       matchesCondition
@@ -1383,7 +1500,14 @@ const renderProducts = () => {
     const categoryTag = document.createElement("span");
     categoryTag.className = "tag tag-alt";
     categoryTag.textContent = getCategoryLabel(product);
-    meta.append(typeTag, categoryTag);
+    const operationTag = document.createElement("span");
+    operationTag.className = "tag";
+    operationTag.textContent = formatOperation(product.operation);
+    meta.append(typeTag, operationTag, categoryTag);
+    const operationTag = document.createElement("span");
+    operationTag.className = "tag";
+    operationTag.textContent = formatOperation(product.operation);
+    meta.append(operationTag);
     const subcategoryLabel = getSubcategoryLabel(product);
     if (subcategoryLabel) {
       const subTag = document.createElement("span");
@@ -1552,6 +1676,7 @@ const renderProducts = () => {
 };
 
 const updateAdminList = () => {
+  if (!adminProductList) return;
   adminProductList.innerHTML = "";
   if (!approvedProducts.length) {
     const empty = document.createElement("p");
@@ -1579,7 +1704,8 @@ const updateAdminList = () => {
     const categoryLabel = getCategoryLabel(product);
     const subcategoryLabel = getSubcategoryLabel(product);
     const childLabel = getChildLabel(product);
-    meta.textContent = `${formatPriceLabel(product.price)} · ${product.type || "Producto"} · ${categoryLabel}${
+    const operationLabel = formatOperation(product.operation);
+    meta.textContent = `${formatPriceLabel(product.price)} · ${product.type || "Producto"} · ${operationLabel} · ${categoryLabel}${
       subcategoryLabel ? ` · ${subcategoryLabel}` : ""
     }${childLabel ? ` · ${childLabel}` : ""}${protectedLabel} · ${formatCondition(
       product.condition
@@ -1608,6 +1734,7 @@ const updateAdminList = () => {
 };
 
 const updatePendingList = () => {
+  if (!adminPendingList) return;
   adminPendingList.innerHTML = "";
   if (!pendingProposals.length) {
     const empty = document.createElement("p");
@@ -1637,7 +1764,8 @@ const updatePendingList = () => {
     const categoryLabel = getCategoryLabel(proposal);
     const subcategoryLabel = getSubcategoryLabel(proposal);
     const childLabel = getChildLabel(proposal);
-    meta.textContent = `${formatPriceLabel(proposal.price)} · ${proposal.type || "Producto"} · ${categoryLabel}${
+    const operationLabel = formatOperation(proposal.operation);
+    meta.textContent = `${formatPriceLabel(proposal.price)} · ${proposal.type || "Producto"} · ${operationLabel} · ${categoryLabel}${
       subcategoryLabel ? ` · ${subcategoryLabel}` : ""
     }${childLabel ? ` · ${childLabel}` : ""}${protectedLabel}${statusLabel} · ${formatCondition(
       proposal.condition
@@ -1748,6 +1876,7 @@ const openEditForm = (item, mode) => {
     editingApprovedId = null;
   }
   productType.value = item.type || "";
+  if (productOperation) productOperation.value = item.operation || "venta";
   productCondition.value = item.condition || "";
   productDelivery.value = item.deliveryZone || "";
   setCategorySelection(
@@ -2321,6 +2450,7 @@ const handleAdminLogout = () => {
 const handleProductSubmit = (event) => {
   event.preventDefault();
   const type = productType.value.trim();
+  const operation = productOperation.value.trim();
   const condition = productCondition.value.trim();
   const deliveryZone = productDelivery.value.trim();
   const categoryId = productCategory.value;
@@ -2338,6 +2468,7 @@ const handleProductSubmit = (event) => {
 
   if (
     !type ||
+    !operation ||
     !condition ||
     !deliveryZone ||
     !categoryId ||
@@ -2366,6 +2497,7 @@ const handleProductSubmit = (event) => {
         ? {
             ...proposal,
             type,
+            operation,
             condition,
             deliveryZone,
             category: categoryName,
@@ -2397,6 +2529,7 @@ const handleProductSubmit = (event) => {
       ? {
           ...product,
           type,
+          operation,
           condition,
           deliveryZone,
           category: categoryName,
@@ -2427,6 +2560,7 @@ const handleProductSubmit = (event) => {
     approvedProducts.unshift({
       id: generateId(),
       type,
+      operation,
       condition,
       deliveryZone,
       category: categoryName,
@@ -2596,6 +2730,7 @@ const handleStudentSave = (event) => {
 };
 
 const setupContactForm = () => {
+  if (!contactForm || !contactStatus) return;
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
     contactStatus.textContent = "Mensaje enviado. Te contactaremos pronto.";
@@ -2603,9 +2738,213 @@ const setupContactForm = () => {
   });
 };
 
+const setupMathGame = () => {
+  if (
+    !mathGameForm ||
+    !mathGameQuestion ||
+    !mathGameAnswer ||
+    !mathGameFeedback ||
+    !mathGameScore ||
+    !mathGameNew
+  ) {
+    return;
+  }
+  let currentAnswer = 0;
+  let streak = 0;
+  const operations = [
+    { symbol: "+", fn: (a, b) => a + b },
+    { symbol: "−", fn: (a, b) => a - b },
+    { symbol: "×", fn: (a, b) => a * b },
+  ];
+  const newChallenge = () => {
+    const a = Math.floor(Math.random() * 20) + 1;
+    const b = Math.floor(Math.random() * 12) + 1;
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    const safeA = operation.symbol === "−" && a < b ? b : a;
+    const safeB = operation.symbol === "−" && a < b ? a : b;
+    currentAnswer = operation.fn(safeA, safeB);
+    mathGameQuestion.textContent = `${safeA} ${operation.symbol} ${safeB} = ?`;
+    mathGameAnswer.value = "";
+    mathGameAnswer.focus();
+    mathGameFeedback.textContent = "";
+  };
+  mathGameForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = Number(mathGameAnswer.value);
+    if (Number.isFinite(value) && value === currentAnswer) {
+      streak += 1;
+      mathGameFeedback.textContent = "¡Correcto! Sigue con el siguiente reto.";
+    } else {
+      streak = 0;
+      mathGameFeedback.textContent = `Respuesta incorrecta. La respuesta era ${currentAnswer}.`;
+    }
+    mathGameScore.textContent = streak.toString();
+    newChallenge();
+  });
+  mathGameNew.addEventListener("click", newChallenge);
+  newChallenge();
+};
+
+const initCoursesPage = () => {
+  const coursesContainer = document.getElementById("courses");
+  if (!coursesContainer) return;
+  const overlay = document.getElementById("overlay");
+  const enrollModal = document.getElementById("enrollModal");
+  const callModal = document.getElementById("callModal");
+  const enrollForm = document.getElementById("enrollForm");
+  const callbackForm = document.getElementById("callbackForm");
+  const toast = document.getElementById("toast");
+  let courses = [];
+
+  const formatDate = (value) => new Date(value).toLocaleDateString("es-MX");
+  const generateGroups = (course) => {
+    let start = new Date(course.fecha_inicio);
+    const now = new Date();
+    let id = 1;
+    course.grupos = [];
+    while (course.grupos.length < 4) {
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
+      if (end > now) {
+        if (!course.grupos.some((group) => new Date(group.inicio) < end && new Date(group.fin) > start)) {
+          course.grupos.push({
+            id_grupo: `${course.id}-${id}`,
+            inicio: start.toISOString().slice(0, 10),
+            fin: end.toISOString().slice(0, 10),
+            dias_horarios: course.dias_horarios,
+            estado: "planificado",
+          });
+          id += 1;
+        }
+      }
+      start.setDate(start.getDate() + 14);
+    }
+  };
+
+  const renderCourse = (course) => {
+    const group = course.grupos[0];
+    const start = formatDate(group.inicio);
+    const end = formatDate(group.fin);
+    const diff = Math.floor((new Date(group.inicio) - new Date()) / 86400000);
+    const discount = diff >= 7;
+    const priceHTML = discount
+      ? `<p>Precio: $${course.precio} MXN <strong>$${course.precio_descuento} MXN</strong> <span class="off">20% off por inscripción anticipada</span></p>`
+      : `<p>Precio: $${course.precio} MXN</p>`;
+    const days = course.dias_horarios
+      .map((day) => `<span class="chip-inline">${day.dia} ${day.hora_inicio}-${day.hora_fin}</span>`)
+      .join("");
+    const topics = course.temario.map((topic) => `<li>${topic}</li>`).join("");
+    coursesContainer.insertAdjacentHTML(
+      "beforeend",
+      `<article class="course-card">
+        <h3>${course.nombre}</h3>
+        <p>${start} - ${end}</p>
+        ${priceHTML}
+        <div class="chips">${days}</div>
+        <button class="accordion" aria-expanded="false" aria-controls="tem-${course.id}">Ver temario</button>
+        <div id="tem-${course.id}" class="panel" hidden><ol>${topics}</ol></div>
+        <div class="actions">
+          <button class="call-btn" data-course="${course.id}" aria-label="Agendar llamada">📅</button>
+          <button class="enroll-btn" data-course="${course.id}">Inscribirme</button>
+        </div>
+      </article>`
+    );
+  };
+
+  const openModal = (modal) => {
+    if (overlay) overlay.hidden = false;
+    if (modal) {
+      modal.hidden = false;
+      modal.querySelector("input,select,textarea")?.focus();
+    }
+  };
+
+  const closeModal = () => {
+    if (overlay) overlay.hidden = true;
+    if (enrollModal) enrollModal.hidden = true;
+    if (callModal) callModal.hidden = true;
+  };
+
+  const showCourseToast = (message) => {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.hidden = false;
+    setTimeout(() => {
+      toast.hidden = true;
+    }, 4000);
+  };
+
+  const submitEnroll = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    formData.append("token", Date.now());
+    fetch("api/save_enrollment.php", { method: "POST", body: formData })
+      .then((response) => response.json())
+      .then((data) => {
+        showCourseToast(data.ok ? "Inscripción registrada" : "Error");
+        if (data.ok) closeModal();
+      });
+  };
+
+  const submitCallback = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    formData.append("token", Date.now());
+    fetch("api/save_callback.php", { method: "POST", body: formData })
+      .then((response) => response.json())
+      .then((data) => {
+        showCourseToast(data.ok ? "Agenda enviada" : "Error");
+        if (data.ok) closeModal();
+      });
+  };
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (event.target.classList.contains("accordion")) {
+      const panel = document.getElementById(event.target.getAttribute("aria-controls"));
+      const expanded = event.target.getAttribute("aria-expanded") === "true";
+      event.target.setAttribute("aria-expanded", (!expanded).toString());
+      if (panel) panel.hidden = expanded;
+    }
+    if (event.target.classList.contains("call-btn")) {
+      callbackForm?.reset();
+      if (callbackForm) callbackForm.course_id.value = event.target.dataset.course || "";
+      openModal(callModal);
+    }
+    if (event.target.classList.contains("enroll-btn")) {
+      const course = courses.find((item) => item.id === event.target.dataset.course);
+      const select = enrollForm?.querySelector("select");
+      if (course && select) {
+        select.innerHTML = course.grupos
+          .map((group) => `<option value="${group.id_grupo}">${formatDate(group.inicio)}</option>`)
+          .join("");
+        enrollForm.course_id.value = course.id;
+      }
+      openModal(enrollModal);
+    }
+    if (event.target.classList.contains("close-modal") || event.target.id === "overlay") {
+      closeModal();
+    }
+  });
+
+  if (enrollForm) enrollForm.addEventListener("submit", submitEnroll);
+  if (callbackForm) callbackForm.addEventListener("submit", submitCallback);
+
+  fetch("data/courses.json")
+    .then((response) => response.json())
+    .then((data) => {
+      courses = data;
+      courses.forEach((course) => {
+        generateGroups(course);
+        renderCourse(course);
+      });
+    });
+};
+
 const handleProposalSubmit = (event) => {
   event.preventDefault();
   const type = proposalType.value.trim();
+  const operation = proposalOperation.value.trim();
   const condition = proposalCondition.value.trim();
   const deliveryZone = proposalDelivery.value.trim();
   const contactPhone = proposalContactPhone.value.trim();
@@ -2625,6 +2964,7 @@ const handleProposalSubmit = (event) => {
 
   if (
     !type ||
+    !operation ||
     !condition ||
     !deliveryZone ||
     !contactPhone ||
@@ -2651,6 +2991,7 @@ const handleProposalSubmit = (event) => {
   const proposal = {
     id: generateId(),
     type,
+    operation,
     condition,
     deliveryZone,
     category: categoryName,
@@ -2696,7 +3037,9 @@ const handleProposalSubmit = (event) => {
   if (proposalDescCount) {
     proposalDescCount.textContent = "220 caracteres restantes";
   }
-  updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
+  if (proposalPrice) {
+    updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
+  }
   updatePendingList();
 
   if (hasAdminSession()) {
@@ -2705,6 +3048,26 @@ const handleProposalSubmit = (event) => {
 };
 
 const setupAdminEvents = () => {
+  if (
+    !openAdmin ||
+    !closeAdmin ||
+    !adminModal ||
+    !adminLoginForm ||
+    !adminLogout ||
+    !newProductBtn ||
+    !cancelProduct ||
+    !productImageBtn ||
+    !productImage ||
+    !adminDropzone ||
+    !productDescription ||
+    !productSchedule ||
+    !productOperation ||
+    !productCategory ||
+    !productSubcategory ||
+    !productForm
+  ) {
+    return;
+  }
   openAdmin.addEventListener("click", openAdminModal);
   closeAdmin.addEventListener("click", closeAdminModal);
   adminModal.addEventListener("click", (event) => {
@@ -2773,6 +3136,20 @@ const setupAdminEvents = () => {
 };
 
 const setupProposalEvents = () => {
+  if (
+    !proposalForm ||
+    !proposalImageBtn ||
+    !proposalImage ||
+    !proposalDropzone ||
+    !proposalSchedule ||
+    !proposalOperation ||
+    !proposalCategory ||
+    !proposalSubcategory ||
+    !proposalDescription ||
+    !proposalPrice
+  ) {
+    return;
+  }
   proposalImageBtn.addEventListener("click", () => proposalImage.click());
   proposalImage.addEventListener("change", (event) =>
     handleImageDrop({
@@ -2975,6 +3352,8 @@ const init = () => {
   setupProposalEvents();
   setupProtectedAccess();
   setupAboutForm();
+  setupMathGame();
+  initCoursesPage();
   initializeNotificationForm();
   renderCatalogMenu();
   setupCatalogMenu();
@@ -2996,10 +3375,18 @@ const init = () => {
     proposalCategory?.value,
     proposalSubcategory?.value
   );
+  renderCategoryChips();
+  setupCategoryChips();
+  setupOperationChips();
+  updateChipSelection(operationChips, "operation", operationSelect?.value || "all");
   renderProducts();
-  searchInput.addEventListener("input", renderProducts);
-  sortSelect.addEventListener("change", renderProducts);
+  searchInput?.addEventListener("input", renderProducts);
+  sortSelect?.addEventListener("change", renderProducts);
   typeSelect?.addEventListener("change", renderProducts);
+  operationSelect?.addEventListener("change", () => {
+    updateChipSelection(operationChips, "operation", operationSelect.value);
+    renderProducts();
+  });
   priceMin?.addEventListener("input", renderProducts);
   priceMax?.addEventListener("input", renderProducts);
   childcategorySelect?.addEventListener("change", renderProducts);
@@ -3012,6 +3399,7 @@ const init = () => {
       subcategorySelect.value,
       { includeAll: true }
     );
+    updateChipSelection(categoryChips, "category", categorySelect.value);
     renderProducts();
   });
   subcategorySelect?.addEventListener("change", () => {
@@ -3023,9 +3411,9 @@ const init = () => {
     );
     renderProducts();
   });
-  studentLoginForm.addEventListener("submit", handleStudentLogin);
-  studentLogout.addEventListener("click", handleStudentLogout);
-  studentEditForm.addEventListener("submit", handleStudentSave);
+  studentLoginForm?.addEventListener("submit", handleStudentLogin);
+  studentLogout?.addEventListener("click", handleStudentLogout);
+  studentEditForm?.addEventListener("submit", handleStudentSave);
   setupContactForm();
   if (proposalDescCount) {
     proposalDescCount.textContent = "220 caracteres restantes";
@@ -3034,15 +3422,15 @@ const init = () => {
   renderProtectedCatalog();
 
   if (hasAdminSession()) {
-    adminLogin.hidden = true;
-    adminPanel.hidden = false;
+    if (adminLogin) adminLogin.hidden = true;
+    if (adminPanel) adminPanel.hidden = false;
   }
   if (conditionSelect) {
     conditionSelect.disabled = !hasAdminSession();
   }
 
   if (hasStudentSession()) {
-    studentPanel.hidden = false;
+    if (studentPanel) studentPanel.hidden = false;
     loadStudentContent();
   }
 
