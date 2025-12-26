@@ -12,9 +12,6 @@ const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
 const PROTECTED_CATALOG_KEY = "protectedCatalogUnlocked";
 const PROTECTED_CATALOG_HASH = "db55da3fc3098e9c42311c6013304ff36b19ef73d12ea932054b5ad51df4f49d";
-const STUDENT_ACCESS_KEY = "LTA_STUDENT_ACCESS_V1";
-const STUDENT_DATA_KEY = "LTA_STUDENT_DATA_V1";
-const STUDENT_PASSWORDS = new Set(["2025", "1991"]);
 const ADMIN_ACCESS_HASHES = new Set([
   "7d12ba56e9f8b3dc64f77c87318c4f37bc12cfbf1a37573cdf3e4fa683f20155",
   "b2b2f104d32c638903e151a9b20d6e27b41d8c0c84cf8458738f83ca2f1dd744",
@@ -169,23 +166,6 @@ const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 const notificationToast = document.getElementById("notificationToast");
 const notificationMessage = document.getElementById("notificationMessage");
-const mathQuestion = document.getElementById("mathQuestion");
-const mathAnswer = document.getElementById("mathAnswer");
-const mathPracticeForm = document.getElementById("mathPracticeForm");
-const mathPracticeStatus = document.getElementById("mathPracticeStatus");
-const newMathQuestionBtn = document.getElementById("newMathQuestion");
-const studentLoginForm = document.getElementById("studentLoginForm");
-const studentPassword = document.getElementById("studentPassword");
-const studentLoginStatus = document.getElementById("studentLoginStatus");
-const studentEditor = document.getElementById("studentEditor");
-const studentEditForm = document.getElementById("studentEditForm");
-const studentContent = document.getElementById("studentContent");
-const studentDate = document.getElementById("studentDate");
-const studentNumber = document.getElementById("studentNumber");
-const studentEditStatus = document.getElementById("studentEditStatus");
-const studentPreviewContent = document.getElementById("studentPreviewContent");
-const studentPreviewMeta = document.getElementById("studentPreviewMeta");
-
 const proposalForm = document.getElementById("proposalForm");
 const proposalDropzone = document.getElementById("proposalDropzone");
 const proposalImageBtn = document.getElementById("proposalImageBtn");
@@ -211,6 +191,7 @@ const proposalSchedule = document.getElementById("proposalSchedule");
 const proposalDates = document.getElementById("proposalDates");
 const proposalStartDate = document.getElementById("proposalStartDate");
 const proposalEndDate = document.getElementById("proposalEndDate");
+const proposalTerms = document.getElementById("proposalTerms");
 const proposalStatus = document.getElementById("proposalStatus");
 
 const adminModal = document.getElementById("adminModal");
@@ -1736,6 +1717,14 @@ const buildCoursePricing = () => {
   return wrapper;
 };
 
+const buildCommissionNote = () => {
+  const note = document.createElement("p");
+  note.className = "muted small";
+  note.textContent =
+    "La coordinación se realiza directamente entre las partes. Comisión 20% al confirmarse el trato.";
+  return note;
+};
+
 const buildContactSection = (product) => {
   const wrapper = document.createElement("div");
   wrapper.className = "contact-section";
@@ -1988,10 +1977,11 @@ const renderProducts = () => {
     }
 
     const contactSection = buildContactSection(product);
+    const commissionNote = buildCommissionNote();
 
     card.append(carousel, meta, title, details, desc, priceBlock);
     if (schedule.textContent) card.append(schedule);
-    card.append(contactSection);
+    card.append(commissionNote, contactSection);
     productGrid.appendChild(card);
   });
 
@@ -2422,165 +2412,13 @@ const handleImageDrop = async ({ files, previewEl, statusEl }) => {
   }
 };
 
-const setupMathGame = () => {
-  if (!mathQuestion || !mathAnswer || !mathPracticeForm || !mathPracticeStatus || !newMathQuestionBtn) {
-    return;
-  }
-  const createQuestion = () => {
-    const a = Math.floor(Math.random() * 41) + 5;
-    const b = Math.floor(Math.random() * 31) + 5;
-    mathQuestion.textContent = `${a} + ${b} = ?`;
-    mathQuestion.dataset.answer = String(a + b);
-    mathAnswer.value = "";
-    mathPracticeStatus.textContent = "";
-  };
-
-  newMathQuestionBtn.addEventListener("click", createQuestion);
-  mathPracticeForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const expected = Number(mathQuestion.dataset.answer || "");
-    const provided = Number(mathAnswer.value);
-    if (Number.isNaN(provided)) {
-      mathPracticeStatus.textContent = "Ingresa un número válido.";
-      return;
-    }
-    if (provided === expected) {
-      mathPracticeStatus.textContent = "¡Correcto! Se generó una nueva operación.";
-      createQuestion();
-      return;
-    }
-    mathPracticeStatus.textContent = "Respuesta incorrecta. Intenta de nuevo.";
-  });
-
-  createQuestion();
-};
-
-const loadStudentData = () => {
-  const raw = localStorage.getItem(STUDENT_DATA_KEY);
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch (error) {
-    return null;
-  }
-};
-
-const updateStudentPreview = (data) => {
-  if (!studentPreviewContent || !studentPreviewMeta) return;
-  const contentText = data?.content?.trim() ? data.content.trim() : "-";
-  const dateText = data?.date?.trim() ? data.date.trim() : "-";
-  const numberText = data?.number?.toString().trim() ? data.number.toString().trim() : "-";
-  studentPreviewContent.textContent = `Contenido: ${contentText}`;
-  studentPreviewMeta.textContent = `Fecha: ${dateText} · Número: ${numberText}`;
-};
-
-const setupStudentAccess = () => {
-  if (
-    !studentLoginForm ||
-    !studentPassword ||
-    !studentLoginStatus ||
-    !studentEditor ||
-    !studentEditForm ||
-    !studentContent ||
-    !studentDate ||
-    !studentNumber ||
-    !studentEditStatus
-  ) {
-    return;
-  }
-
-  const showEditor = () => {
-    studentEditor.hidden = false;
-  };
-
-  const savedData = loadStudentData();
-  if (savedData) {
-    studentContent.value = savedData.content || "";
-    studentDate.value = savedData.date || "";
-    studentNumber.value = savedData.number || "";
-    updateStudentPreview(savedData);
-  } else {
-    updateStudentPreview({});
-  }
-
-  if (sessionStorage.getItem(STUDENT_ACCESS_KEY) === "1") {
-    showEditor();
-  }
-
-  studentLoginForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const password = studentPassword.value.trim();
-    if (STUDENT_PASSWORDS.has(password)) {
-      sessionStorage.setItem(STUDENT_ACCESS_KEY, "1");
-      studentLoginStatus.textContent = "Acceso habilitado.";
-      studentPassword.value = "";
-      showEditor();
-      return;
-    }
-    studentLoginStatus.textContent = "Clave incorrecta.";
-  });
-
-  studentEditForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const payload = {
-      content: studentContent.value.trim(),
-      date: studentDate.value,
-      number: studentNumber.value.trim(),
-    };
-    localStorage.setItem(STUDENT_DATA_KEY, JSON.stringify(payload));
-    updateStudentPreview(payload);
-    studentEditStatus.textContent = "Edición actualizada.";
-  });
-};
-
 const setupCourseButtons = () => {
   courseButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const course = button.dataset.course;
-      const message = `Hola Alberto. Quiero inscribirme al curso: ${course}. Tarifa: $350 MXN por sesión de 1 hora. Promo: $2,400 MXN por 8 sesiones de 1 hora. ¿Me confirmas horarios y forma de pago?`;
+      const message = `Hola Alberto. Quiero inscribirme al curso: ${course}. Tarifa: $350 MXN por sesión de 1 hora. Promo: $2,400 MXN por 8 sesiones de 1 hora. ¿Me confirmas horarios?`;
       window.open(createWhatsAppUrl(message), "_blank", "noopener");
     });
-  });
-};
-
-const removeRestrictedElements = () => {
-  const surfaceToken = "can" + "vas";
-  const tokens = {
-    g: "ga" + "me",
-    q: "qu" + "iz",
-    c: "chal" + "lenge",
-    b: "bo" + "mb",
-    r: "re" + "to",
-  };
-  const selectors = [
-    `[id*="${tokens.g}" i]`,
-    `[class*="${tokens.g}" i]`,
-    `[id*="${tokens.q}" i]`,
-    `[class*="${tokens.q}" i]`,
-    `[id*="${tokens.c}" i]`,
-    `[class*="${tokens.c}" i]`,
-    `[id*="${tokens.b}" i]`,
-    `[class*="${tokens.b}" i]`,
-    `[id*="${tokens.r}" i]`,
-    `[class*="${tokens.r}" i]`,
-    `[id*="${surfaceToken}" i]`,
-    `[class*="${surfaceToken}" i]`,
-    `[data-${tokens.g}]`,
-    `[data-${tokens.q}]`,
-    `[data-${tokens.c}]`,
-    `[data-${tokens.b}]`,
-    `${surfaceToken}#${tokens.g}`,
-    `${surfaceToken}.${tokens.g}`,
-    `${surfaceToken}[data-${tokens.g}]`,
-  ];
-  const nodes = new Set();
-  selectors.forEach((selector) => {
-    document.querySelectorAll(selector).forEach((node) => nodes.add(node));
-  });
-  nodes.forEach((node) => {
-    console.warn("Elemento sospechoso removido:", node);
-    node.remove();
   });
 };
 
@@ -3359,6 +3197,11 @@ const handleProposalSubmit = (event) => {
     return;
   }
 
+  if (proposalTerms && !proposalTerms.checked) {
+    proposalStatus.textContent = "Debes aceptar los términos de publicación y comisión.";
+    return;
+  }
+
   if (rawPrice && priceValue === null) {
     proposalStatus.textContent = "Ingresa un precio válido o deja el campo vacío.";
     return;
@@ -3672,8 +3515,9 @@ const renderProtectedCatalog = () => {
     }
 
     const contactSection = buildContactSection(product);
+    const commissionNote = buildCommissionNote();
 
-    card.append(carousel, meta, title, details, desc, priceBlock, contactSection);
+    card.append(carousel, meta, title, details, desc, priceBlock, commissionNote, contactSection);
     protectedGrid.appendChild(card);
   });
   registerReveals(protectedGrid);
@@ -3761,10 +3605,7 @@ const init = () => {
   renderMessages();
   renderNotifications();
   setupCourseButtons();
-  removeRestrictedElements();
   setupTabs();
-  setupMathGame();
-  setupStudentAccess();
   setupAdminTabs();
   setupNotification();
   setupAdminEvents();
