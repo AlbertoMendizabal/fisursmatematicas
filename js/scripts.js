@@ -106,6 +106,7 @@ const CATEGORIES = [
       { id: "celulares", name: "Celulares" },
       { id: "tablets", name: "Tablets" },
       { id: "laptops", name: "Laptops" },
+      { id: "computo", name: "Cómputo" },
       { id: "desktop", name: "Computadoras de escritorio" },
       { id: "monitores", name: "Monitores" },
       { id: "consolas", name: "Consolas" },
@@ -269,12 +270,6 @@ const studentPreview = document.getElementById("studentPreview");
 
 const contactForm = document.getElementById("contactForm");
 const contactStatus = document.getElementById("contactStatus");
-const mathGameForm = document.getElementById("mathGameForm");
-const mathGameQuestion = document.getElementById("mathGameQuestion");
-const mathGameAnswer = document.getElementById("mathGameAnswer");
-const mathGameFeedback = document.getElementById("mathGameFeedback");
-const mathGameScore = document.getElementById("mathGameScore");
-const mathGameNew = document.getElementById("mathGameNew");
 const categorySelect = document.getElementById("categorySelect");
 const subcategorySelect = document.getElementById("subcategorySelect");
 const childcategorySelect = document.getElementById("childcategorySelect");
@@ -880,6 +875,7 @@ const defaultProducts = () => [
     categoryId: "inmuebles",
     subcategoryId: "renta",
     childId: "renta-departamentos",
+    operation: "renta",
     type: "Producto",
     status: "publicado",
     isProtected: false,
@@ -899,6 +895,7 @@ const defaultProducts = () => [
     categoryId: "inmuebles",
     subcategoryId: "renta",
     childId: "renta-locales",
+    operation: "renta",
     type: "Producto",
     status: "publicado",
     isProtected: false,
@@ -1025,7 +1022,7 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Renta de sonido para eventos (5 horas)",
     description:
-      "Sonido para fiestas y eventos sociales por 5 horas. Ideal para reuniones, cumpleaños y celebraciones. Te apoyamos para que tu evento se escuche con claridad y buena potencia.",
+      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para reuniones, cumpleaños y celebraciones. Coordinamos contigo para que tu evento se escuche claro y con buena presencia.",
     price: 5000,
     priceMXN: 5000,
     images: [demoImage("Sonido")],
@@ -1033,6 +1030,7 @@ const defaultProducts = () => [
     categoryId: "servicios",
     subcategoryId: "eventos",
     childId: "",
+    operation: "renta",
     type: "Servicio",
     status: "publicado",
     isProtected: false,
@@ -1083,7 +1081,7 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Renta de sonido para eventos (5 horas)",
     description:
-      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para celebraciones y reuniones. Te notificamos y coordinamos contigo para que todo suene claro y con buena presencia.",
+      "Renta de sonido para fiestas y eventos por 5 horas. Ideal para reuniones, cumpleaños y celebraciones. Coordinamos contigo para que tu evento se escuche claro y con buena presencia.",
     price: 5000,
     priceMXN: 5000,
     images: [demoImage("Sonido")],
@@ -1104,8 +1102,8 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Ecuaciones diferenciales",
     description: "Curso enfocado en resolución de ecuaciones diferenciales con ejemplos guiados.",
-    price: null,
-    priceMXN: null,
+    price: 2400,
+    priceMXN: 2400,
     images: [demoImage("Ecuaciones")],
     category: "Cursos",
     categoryId: "cursos",
@@ -1123,8 +1121,8 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Álgebra lineal",
     description: "Matrices, vectores y espacios vectoriales con práctica aplicada.",
-    price: null,
-    priceMXN: null,
+    price: 2400,
+    priceMXN: 2400,
     images: [demoImage("Álgebra")],
     category: "Cursos",
     categoryId: "cursos",
@@ -1161,8 +1159,8 @@ const defaultProducts = () => [
     id: generateId(),
     title: "Aprende a sumar, restar, multiplicar y dividir",
     description: "Curso base para dominar operaciones fundamentales.",
-    price: null,
-    priceMXN: null,
+    price: 2400,
+    priceMXN: 2400,
     images: [demoImage("Operaciones")],
     category: "Cursos",
     categoryId: "cursos",
@@ -1501,26 +1499,15 @@ const renderProducts = () => {
     categoryTag.className = "tag tag-alt";
     categoryTag.textContent = getCategoryLabel(product);
     const operationTag = document.createElement("span");
-    operationTag.className = "tag";
+    operationTag.className = "tag tag-highlight";
     operationTag.textContent = formatOperation(product.operation);
     meta.append(typeTag, operationTag, categoryTag);
-    const operationTag = document.createElement("span");
-    operationTag.className = "tag";
-    operationTag.textContent = formatOperation(product.operation);
-    meta.append(operationTag);
     const subcategoryLabel = getSubcategoryLabel(product);
     if (subcategoryLabel) {
       const subTag = document.createElement("span");
       subTag.className = "tag";
       subTag.textContent = subcategoryLabel;
       meta.append(subTag);
-    }
-    const childLabel = getChildLabel(product);
-    if (childLabel) {
-      const childTag = document.createElement("span");
-      childTag.className = "tag";
-      childTag.textContent = childLabel;
-      meta.append(childTag);
     }
     const childLabel = getChildLabel(product);
     if (childLabel) {
@@ -2738,53 +2725,6 @@ const setupContactForm = () => {
   });
 };
 
-const setupMathGame = () => {
-  if (
-    !mathGameForm ||
-    !mathGameQuestion ||
-    !mathGameAnswer ||
-    !mathGameFeedback ||
-    !mathGameScore ||
-    !mathGameNew
-  ) {
-    return;
-  }
-  let currentAnswer = 0;
-  let streak = 0;
-  const operations = [
-    { symbol: "+", fn: (a, b) => a + b },
-    { symbol: "−", fn: (a, b) => a - b },
-    { symbol: "×", fn: (a, b) => a * b },
-  ];
-  const newChallenge = () => {
-    const a = Math.floor(Math.random() * 20) + 1;
-    const b = Math.floor(Math.random() * 12) + 1;
-    const operation = operations[Math.floor(Math.random() * operations.length)];
-    const safeA = operation.symbol === "−" && a < b ? b : a;
-    const safeB = operation.symbol === "−" && a < b ? a : b;
-    currentAnswer = operation.fn(safeA, safeB);
-    mathGameQuestion.textContent = `${safeA} ${operation.symbol} ${safeB} = ?`;
-    mathGameAnswer.value = "";
-    mathGameAnswer.focus();
-    mathGameFeedback.textContent = "";
-  };
-  mathGameForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const value = Number(mathGameAnswer.value);
-    if (Number.isFinite(value) && value === currentAnswer) {
-      streak += 1;
-      mathGameFeedback.textContent = "¡Correcto! Sigue con el siguiente reto.";
-    } else {
-      streak = 0;
-      mathGameFeedback.textContent = `Respuesta incorrecta. La respuesta era ${currentAnswer}.`;
-    }
-    mathGameScore.textContent = streak.toString();
-    newChallenge();
-  });
-  mathGameNew.addEventListener("click", newChallenge);
-  newChallenge();
-};
-
 const initCoursesPage = () => {
   const coursesContainer = document.getElementById("courses");
   if (!coursesContainer) return;
@@ -3352,7 +3292,6 @@ const init = () => {
   setupProposalEvents();
   setupProtectedAccess();
   setupAboutForm();
-  setupMathGame();
   initCoursesPage();
   initializeNotificationForm();
   renderCatalogMenu();
