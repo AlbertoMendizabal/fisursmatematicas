@@ -19,6 +19,7 @@ const ADMIN_ACCESS_HASHES = new Set([
 ]);
 const ABOUT_KEY = "LTA_ABOUT_V1";
 const TAXONOMY_KEY = "catalogTaxonomy";
+const DEBUG_ADMIN_EDIT = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 
 const DEFAULT_NOTIFICATION =
   "Bienvenida a LA TIENDA DE ALBERTO. Aquí puedes consultar cursos y productos disponibles.";
@@ -303,18 +304,6 @@ const taxonomyChildName = document.getElementById("taxonomyChildName");
 const taxonomyChildList = document.getElementById("taxonomyChildList");
 const taxonomySelectedCategory = document.getElementById("taxonomySelectedCategory");
 const taxonomySelectedSubcategory = document.getElementById("taxonomySelectedSubcategory");
-const mathGameForm = document.getElementById("mathGameForm");
-const mathA = document.getElementById("mathA");
-const mathB = document.getElementById("mathB");
-const mathAnswer = document.getElementById("mathAnswer");
-const mathStatus = document.getElementById("mathStatus");
-const studentLoginForm = document.getElementById("studentLoginForm");
-const studentPassword = document.getElementById("studentPassword");
-const studentLoginStatus = document.getElementById("studentLoginStatus");
-const studentLoginCard = document.getElementById("studentLoginCard");
-const studentEditCard = document.getElementById("studentEditCard");
-const studentQuickForm = document.getElementById("studentQuickForm");
-const studentQuickStatus = document.getElementById("studentQuickStatus");
 
 let approvedProducts = [];
 let pendingProposals = [];
@@ -329,7 +318,6 @@ let productMapManager = null;
 
 const MAP_DEFAULT_CENTER = [19.4326, -99.1332];
 const MAP_DEFAULT_ZOOM = 5;
-const ZOOM_LEVEL = 4;
 let storedMessages = [];
 let storedNotifications = [];
 let revealObserver = null;
@@ -2279,28 +2267,42 @@ const initMapEmbed = (container) => {
 
 const initMapEmbeds = (root = document) => {
   root.querySelectorAll(".map-embed").forEach((container) => {
+    if (container.tagName !== "DIV") return;
     initMapEmbed(container);
   });
 };
 
 const buildMapBlock = (product) => {
   const location = safeText(product.addressText || product.location).trim();
-  const showMapPublic = Boolean(product.showMapPublic ?? product.visibility?.showMap);
+  const showMapPublic = Boolean(
+    product.visibility?.showMap ?? product.showMapPublic ?? product.mapApproved
+  );
   const showAddressPublic = Boolean(
-    product.showAddressPublic ?? product.visibility?.showAddress
+    product.visibility?.showAddress ?? product.showAddressPublic
   );
   const hasCoords =
     Number.isFinite(Number(product.lat)) && Number.isFinite(Number(product.lng));
+  const mapQuery = hasCoords ? `${product.lat},${product.lng}` : location;
   if (!showMapPublic && !showAddressPublic) return null;
-  if (showMapPublic && !hasCoords) return null;
+  if (showMapPublic && !mapQuery) return null;
   const block = document.createElement("div");
   block.className = "map-block";
-  if (showMapPublic && hasCoords) {
-    const map = document.createElement("div");
+  if (showMapPublic && mapQuery) {
+    const map = document.createElement("iframe");
     map.className = "map-embed";
-    map.dataset.lat = product.lat;
-    map.dataset.lng = product.lng;
+    map.loading = "lazy";
+    map.referrerPolicy = "no-referrer-when-downgrade";
+    map.title = "Mapa de ubicación";
+    map.src = `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`;
     block.appendChild(map);
+
+    const link = document.createElement("a");
+    link.className = "map-link";
+    link.href = `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}`;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Abrir en Google Maps";
+    block.appendChild(link);
   }
   if (showAddressPublic && location) {
     const note = document.createElement("p");
@@ -2880,11 +2882,16 @@ const setupAdminActionDelegation = () => {
     if (!(event.target instanceof Element)) return;
     const actionBtn = event.target.closest("button[data-action]");
     if (!actionBtn) return;
+    event.preventDefault();
+    event.stopPropagation();
     const action = actionBtn.dataset.action;
     const id = actionBtn.dataset.id;
     const mode = actionBtn.dataset.mode || "approved";
     if (!id) return;
     if (action === "edit") {
+      if (DEBUG_ADMIN_EDIT) {
+        console.debug("Admin edit click", { id, mode });
+      }
       const source =
         mode === "pending"
           ? pendingProposals.find((proposal) => proposal.id === id)
@@ -3205,6 +3212,7 @@ const getMapState = (manager, addressText) => {
 };
 
 const openEditForm = (item, mode) => {
+  if (!item || !productForm) return;
   productForm.hidden = false;
   editingMode = mode;
   editingDraft = JSON.parse(JSON.stringify(item || {}));
@@ -3245,10 +3253,14 @@ const openEditForm = (item, mode) => {
   if (productShowPhone) productShowPhone.checked = Boolean(item.visibility?.showPhone);
   if (productShowEmail) productShowEmail.checked = Boolean(item.visibility?.showEmail);
   if (productShowMap) {
-    productShowMap.checked = Boolean(item.showMapPublic ?? item.mapApproved);
+    productShowMap.checked = Boolean(
+      item.visibility?.showMap ?? item.showMapPublic ?? item.mapApproved
+    );
   }
   if (productShowAddress) {
-    productShowAddress.checked = Boolean(item.showAddressPublic);
+    productShowAddress.checked = Boolean(
+      item.visibility?.showAddress ?? item.showAddressPublic
+    );
   }
   if (productExpiration) {
     const preset = item.durationPreset || (item.expiresAt ? "date" : "forever");
@@ -3277,6 +3289,7 @@ const openEditForm = (item, mode) => {
     });
     requestAnimationFrame(() => productMapManager.invalidate());
   }
+  productForm.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 const deleteProduct = (id) => {
@@ -3295,16 +3308,23 @@ const approveProposal = (id) => {
   if (!confirmed) return;
   pendingProposals = pendingProposals.filter((item) => item.id !== id);
   const { detailsRequest, status, ...rest } = proposal;
+  const showMap = Boolean(
+    proposal.visibility?.showMap ?? proposal.showMapPublic ?? proposal.mapApproved
+  );
+  const showAddress = Boolean(
+    proposal.visibility?.showAddress ?? proposal.showAddressPublic
+  );
   approvedProducts.unshift({
     ...rest,
     visibility: {
       showPhone: Boolean(proposal.visibility?.showPhone),
       showEmail: Boolean(proposal.visibility?.showEmail),
-      showMap: Boolean(proposal.visibility?.showMap),
-      showAddress: Boolean(proposal.visibility?.showAddress),
+      showMap,
+      showAddress,
     },
-    showMapPublic: Boolean(proposal.showMapPublic),
-    showAddressPublic: Boolean(proposal.showAddressPublic),
+    showMapPublic: showMap,
+    showAddressPublic: showAddress,
+    mapApproved: showMap,
     expiresAt: null,
     pinnedForever: true,
     durationPreset: "forever",
@@ -4163,7 +4183,9 @@ const setupNotificationBubble = () => {
     });
   }
   if (dismissNotifications) {
-    dismissNotifications.addEventListener("click", () => {
+    dismissNotifications.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
       if (notificationBubble) notificationBubble.hidden = true;
     });
@@ -4292,8 +4314,9 @@ const handleProductSubmit = (event) => {
     return;
   }
 
-  if (showMap && (!mapState.lat || !mapState.lng)) {
-    productFormStatus.textContent = "Ubica el pin en el mapa para mostrarlo.";
+  if (showMap && (!mapState.lat || !mapState.lng) && !location) {
+    productFormStatus.textContent =
+      "Agrega una ubicación o coloca el pin para mostrar el mapa.";
     return;
   }
 
@@ -4562,68 +4585,6 @@ const setupContactForm = () => {
   });
 };
 
-const setupMathGame = () => {
-  if (!mathGameForm || !mathA || !mathB || !mathAnswer || !mathStatus) return;
-  const generateProblem = () => {
-    mathA.textContent = Math.floor(Math.random() * 20 + 1).toString();
-    mathB.textContent = Math.floor(Math.random() * 20 + 1).toString();
-    mathAnswer.value = "";
-  };
-  const checkAnswer = () => {
-    const a = Number.parseInt(mathA.textContent, 10);
-    const b = Number.parseInt(mathB.textContent, 10);
-    const answer = Number.parseInt(mathAnswer.value, 10);
-    if (Number.isNaN(answer)) return;
-    mathStatus.textContent = answer === a + b ? "¡Correcto!" : "Intenta de nuevo.";
-  };
-  mathGameForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    checkAnswer();
-    setTimeout(generateProblem, 700);
-  });
-  generateProblem();
-  setInterval(generateProblem, 15000);
-};
-
-const setupStudentAccess = () => {
-  if (!studentLoginForm || !studentPassword || !studentLoginStatus) return;
-  const unlock = () => {
-    if (studentLoginCard) studentLoginCard.hidden = true;
-    if (studentEditCard) studentEditCard.hidden = false;
-  };
-  if (sessionStorage.getItem("studentAccess") === "1") {
-    unlock();
-  }
-  studentLoginForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const value = studentPassword.value.trim();
-    if (value === "2025" || value === "1991") {
-      sessionStorage.setItem("studentAccess", "1");
-      studentLoginStatus.textContent = "Acceso concedido.";
-      unlock();
-    } else {
-      studentLoginStatus.textContent = "Clave incorrecta.";
-    }
-  });
-  if (studentQuickForm) {
-    const stored = loadFromStorage("studentQuickData", {});
-    if (stored?.content) document.getElementById("studentContent").value = stored.content;
-    if (stored?.date) document.getElementById("studentDate").value = stored.date;
-    if (stored?.number) document.getElementById("studentNumber").value = stored.number;
-    studentQuickForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const payload = {
-        content: document.getElementById("studentContent").value.trim(),
-        date: document.getElementById("studentDate").value,
-        number: document.getElementById("studentNumber").value,
-      };
-      saveToStorage("studentQuickData", payload);
-      if (studentQuickStatus) {
-        studentQuickStatus.textContent = "Datos guardados.";
-      }
-    });
-  }
-};
 
 const initCoursesPage = () => {
   const coursesContainer = document.getElementById("courses");
@@ -5306,6 +5267,7 @@ const openLightbox = (src, alt) => {
   lightboxImage.alt = alt || "Vista ampliada";
   imageLightbox.classList.add("show");
   imageLightbox.setAttribute("aria-hidden", "false");
+  document.body.classList.add("no-scroll");
 };
 
 const closeLightboxHandler = () => {
@@ -5313,6 +5275,7 @@ const closeLightboxHandler = () => {
   imageLightbox.classList.remove("show");
   imageLightbox.setAttribute("aria-hidden", "true");
   lightboxImage.src = "";
+  document.body.classList.remove("no-scroll");
 };
 
 const setupLightbox = () => {
@@ -5337,52 +5300,51 @@ const setupLightbox = () => {
 const setupZoomLens = () => {
   const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   if (!supportsHover) return;
-  const lens = document.createElement("div");
-  lens.className = "zoom-lens";
-  document.body.appendChild(lens);
+  const zoomScale = 2.5;
   let activeTarget = null;
-  let lastEvent = null;
   let rafId = null;
+  let lastEvent = null;
 
-  const updateLens = () => {
+  const resetZoom = (target) => {
+    if (!target) return;
+    target.style.transform = "";
+    target.style.transformOrigin = "";
+  };
+
+  const updateZoom = () => {
     if (!activeTarget || !lastEvent) return;
     const rect = activeTarget.getBoundingClientRect();
     const x = Math.min(Math.max((lastEvent.clientX - rect.left) / rect.width, 0), 1);
     const y = Math.min(Math.max((lastEvent.clientY - rect.top) / rect.height, 0), 1);
-    lens.style.left = `${lastEvent.clientX}px`;
-    lens.style.top = `${lastEvent.clientY}px`;
-    lens.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
+    activeTarget.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+    activeTarget.style.transform = `scale(${zoomScale})`;
     rafId = null;
   };
 
   const scheduleUpdate = (event) => {
     lastEvent = event;
     if (rafId) return;
-    rafId = requestAnimationFrame(updateLens);
+    rafId = requestAnimationFrame(updateZoom);
   };
 
   document.addEventListener("mousemove", (event) => {
     if (!(event.target instanceof Element)) return;
     const target = event.target.closest("img[data-zoom]");
     if (!target) {
-      if (activeTarget) {
-        activeTarget = null;
-        lens.classList.remove("is-active");
-      }
+      if (activeTarget) resetZoom(activeTarget);
+      activeTarget = null;
       return;
     }
     if (activeTarget !== target) {
+      if (activeTarget) resetZoom(activeTarget);
       activeTarget = target;
-      lens.style.backgroundImage = `url("${target.src}")`;
-      lens.style.backgroundSize = `${ZOOM_LEVEL * 100}%`;
-      lens.classList.add("is-active");
     }
     scheduleUpdate(event);
   });
 
   document.addEventListener("mouseleave", () => {
+    if (activeTarget) resetZoom(activeTarget);
     activeTarget = null;
-    lens.classList.remove("is-active");
   });
 };
 
@@ -5516,8 +5478,6 @@ const init = () => {
     renderProducts();
   });
   setupContactForm();
-  setupMathGame();
-  setupStudentAccess();
   setupTaxonomyAdmin();
   refreshTaxonomyUI();
   renderTaxonomyAdmin();

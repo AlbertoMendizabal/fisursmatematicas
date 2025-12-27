@@ -608,8 +608,6 @@
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
             <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-juego" id="tab-juego-btn">Juego matemático</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-alumnos" id="tab-alumnos-btn">Acceso alumnos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn">
@@ -622,64 +620,6 @@
                   <li><strong>Cálculo integral</strong><span>Inicio: 19 de enero · Fin: 19 de febrero</span></li>
                 </ul>
                 <p class="muted">Solicita tu lugar con anticipación.</p>
-              </div>
-            </div>
-          </div>
-          <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn" hidden>
-            <div class="panel-grid">
-              <div class="card reveal">
-                <h3>Juego matemático rápido</h3>
-                <p class="muted">Resuelve la suma antes de que cambie el ejercicio.</p>
-                <div class="math-game" id="mathGame">
-                  <div class="math-problem">
-                    <span id="mathA">1</span>
-                    <span>+</span>
-                    <span id="mathB">1</span>
-                  </div>
-                  <form id="mathGameForm" class="math-form">
-                    <label class="field">
-                      <span>Tu respuesta</span>
-                      <input type="number" id="mathAnswer" required>
-                    </label>
-                    <button class="btn btn-primary" type="submit">Comprobar</button>
-                  </form>
-                  <p class="muted" id="mathStatus" aria-live="polite"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="tab-alumnos" class="tab-panel" role="tabpanel" aria-labelledby="tab-alumnos-btn" hidden>
-            <div class="panel-grid">
-              <div class="card reveal" id="studentLoginCard">
-                <h3>Acceso de alumnos</h3>
-                <p class="muted">Ingresa la clave 2025 o 1991 para editar datos rápidos.</p>
-                <form id="studentLoginForm">
-                  <label class="field">
-                    <span>Contraseña</span>
-                    <input type="password" id="studentPassword" required>
-                  </label>
-                  <button class="btn btn-primary" type="submit">Entrar</button>
-                  <p class="muted" id="studentLoginStatus" aria-live="polite"></p>
-                </form>
-              </div>
-              <div class="card reveal" id="studentEditCard" hidden>
-                <h3>Edición rápida</h3>
-                <form id="studentQuickForm" class="form-grid">
-                  <label class="field">
-                    <span>Contenido</span>
-                    <input type="text" id="studentContent" placeholder="Título o tema">
-                  </label>
-                  <label class="field">
-                    <span>Fecha</span>
-                    <input type="date" id="studentDate">
-                  </label>
-                  <label class="field">
-                    <span>Número</span>
-                    <input type="number" id="studentNumber" placeholder="Ej. 24">
-                  </label>
-                  <button class="btn btn-primary" type="submit">Guardar</button>
-                  <p class="muted" id="studentQuickStatus" aria-live="polite"></p>
-                </form>
               </div>
             </div>
           </div>
