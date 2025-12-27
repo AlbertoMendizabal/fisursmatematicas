@@ -6,7 +6,7 @@
   <title>LA TIENDA DE ALBERTO</title>
   <!-- build-id: GOLD_RENT_KEEPUI_20251226_0759 -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="css/styles.css?v=20250214-1530">
+  <link rel="stylesheet" href="css/styles.css?v=20251227a">
 </head>
 <body data-build="GOLD_RENT_KEEPUI_20251226_0759">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -53,7 +53,7 @@
             <a class="btn btn-ghost" href="#catalogo">Explorar catálogo</a>
           </div>
           <div class="trust-box reveal">
-            <p><strong>Comisión del 20% al confirmarse el trato</strong></p>
+            <p><strong>Comisión clara por conexión y gestión</strong></p>
             <p class="muted">La plataforma conecta a las partes. La entrega, revisión y acuerdos se coordinan directamente.</p>
           </div>
         </div>
@@ -89,7 +89,7 @@
           <article class="step-card reveal">
             <span class="step-icon" aria-hidden="true">💬</span>
             <h3>Contacto directo</h3>
-            <p>Contacto directo: el proveedor y la persona interesada acuerdan lugar, fecha y hora, así como el pago restante. La plataforma no participa en la entrega ni recibe el 80% del monto; únicamente gestiona la comisión del 20% tras confirmación por WhatsApp.</p>
+            <p>Contacto directo: el proveedor y la persona interesada acuerdan lugar, fecha y hora, así como el pago restante. La plataforma no participa en la entrega ni recibe el pago al proveedor; únicamente gestiona la comisión tras confirmación por WhatsApp.</p>
           </article>
         </div>
         <div class="commission-block card reveal" id="commission-info">
@@ -97,11 +97,16 @@
           <ol class="commission-steps">
             <li>Publica tu anuncio (venta o renta) con fotos, precio y detalles.</li>
             <li>Cuando una persona se interesa, confirma por WhatsApp que desea continuar.</li>
-            <li>Al confirmarse el interés real, se solicita la comisión del 20% y se paga a Spin by OXXO (CLABE 72 8969 0001 2096 8953).</li>
-            <li>El 80% restante se acuerda y se entrega directamente al proveedor; la plataforma no recibe ese monto.</li>
+            <li>Al confirmarse el interés real, se solicita la comisión y se paga a Spin by OXXO (CLABE 728969000120968953).</li>
+            <li>El resto del pago se acuerda y se entrega directamente al proveedor; la plataforma no recibe ese monto.</li>
             <li>Después de la comisión, se comparte el contacto para coordinar entrega o reunión directamente entre interesado y proveedor.</li>
           </ol>
-          <p class="muted"><strong>Banco:</strong> Spin by OXXO · <strong>CLABE:</strong> 72 8969 0001 2096 8953.</p>
+          <div class="commission-details">
+            <p><strong>Comisión estándar:</strong> 10% (mínimo $50 MXN, tope $500 MXN).</p>
+            <p><strong>Inmuebles y vehículos:</strong> 5% (tope $1,500 MXN).</p>
+            <p><strong>Servicios de bajo monto:</strong> 10% con mínimo $50 MXN.</p>
+            <p class="muted"><strong>Banco:</strong> Spin by OXXO · <strong>CLABE:</strong> 728969000120968953.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -232,10 +237,6 @@
               </div>
             </div>
             <label class="checkbox">
-              <input type="checkbox" id="proposalPrivate">
-              <span>Producto visible solo en Especiales</span>
-            </label>
-            <label class="checkbox">
               <input type="checkbox" id="proposalSchedule">
               <span>Agregar calendario de fechas</span>
             </label>
@@ -251,7 +252,7 @@
             </div>
             <label class="checkbox">
               <input type="checkbox" id="proposalTerms" required>
-              <span>Entiendo que la plataforma solo publica y conecta; la entrega y el resto del pago se acuerdan entre las partes. Comisión 20% al confirmarse interés por WhatsApp.</span>
+              <span>Entiendo que la plataforma solo publica y conecta; la entrega y el resto del pago se acuerdan entre las partes. La comisión se solicita tras confirmar interés por WhatsApp.</span>
             </label>
             <button class="btn btn-primary" type="submit">Enviar propuesta</button>
             <p id="proposalStatus" class="muted proposal-status" aria-live="polite"></p>
@@ -261,7 +262,7 @@
             <ul>
               <li>La propuesta queda en revisión</li>
               <li>Se confirma cuando se apruebe</li>
-              <li>La comisión del 20% se aplica cuando se confirma el trato</li>
+              <li>La comisión se aplica cuando se confirma el trato</li>
             </ul>
             <p class="muted">Si lo prefieres, envía imágenes y descripción por WhatsApp. Si no deseas hacerlo tú mismo, solicita apoyo para subir el producto o servicio.</p>
           </div>
@@ -273,12 +274,12 @@
       <div class="container">
         <div class="section-head reveal">
           <h2>Cursos en línea</h2>
-          <p>Sesiones en línea con tarifa por hora o promo por paquete. Impartido por Alberto.</p>
+          <p>Sesiones en línea con tarifa por hora o promo por paquete. Enfoque práctico y acompañamiento paso a paso.</p>
         </div>
         <div class="card-grid">
           <article class="card course-card reveal">
             <h3>Contar y sumar desde cero</h3>
-            <p class="muted">Sesiones en línea para construir bases sólidas y practicar paso a paso.</p>
+            <p class="muted">Sesiones en línea para niños y adultos que quieren iniciar desde lo básico. Se trabajan números, sumas y estrategias de conteo con ejercicios guiados para ganar confianza.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -287,7 +288,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Sumar, restar, multiplicar y dividir</h3>
-            <p class="muted">Sesiones en línea enfocadas en práctica guiada y confianza en operaciones.</p>
+            <p class="muted">Sesiones en línea para dominar operaciones fundamentales y resolver problemas cotidianos. Incluye métodos rápidos, práctica con ejercicios tipo examen y retroalimentación.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -296,7 +297,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Aritmética</h3>
-            <p class="muted">Sesiones en línea con ejercicios clave para fortalecer el razonamiento.</p>
+            <p class="muted">Sesiones en línea centradas en fracciones, decimales, proporciones y porcentajes. Ideal para reforzar bases escolares y mejorar precisión en ejercicios.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -305,7 +306,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Álgebra</h3>
-            <p class="muted">Sesiones en línea para resolver ecuaciones y modelar problemas.</p>
+            <p class="muted">Sesiones en línea para comprender variables, expresiones y ecuaciones. Enfoque en modelar problemas, resolver paso a paso y aplicar en situaciones reales.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -314,7 +315,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Geometría</h3>
-            <p class="muted">Sesiones en línea para comprender figuras, áreas y razonamiento espacial.</p>
+            <p class="muted">Sesiones en línea para trabajar figuras, áreas, perímetros y sólidos. Se refuerza el razonamiento espacial con ejercicios prácticos.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -323,7 +324,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Trigonometría</h3>
-            <p class="muted">Sesiones en línea con práctica de identidades y aplicaciones reales.</p>
+            <p class="muted">Sesiones en línea para dominar razones trigonométricas, identidades y resolución de triángulos. Aplicaciones con ejercicios guiados.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -332,7 +333,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Cálculo (Taller intensivo de derivadas e integrales)</h3>
-            <p class="muted">Sesiones en línea centradas en derivadas, integrales y aplicación práctica.</p>
+            <p class="muted">Sesiones en línea con repaso de límites, derivadas e integrales aplicadas. Ideal para preparación de exámenes y resolución de problemas paso a paso.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -341,7 +342,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Cálculo diferencial</h3>
-            <p class="muted">Sesiones en línea con ejercicios guiados y preparación para exámenes.</p>
+            <p class="muted">Sesiones en línea enfocadas en límites, continuidad, derivadas y aplicaciones. Se resuelven ejercicios tipo examen con guía y práctica.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -350,7 +351,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Cálculo integral</h3>
-            <p class="muted">Sesiones en línea con métodos de integración y práctica intensiva.</p>
+            <p class="muted">Sesiones en línea para dominar técnicas de integración y aplicaciones geométricas y físicas. Incluye práctica intensiva de ejercicios.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -359,7 +360,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Probabilidad</h3>
-            <p class="muted">Sesiones en línea con ejemplos prácticos y análisis de datos.</p>
+            <p class="muted">Sesiones en línea para entender eventos, conteo y distribución de probabilidad. Se trabaja con ejemplos reales y práctica guiada.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -368,7 +369,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Álgebra lineal</h3>
-            <p class="muted">Sesiones en línea con matrices, vectores y aplicaciones prácticas.</p>
+            <p class="muted">Sesiones en línea para trabajar vectores, matrices y sistemas lineales. Se enfatiza la comprensión visual y la aplicación a problemas reales.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -377,7 +378,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Análisis matemático</h3>
-            <p class="muted">Sesiones en línea con enfoque conceptual y rigor matemático.</p>
+            <p class="muted">Sesiones en línea con rigor en límites, continuidad y series. Ideal para quienes buscan reforzar fundamentos teóricos y ejercicios avanzados.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -386,7 +387,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Ecuaciones diferenciales</h3>
-            <p class="muted">Sesiones en línea para modelar fenómenos y resolver ejercicios guiados.</p>
+            <p class="muted">Sesiones en línea para modelar fenómenos físicos y resolver ecuaciones de primer y segundo orden. Se practica con problemas guiados.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -395,7 +396,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Básicos de ajedrez</h3>
-            <p class="muted">Sesiones en línea para mejorar estrategia y pensamiento lógico.</p>
+            <p class="muted">Sesiones en línea para aprender aperturas, táctica y planes básicos. Ideal para principiantes que quieren mejorar su estrategia.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -404,7 +405,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Curso intensivo de ChatGPT Plus</h3>
-            <p class="muted">Sesiones en línea para aplicar IA en tareas y proyectos.</p>
+            <p class="muted">Sesiones en línea para aplicar IA en tareas, proyectos y productividad. Se explican prompts efectivos y flujos de trabajo prácticos.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -413,7 +414,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Te leo un libro (Círculo de lectura)</h3>
-            <p class="muted">Sesiones en línea para comprensión lectora y análisis guiado.</p>
+            <p class="muted">Sesiones en línea de lectura guiada para mejorar comprensión y análisis. Incluye conversación y ejercicios de reflexión.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -422,7 +423,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Física I</h3>
-            <p class="muted">Sesiones en línea para comprender cinemática y leyes de Newton.</p>
+            <p class="muted">Sesiones en línea centradas en mecánica: cinemática, dinámica, trabajo-energía, cantidad de movimiento y rotación. Resolución de ejercicios tipo examen.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -431,7 +432,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Física II</h3>
-            <p class="muted">Sesiones en línea enfocadas en electricidad, magnetismo y práctica.</p>
+            <p class="muted">Sesiones en línea sobre ondas, sonido, calor, gases ideales y termodinámica. Aplicaciones claras y práctica guiada para afianzar conceptos.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -440,7 +441,7 @@
           </article>
           <article class="card course-card reveal">
             <h3>Programación</h3>
-            <p class="muted">Sesiones en línea para lógica, algoritmos y ejercicios aplicados.</p>
+            <p class="muted">Sesiones en línea para aprender lógica, estructuras básicas y resolución de problemas. Ideal para empezar desde cero y practicar con ejercicios.</p>
             <div class="course-pricing">
               <p><strong>Tarifa:</strong> $350 MXN por sesión de 1 hora</p>
               <p><strong>Promo:</strong> $2,400 MXN por 8 sesiones de 1 hora</p>
@@ -448,7 +449,6 @@
             <button class="btn btn-whatsapp" data-course="Programación">Solicitar por WhatsApp</button>
           </article>
         </div>
-        <p class="muted course-note">Tarifa: $350 MXN por sesión (1 hora) | Promoción: $2,400 MXN por 8 sesiones.</p>
       </div>
     </section>
 
@@ -542,25 +542,6 @@
           <button class="chip-nav" type="button" data-chip-nav="right" aria-label="Desplazar categorías a la derecha">›</button>
         </div>
         <div id="productGrid" class="card-grid"></div>
-        <div class="protected-section">
-          <div class="protected-header">
-            <h3>Especiales</h3>
-            <p class="muted">Catálogo con acceso</p>
-          </div>
-          <button class="card protected-card" id="openProtectedCatalog" type="button">
-            <div>
-              <h4>Especiales</h4>
-              <p class="muted">Catálogo con acceso</p>
-            </div>
-            <span class="tag tag-highlight">Acceso</span>
-          </button>
-          <div id="protectedCatalog" class="protected-catalog" hidden>
-            <div class="protected-actions">
-              <button class="btn btn-ghost" id="closeProtectedCatalog" type="button">Cerrar catálogo</button>
-            </div>
-            <div id="protectedGrid" class="card-grid"></div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -670,12 +651,23 @@
             <p class="muted">El proveedor y la persona interesada acuerdan lugar, fecha y hora directamente por WhatsApp.</p>
           </article>
           <article class="card reveal">
-            <h3>¿Cuándo se cobra la comisión del 20%?</h3>
-            <p class="muted">Cuando la persona interesada confirma por WhatsApp que desea adquirir o rentar.</p>
+            <h3>¿Cuándo se cobra la comisión?</h3>
+            <p class="muted">Cuando la persona interesada confirma por WhatsApp que desea continuar con el trato.</p>
           </article>
           <article class="card reveal">
             <h3>¿Cómo se paga la comisión?</h3>
-            <p class="muted">La comisión se paga a Spin by OXXO mediante transferencia a esta CLABE: 72 8969 0001 2096 8953. Banco: Spin by OXXO.</p>
+            <p class="muted">La comisión se paga a Spin by OXXO mediante transferencia a esta CLABE: 728969000120968953. Banco: Spin by OXXO.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Consejos de seguridad</h3>
+            <ul class="muted">
+              <li>Reunirse en lugares públicos y concurridos (plazas, cafés, puntos de entrega).</li>
+              <li>Preferir horarios diurnos e ir acompañado cuando sea posible.</li>
+              <li>Verificar identidad básica por WhatsApp antes de la reunión (mensaje y llamada breve).</li>
+              <li>Evitar llevar efectivo completo si no es necesario; revisar el artículo antes del pago final.</li>
+              <li>En artículos caros, sugerir puntos seguros y vigilados.</li>
+              <li>La plataforma facilita el contacto; el acuerdo final es entre interesado y proveedor.</li>
+            </ul>
           </article>
           <article class="card reveal">
             <h3>¿Qué pasa con el 80% restante?</h3>
@@ -691,7 +683,7 @@
       <div>
         <h3>LA TIENDA DE ALBERTO</h3>
         <p class="muted">Productos, servicios y asesoría directa.</p>
-        <p class="muted"><strong>Comisión del 20% al confirmarse el trato.</strong> Coordinación directa entre comprador y vendedor.</p>
+        <p class="muted"><strong>Comisión por conexión y gestión al confirmarse el trato.</strong> Coordinación directa entre comprador y vendedor.</p>
       </div>
       <div class="footer-contact">
         <span>WhatsApp</span>
@@ -708,14 +700,14 @@
     </div>
     <button class="btn btn-ghost toast-close" id="closeNotification" type="button" data-toast-close="1" aria-label="Cerrar notificación">Cerrar</button>
   </div>
-  <div id="notificationBubble" class="notification-bubble" role="status" aria-live="polite" hidden>
+  <div id="notifWidget" class="notification-bubble is-hidden" role="status" aria-live="polite">
     <div>
       <strong id="notificationBubbleTitle">Notificaciones</strong>
-      <p id="notificationBubbleText"></p>
+      <p data-notif-text></p>
     </div>
     <div class="notification-actions">
-      <button class="btn btn-primary" id="openNotifications" type="button">Ver</button>
-      <button class="btn btn-ghost" id="dismissNotifications" type="button">Cerrar</button>
+      <button class="btn btn-primary" type="button" data-notif-action="open">Ver</button>
+      <button class="btn btn-ghost" type="button" data-notif-action="close">Cerrar</button>
     </div>
   </div>
 
@@ -881,10 +873,6 @@
               <input type="checkbox" id="productShowAddress">
               <span>Mostrar texto de ubicación</span>
             </label>
-            <label class="checkbox">
-              <input type="checkbox" id="productPrivate">
-              <span>Producto visible solo en Especiales</span>
-            </label>
             <label class="field">
               <span>Duración del anuncio</span>
               <select id="productExpiration">
@@ -1027,30 +1015,15 @@
     </div>
   </div>
 
-  <div id="protectedModal" class="modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="protectedTitle">
-      <button class="modal-close" id="closeProtectedModal" type="button" aria-label="Cerrar">×</button>
-      <h2 id="protectedTitle">Acceso a Especiales</h2>
-      <p class="muted">Ingresa la contraseña para desbloquear este catálogo.</p>
-      <form id="protectedAccessForm">
-        <label class="field">
-          <span>Contraseña</span>
-          <input type="password" id="protectedPassword" required>
-        </label>
-        <button class="btn btn-primary" type="submit">Entrar</button>
-        <p class="muted" id="protectedAccessStatus" aria-live="polite"></p>
-      </form>
-    </div>
-  </div>
-
   <div id="commissionModal" class="modal" aria-hidden="true">
     <div class="modal-content modal-content-sm" role="dialog" aria-modal="true" aria-labelledby="commissionTitle">
       <button class="modal-close" id="closeCommissionModal" type="button" aria-label="Cerrar">×</button>
       <h2 id="commissionTitle">Confirmación de comisión</h2>
       <p class="muted" id="commissionModalMessage"></p>
       <div class="commission-details">
-        <p><strong>Comisión 20%:</strong> Spin by OXXO</p>
-        <p><strong>CLABE:</strong> 72 8969 0001 2096 8953</p>
+        <p><strong>Comisión estándar:</strong> 10% (mínimo $50 MXN, tope $500 MXN).</p>
+        <p><strong>Inmuebles y vehículos:</strong> 5% (tope $1,500 MXN).</p>
+        <p><strong>CLABE:</strong> 728969000120968953 · <strong>Banco:</strong> Spin by OXXO</p>
       </div>
       <div class="form-actions">
         <button class="btn btn-primary" id="continueWhatsApp" type="button">Continuar a WhatsApp</button>
@@ -1058,18 +1031,18 @@
       </div>
     </div>
   </div>
-  <div id="imageLightbox" class="lightbox" aria-hidden="true">
-    <div class="lightbox-content" role="dialog" aria-modal="true" aria-label="Vista ampliada">
-      <button class="lightbox-close" id="closeLightbox" type="button" aria-label="Cerrar">×</button>
-      <img id="lightboxImage" alt="">
+  <div id="lightbox" class="lightbox is-hidden" aria-hidden="true">
+    <button type="button" class="lightbox__close" id="closeLightbox" aria-label="Cerrar">×</button>
+    <div class="lightbox__stage">
+      <div id="lightboxZoom" class="lightbox__zoom" role="img" aria-label="Imagen ampliada"></div>
     </div>
   </div>
-  <audio id="holidayAudio" preload="auto">
-    <source src="assets/audio/navidad.mp3" type="audio/mpeg">
-  </audio>
-  <button class="btn btn-ghost music-toggle" id="toggleMusic" type="button" aria-pressed="false" hidden>Reproducir música</button>
+  <audio id="bgMusic" preload="auto" src="assets/audio/navidad.mp3"></audio>
+  <button id="musicBtn" type="button" aria-pressed="false" class="btn btn-ghost music-toggle">
+    <span class="icon">▶︎</span> <span class="label">Música</span>
+  </button>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="js/scripts.js?v=20251226-2300"></script>
+  <script src="js/scripts.js?v=20251227a"></script>
 </body>
 </html>
