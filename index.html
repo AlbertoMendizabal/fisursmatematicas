@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
   <!-- build-id: GOLD_RENT_KEEPUI_20251226_0759 -->
-  <link rel="stylesheet" href="css/styles.css?v=20251227-0044">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="css/styles.css?v=20250214-1530">
 </head>
 <body data-build="GOLD_RENT_KEEPUI_20251226_0759">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -166,6 +167,17 @@
               <span>Dirección o zona aproximada (opcional)</span>
               <input type="text" id="proposalAddress" placeholder="Ej. Colonia Roma, CDMX">
             </label>
+            <div class="location-actions">
+              <button class="btn btn-ghost" id="proposalMapSearch" type="button">Buscar en mapa</button>
+              <label class="checkbox">
+                <input type="checkbox" id="proposalMapManual">
+                <span>Colocar pin manualmente</span>
+              </label>
+            </div>
+            <div class="map-panel">
+              <div class="map-preview" id="proposalMap" aria-label="Mapa de ubicación"></div>
+              <p class="muted small" id="proposalMapStatus">La ubicación puede ser aproximada. La publicación se revisa antes de mostrarse.</p>
+            </div>
             <label class="checkbox">
               <input type="checkbox" id="proposalMapRequest">
               <span>Permitir mostrar mapa (sujeto a aprobación)</span>
@@ -783,14 +795,15 @@
         </form>
       </div>
       <div id="adminPanel" hidden>
-        <div class="panel-header">
-          <div class="tab-list" role="tablist" aria-label="Panel admin">
-            <button class="tab" role="tab" aria-selected="true" aria-controls="admin-pending" id="admin-pending-btn">Pendientes</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-products" id="admin-products-btn">Productos</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-taxonomy" id="admin-taxonomy-btn">Categorías</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-messages" id="admin-messages-btn">Mensajes</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-notifications" id="admin-notifications-btn">Notificaciones</button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="admin-about" id="admin-about-btn">Conóceme</button>
+            <div class="panel-header">
+              <div class="tab-list" role="tablist" aria-label="Panel admin">
+                <button class="tab" role="tab" aria-selected="true" aria-controls="admin-pending" id="admin-pending-btn">Pendientes</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="admin-products" id="admin-products-btn">Productos</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="admin-expired" id="admin-expired-btn">Expirados</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="admin-taxonomy" id="admin-taxonomy-btn">Categorías</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="admin-messages" id="admin-messages-btn">Mensajes</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="admin-notifications" id="admin-notifications-btn">Notificaciones</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="admin-about" id="admin-about-btn">Conóceme</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="admin-settings" id="admin-settings-btn">Ajustes</button>
           </div>
           <button class="btn btn-ghost" id="adminLogout" type="button">Cerrar sesión</button>
@@ -899,6 +912,17 @@
               <span>Dirección o zona aproximada (opcional)</span>
               <input type="text" id="productAddress" placeholder="Ej. Colonia Roma, CDMX">
             </label>
+            <div class="location-actions">
+              <button class="btn btn-ghost" id="productMapSearch" type="button">Buscar en mapa</button>
+              <label class="checkbox">
+                <input type="checkbox" id="productMapManual">
+                <span>Colocar pin manualmente</span>
+              </label>
+            </div>
+            <div class="map-panel">
+              <div class="map-preview" id="productMap" aria-label="Mapa de ubicación"></div>
+              <p class="muted small" id="productMapStatus">Selecciona una dirección o coloca el pin en el mapa.</p>
+            </div>
             <div class="field-row">
               <label class="checkbox">
                 <input type="checkbox" id="productShowPhone">
@@ -914,9 +938,29 @@
               </label>
             </div>
             <label class="checkbox">
+              <input type="checkbox" id="productShowAddress">
+              <span>Mostrar texto de ubicación</span>
+            </label>
+            <label class="checkbox">
               <input type="checkbox" id="productPrivate">
               <span>Producto visible solo en Especiales</span>
             </label>
+            <label class="field">
+              <span>Duración del anuncio</span>
+              <select id="productExpiration">
+                <option value="forever">Indefinido</option>
+                <option value="7d">7 días</option>
+                <option value="30d">30 días</option>
+                <option value="3m">3 meses</option>
+                <option value="6m">6 meses</option>
+                <option value="date">Fecha específica</option>
+              </select>
+            </label>
+            <label class="field" id="productExpirationDateField" hidden>
+              <span>Fecha de caducidad</span>
+              <input type="date" id="productExpirationDate">
+            </label>
+            <p class="muted small" id="productExpirationHelp"></p>
             <label class="checkbox">
               <input type="checkbox" id="productSchedule">
               <span>Agregar calendario de fechas</span>
@@ -934,10 +978,16 @@
             <div class="form-actions">
               <button class="btn btn-primary" type="submit">Guardar</button>
               <button class="btn btn-whatsapp" id="adminWhatsApp" type="button">Avisar por WhatsApp</button>
+              <button class="btn btn-ghost" id="reactivateProduct" type="button" hidden>Reactivar</button>
               <button class="btn btn-ghost" id="cancelProduct" type="button">Cancelar</button>
             </div>
             <p id="productFormStatus" class="muted" aria-live="polite"></p>
           </form>
+        </div>
+
+        <div id="admin-expired" class="tab-panel" role="tabpanel" aria-labelledby="admin-expired-btn" hidden>
+          <p class="muted">Anuncios expirados (no visibles en el catálogo público).</p>
+          <div id="adminExpiredList" class="admin-list"></div>
         </div>
 
         <div id="admin-taxonomy" class="tab-panel" role="tabpanel" aria-labelledby="admin-taxonomy-btn" hidden>
@@ -1074,7 +1124,12 @@
       <img id="lightboxImage" alt="">
     </div>
   </div>
+  <audio id="holidayAudio" preload="auto">
+    <source src="assets/audio/navidad.mp3" type="audio/mpeg">
+  </audio>
+  <button class="btn btn-ghost music-toggle" id="toggleMusic" type="button" aria-pressed="false" hidden>Reproducir música</button>
 
-  <script src="js/scripts.js?v=20251227-0044"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/scripts.js?v=20250214-1530"></script>
 </body>
 </html>
