@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LA TIENDA DE ALBERTO</title>
   <!-- build-id: GOLD_RENT_KEEPUI_20251226_0759 -->
-  <link rel="stylesheet" href="css/styles.css?v=20251226-1601">
+  <link rel="stylesheet" href="css/styles.css?v=20251227-0044">
 </head>
 <body data-build="GOLD_RENT_KEEPUI_20251226_0759">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -157,11 +157,19 @@
                 <small class="muted">Este contacto solo es visible en ADMIN.</small>
               </label>
               <label class="field">
-                <span>Contacto alterno (WhatsApp)</span>
-                <input type="tel" id="proposalContactEmail" placeholder="Ej. 55 0000 0000" required>
-                <small class="muted">Este contacto solo es visible en ADMIN.</small>
+                <span>Correo electrónico (opcional)</span>
+                <input type="email" id="proposalContactEmail" placeholder="Ej. correo@dominio.com">
+                <small class="muted">Este contacto puede quedar visible solo en ADMIN.</small>
               </label>
             </div>
+            <label class="field">
+              <span>Dirección o zona aproximada (opcional)</span>
+              <input type="text" id="proposalAddress" placeholder="Ej. Colonia Roma, CDMX">
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="proposalMapRequest">
+              <span>Permitir mostrar mapa (sujeto a aprobación)</span>
+            </label>
             <label class="field">
               <span>Categoría</span>
               <select id="proposalCategory" required></select>
@@ -178,11 +186,25 @@
               <span>Título</span>
               <input type="text" id="proposalTitle" required>
             </label>
-            <label class="field">
+            <div class="field">
               <span>Mini-descripción (máx 220, sin precio)</span>
-              <textarea id="proposalDescription" maxlength="220" rows="3" required></textarea>
+              <div class="richtext-toolbar" data-editor="proposalDescriptionEditor">
+                <button class="btn btn-ghost" type="button" data-format="bold">Negrita</button>
+                <button class="btn btn-ghost" type="button" data-format="underline">Subrayado</button>
+                <button class="btn btn-ghost" type="button" data-format="align-left">Izquierda</button>
+                <button class="btn btn-ghost" type="button" data-format="align-center">Centrar</button>
+                <div class="color-group" role="group" aria-label="Colores">
+                  <button class="color-swatch" type="button" data-color="#0b0b0b" aria-label="Negro"></button>
+                  <button class="color-swatch" type="button" data-color="#5a5a5a" aria-label="Gris"></button>
+                  <button class="color-swatch" type="button" data-color="#b88900" aria-label="Dorado"></button>
+                  <button class="color-swatch" type="button" data-color="#1f2937" aria-label="Azul oscuro"></button>
+                  <button class="color-swatch" type="button" data-color="#b45309" aria-label="Rojo suave"></button>
+                </div>
+              </div>
+              <div id="proposalDescriptionEditor" class="richtext-editor" contenteditable="true" data-placeholder="Escribe una descripción breve..."></div>
+              <textarea id="proposalDescription" hidden></textarea>
               <small id="proposalDescCount">220 caracteres restantes</small>
-            </label>
+            </div>
             <label class="field">
               <span>Precio MXN</span>
               <input type="text" id="proposalPrice" placeholder="350.50">
@@ -574,6 +596,8 @@
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Secciones interactivas">
             <button class="tab" role="tab" aria-selected="true" aria-controls="tab-proximos" id="tab-proximos-btn">Próximos cursos</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-juego" id="tab-juego-btn">Juego matemático</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="tab-alumnos" id="tab-alumnos-btn">Acceso alumnos</button>
             <button class="tab" role="tab" aria-selected="false" aria-controls="tab-contacto" id="tab-contacto-btn">Contacto</button>
           </div>
           <div id="tab-proximos" class="tab-panel" role="tabpanel" aria-labelledby="tab-proximos-btn">
@@ -586,6 +610,64 @@
                   <li><strong>Cálculo integral</strong><span>Inicio: 19 de enero · Fin: 19 de febrero</span></li>
                 </ul>
                 <p class="muted">Solicita tu lugar con anticipación.</p>
+              </div>
+            </div>
+          </div>
+          <div id="tab-juego" class="tab-panel" role="tabpanel" aria-labelledby="tab-juego-btn" hidden>
+            <div class="panel-grid">
+              <div class="card reveal">
+                <h3>Juego matemático rápido</h3>
+                <p class="muted">Resuelve la suma antes de que cambie el ejercicio.</p>
+                <div class="math-game" id="mathGame">
+                  <div class="math-problem">
+                    <span id="mathA">1</span>
+                    <span>+</span>
+                    <span id="mathB">1</span>
+                  </div>
+                  <form id="mathGameForm" class="math-form">
+                    <label class="field">
+                      <span>Tu respuesta</span>
+                      <input type="number" id="mathAnswer" required>
+                    </label>
+                    <button class="btn btn-primary" type="submit">Comprobar</button>
+                  </form>
+                  <p class="muted" id="mathStatus" aria-live="polite"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="tab-alumnos" class="tab-panel" role="tabpanel" aria-labelledby="tab-alumnos-btn" hidden>
+            <div class="panel-grid">
+              <div class="card reveal" id="studentLoginCard">
+                <h3>Acceso de alumnos</h3>
+                <p class="muted">Ingresa la clave 2025 o 1991 para editar datos rápidos.</p>
+                <form id="studentLoginForm">
+                  <label class="field">
+                    <span>Contraseña</span>
+                    <input type="password" id="studentPassword" required>
+                  </label>
+                  <button class="btn btn-primary" type="submit">Entrar</button>
+                  <p class="muted" id="studentLoginStatus" aria-live="polite"></p>
+                </form>
+              </div>
+              <div class="card reveal" id="studentEditCard" hidden>
+                <h3>Edición rápida</h3>
+                <form id="studentQuickForm" class="form-grid">
+                  <label class="field">
+                    <span>Contenido</span>
+                    <input type="text" id="studentContent" placeholder="Título o tema">
+                  </label>
+                  <label class="field">
+                    <span>Fecha</span>
+                    <input type="date" id="studentDate">
+                  </label>
+                  <label class="field">
+                    <span>Número</span>
+                    <input type="number" id="studentNumber" placeholder="Ej. 24">
+                  </label>
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                  <p class="muted" id="studentQuickStatus" aria-live="polite"></p>
+                </form>
               </div>
             </div>
           </div>
@@ -673,6 +755,16 @@
       <p id="notificationMessage"></p>
     </div>
     <button class="btn btn-ghost toast-close" id="closeNotification" type="button" data-toast-close="1" aria-label="Cerrar notificación">Cerrar</button>
+  </div>
+  <div id="notificationBubble" class="notification-bubble" role="status" aria-live="polite" hidden>
+    <div>
+      <strong id="notificationBubbleTitle">Notificaciones</strong>
+      <p id="notificationBubbleText"></p>
+    </div>
+    <div class="notification-actions">
+      <button class="btn btn-primary" id="openNotifications" type="button">Ver</button>
+      <button class="btn btn-ghost" id="dismissNotifications" type="button">Cerrar</button>
+    </div>
   </div>
 
   <div id="adminModal" class="modal" aria-hidden="true">
@@ -772,13 +864,55 @@
             </label>
             <label class="field">
               <span>Mini-descripción (máx 220, sin precio)</span>
-              <textarea id="productDescription" maxlength="220" rows="3" required></textarea>
+              <div class="richtext-toolbar" data-editor="productDescriptionEditor">
+                <button class="btn btn-ghost" type="button" data-format="bold">Negrita</button>
+                <button class="btn btn-ghost" type="button" data-format="underline">Subrayado</button>
+                <button class="btn btn-ghost" type="button" data-format="align-left">Izquierda</button>
+                <button class="btn btn-ghost" type="button" data-format="align-center">Centrar</button>
+                <div class="color-group" role="group" aria-label="Colores">
+                  <button class="color-swatch" type="button" data-color="#0b0b0b" aria-label="Negro"></button>
+                  <button class="color-swatch" type="button" data-color="#5a5a5a" aria-label="Gris"></button>
+                  <button class="color-swatch" type="button" data-color="#b88900" aria-label="Dorado"></button>
+                  <button class="color-swatch" type="button" data-color="#1f2937" aria-label="Azul oscuro"></button>
+                  <button class="color-swatch" type="button" data-color="#b45309" aria-label="Rojo suave"></button>
+                </div>
+              </div>
+              <div id="productDescriptionEditor" class="richtext-editor" contenteditable="true" data-placeholder="Escribe una descripción breve..."></div>
+              <textarea id="productDescription" hidden></textarea>
               <small id="descCount">0/220</small>
             </label>
             <label class="field">
               <span>Precio MXN</span>
               <input type="text" id="productPrice" placeholder="350.50">
             </label>
+            <div class="field-row">
+              <label class="field">
+                <span>Teléfono (opcional)</span>
+                <input type="tel" id="productContactPhone" placeholder="WhatsApp o teléfono">
+              </label>
+              <label class="field">
+                <span>Correo electrónico (opcional)</span>
+                <input type="email" id="productContactEmail" placeholder="correo@dominio.com">
+              </label>
+            </div>
+            <label class="field">
+              <span>Dirección o zona aproximada (opcional)</span>
+              <input type="text" id="productAddress" placeholder="Ej. Colonia Roma, CDMX">
+            </label>
+            <div class="field-row">
+              <label class="checkbox">
+                <input type="checkbox" id="productShowPhone">
+                <span>Mostrar teléfono públicamente</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" id="productShowEmail">
+                <span>Mostrar correo públicamente</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" id="productShowMap">
+                <span>Mostrar mapa públicamente</span>
+              </label>
+            </div>
             <label class="checkbox">
               <input type="checkbox" id="productPrivate">
               <span>Producto visible solo en Especiales</span>
@@ -867,6 +1001,9 @@
           <div class="card">
             <h3>Buzón de notificaciones</h3>
             <p class="muted">Aquí se acumulan los avisos. Acceso privado.</p>
+            <div class="form-actions">
+              <button class="btn btn-ghost" id="clearNotifications" type="button">Eliminar todas</button>
+            </div>
           </div>
           <div id="adminNotificationList" class="admin-list"></div>
         </div>
@@ -931,7 +1068,13 @@
       </div>
     </div>
   </div>
+  <div id="imageLightbox" class="lightbox" aria-hidden="true">
+    <div class="lightbox-content" role="dialog" aria-modal="true" aria-label="Vista ampliada">
+      <button class="lightbox-close" id="closeLightbox" type="button" aria-label="Cerrar">×</button>
+      <img id="lightboxImage" alt="">
+    </div>
+  </div>
 
-  <script src="js/scripts.js?v=20251226-1601"></script>
+  <script src="js/scripts.js?v=20251227-0044"></script>
 </body>
 </html>
