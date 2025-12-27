@@ -4140,6 +4140,14 @@ const showNotification = () => {
 const setupNotification = () => {
   const handleDismiss = (event) => {
     if (!(event.target instanceof Element)) return;
+    const bubbleClose = event.target.closest("#dismissNotifications");
+    if (bubbleClose) {
+      event.preventDefault();
+      event.stopPropagation();
+      sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
+      if (notificationBubble) notificationBubble.hidden = true;
+      return;
+    }
     const target = event.target.closest("[data-toast-close]");
     if (!target) return;
     const toast = target.closest("[data-toast]") || document.querySelector("[data-toast]");
@@ -4160,6 +4168,13 @@ const setupNotification = () => {
     (event) => {
       if (event.key !== "Enter" && event.key !== " ") return;
       if (!(event.target instanceof Element)) return;
+      const bubbleClose = event.target.closest("#dismissNotifications");
+      if (bubbleClose) {
+        event.preventDefault();
+        sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
+        if (notificationBubble) notificationBubble.hidden = true;
+        return;
+      }
       const target = event.target.closest("[data-toast-close]");
       if (!target) return;
       event.preventDefault();
@@ -4176,11 +4191,14 @@ const setupNotification = () => {
 
 const setupNotificationBubble = () => {
   if (openNotifications) {
-    openNotifications.addEventListener("click", () => {
+    const openHandler = () => {
       openAdminModal();
       const button = document.getElementById("admin-notifications-btn");
       button?.click();
-    });
+    };
+    openNotifications.addEventListener("click", openHandler);
+    openNotifications.addEventListener("touchstart", openHandler, { passive: true });
+    openNotifications.addEventListener("pointerdown", openHandler);
   }
   if (dismissNotifications) {
     dismissNotifications.addEventListener("click", (event) => {
@@ -5350,34 +5368,56 @@ const setupZoomLens = () => {
 
 const setupHolidayMusic = () => {
   if (!holidayAudio || !toggleMusic) return;
+
   holidayAudio.loop = false;
+  holidayAudio.preload = "auto";
+  holidayAudio.currentTime = 0;
+
   const setToggleState = (playing) => {
     toggleMusic.hidden = false;
+    toggleMusic.disabled = false;
     toggleMusic.textContent = playing ? "Silenciar música" : "Reproducir música";
     toggleMusic.setAttribute("aria-pressed", playing ? "true" : "false");
   };
 
-  const attemptPlay = () => {
+  const safePlay = () =>
     holidayAudio
       .play()
       .then(() => setToggleState(true))
       .catch(() => setToggleState(false));
+
+  const stop = () => {
+    holidayAudio.pause();
+    setToggleState(false);
   };
 
+  setToggleState(false);
+
+  const firstGestureStart = () => {
+    if (!holidayAudio.paused) return;
+    safePlay();
+  };
+  document.addEventListener("pointerdown", firstGestureStart, { once: true });
+  document.addEventListener("touchstart", firstGestureStart, {
+    once: true,
+    passive: true,
+  });
+
   toggleMusic.addEventListener("click", () => {
-    if (holidayAudio.paused) {
-      holidayAudio.play().then(() => setToggleState(true));
-    } else {
-      holidayAudio.pause();
-      setToggleState(false);
-    }
+    if (holidayAudio.paused) safePlay();
+    else stop();
   });
 
   holidayAudio.addEventListener("ended", () => {
     setToggleState(false);
   });
 
-  attemptPlay();
+  holidayAudio.addEventListener("error", () => {
+    toggleMusic.hidden = false;
+    toggleMusic.textContent = "Música no disponible";
+    toggleMusic.setAttribute("aria-pressed", "false");
+    toggleMusic.disabled = true;
+  });
 };
 
 const setupAboutForm = () => {
@@ -5406,6 +5446,9 @@ const initializeNotificationForm = () => {
 };
 
 const init = () => {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  window.addEventListener("pagehide", () => sessionStorage.removeItem(ADMIN_SESSION_KEY));
+  window.addEventListener("beforeunload", () => sessionStorage.removeItem(ADMIN_SESSION_KEY));
   loadTaxonomy();
   ensureDefaultTaxonomy();
   loadApproved();
