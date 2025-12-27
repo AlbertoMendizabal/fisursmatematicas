@@ -8,11 +8,9 @@ const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
 const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
 const NOTIFICATION_LOG_KEY = "LTA_NOTIFICATIONS_V1";
 const WELCOME_DISMISSED_KEY = "toastDismissed";
-const NOTIFICATION_BUBBLE_DISMISSED_KEY = "notificationBubbleDismissed";
+const NOTIF_WIDGET_HIDDEN_KEY = "notifWidgetHidden";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
-const PROTECTED_CATALOG_KEY = "protectedCatalogUnlocked";
-const PROTECTED_CATALOG_HASH = "db55da3fc3098e9c42311c6013304ff36b19ef73d12ea932054b5ad51df4f49d";
 const ADMIN_ACCESS_HASHES = new Set([
   "7d12ba56e9f8b3dc64f77c87318c4f37bc12cfbf1a37573cdf3e4fa683f20155",
   "b2b2f104d32c638903e151a9b20d6e27b41d8c0c84cf8458738f83ca2f1dd744",
@@ -164,7 +162,6 @@ const proposalDescCount = document.getElementById("proposalDescCount");
 const proposalPrice = document.getElementById("proposalPrice");
 const proposalCommission = document.getElementById("proposalCommission");
 const proposalPayout = document.getElementById("proposalPayout");
-const proposalPrivate = document.getElementById("proposalPrivate");
 const proposalSchedule = document.getElementById("proposalSchedule");
 const proposalDates = document.getElementById("proposalDates");
 const proposalStartDate = document.getElementById("proposalStartDate");
@@ -210,7 +207,6 @@ const productShowPhone = document.getElementById("productShowPhone");
 const productShowEmail = document.getElementById("productShowEmail");
 const productShowMap = document.getElementById("productShowMap");
 const productShowAddress = document.getElementById("productShowAddress");
-const productPrivate = document.getElementById("productPrivate");
 const productSchedule = document.getElementById("productSchedule");
 const productDates = document.getElementById("productDates");
 const productStartDate = document.getElementById("productStartDate");
@@ -238,10 +234,6 @@ const notificationStatus = document.getElementById("notificationStatus");
 const adminNotificationList = document.getElementById("adminNotificationList");
 const clearNotificationsBtn = document.getElementById("clearNotifications");
 
-const notificationBubble = document.getElementById("notificationBubble");
-const notificationBubbleText = document.getElementById("notificationBubbleText");
-const openNotifications = document.getElementById("openNotifications");
-const dismissNotifications = document.getElementById("dismissNotifications");
 
 const exportDataBtn = document.getElementById("exportData");
 const importDataBtn = document.getElementById("importDataBtn");
@@ -268,25 +260,15 @@ const catalogMenu = document.getElementById("catalogMenu");
 const catalogMenuCategories = document.getElementById("catalogMenuCategories");
 const catalogMenuSubcategories = document.getElementById("catalogMenuSubcategories");
 const catalogMenuMobile = document.getElementById("catalogMenuMobile");
-const protectedModal = document.getElementById("protectedModal");
-const openProtectedCatalog = document.getElementById("openProtectedCatalog");
-const closeProtectedModal = document.getElementById("closeProtectedModal");
-const protectedAccessForm = document.getElementById("protectedAccessForm");
-const protectedPassword = document.getElementById("protectedPassword");
-const protectedAccessStatus = document.getElementById("protectedAccessStatus");
-
-const holidayAudio = document.getElementById("holidayAudio");
-const toggleMusic = document.getElementById("toggleMusic");
-const protectedCatalog = document.getElementById("protectedCatalog");
-const protectedGrid = document.getElementById("protectedGrid");
-const closeProtectedCatalog = document.getElementById("closeProtectedCatalog");
+const bgMusic = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
 const commissionModal = document.getElementById("commissionModal");
 const commissionModalMessage = document.getElementById("commissionModalMessage");
 const continueWhatsApp = document.getElementById("continueWhatsApp");
 const cancelWhatsApp = document.getElementById("cancelWhatsApp");
 const closeCommissionModal = document.getElementById("closeCommissionModal");
-const imageLightbox = document.getElementById("imageLightbox");
-const lightboxImage = document.getElementById("lightboxImage");
+const lightbox = document.getElementById("lightbox");
+const lightboxZoom = document.getElementById("lightboxZoom");
 const closeLightbox = document.getElementById("closeLightbox");
 const aboutContent = document.getElementById("aboutContent");
 const aboutForm = document.getElementById("aboutForm");
@@ -553,15 +535,6 @@ const hashText = async (value) => {
 const isCourseItem = (product) =>
   product?.type === "Curso" || product?.categoryId === "cursos";
 
-const hasProtectedAccess = () =>
-  sessionStorage.getItem(PROTECTED_CATALOG_KEY) === "1";
-
-const setProtectedAccess = () =>
-  sessionStorage.setItem(PROTECTED_CATALOG_KEY, "1");
-
-const clearProtectedAccess = () =>
-  sessionStorage.removeItem(PROTECTED_CATALOG_KEY);
-
 const updatePriceBreakdown = (priceValue, commissionEl, payoutEl) => {
   if (!commissionEl || !payoutEl) return;
   if (priceValue === null) {
@@ -569,7 +542,7 @@ const updatePriceBreakdown = (priceValue, commissionEl, payoutEl) => {
     payoutEl.textContent = "$0 MXN";
     return;
   }
-  const commission = priceValue * 0.2;
+  const commission = Math.min(Math.max(priceValue * 0.1, 50), 500);
   const payout = priceValue - commission;
   commissionEl.textContent = formatPrice(commission);
   payoutEl.textContent = formatPrice(payout);
@@ -971,7 +944,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now(),
@@ -990,7 +962,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 5000,
@@ -1009,7 +980,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 9000,
@@ -1028,7 +998,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 12000,
@@ -1047,7 +1016,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 15000,
@@ -1066,7 +1034,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 17000,
@@ -1085,7 +1052,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 19000,
@@ -1104,7 +1070,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 21000,
@@ -1123,7 +1088,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 23000,
@@ -1142,7 +1106,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 25000,
@@ -1161,7 +1124,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 27000,
@@ -1181,7 +1143,6 @@ const defaultProducts = () => [
     operation: "renta",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 30000,
@@ -1201,7 +1162,6 @@ const defaultProducts = () => [
     operation: "renta",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 33000,
@@ -1220,7 +1180,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 36000,
@@ -1239,7 +1198,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 39000,
@@ -1258,7 +1216,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 42000,
@@ -1277,7 +1234,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 45000,
@@ -1296,7 +1252,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 48000,
@@ -1315,7 +1270,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Producto",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 52000,
@@ -1336,7 +1290,6 @@ const defaultProducts = () => [
     operation: "renta",
     type: "Servicio",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 56000,
@@ -1355,7 +1308,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Servicio",
     status: "publicado",
-    isProtected: false,
     startDate: "2024-11-18",
     endDate: "2024-11-18",
     createdAt: Date.now() - 60000,
@@ -1374,7 +1326,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Servicio",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 64000,
@@ -1393,7 +1344,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 70000,
@@ -1412,7 +1362,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 74000,
@@ -1431,7 +1380,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 76000,
@@ -1450,7 +1398,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 78000,
@@ -1469,7 +1416,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 80000,
@@ -1488,7 +1434,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 82000,
@@ -1507,7 +1452,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 84000,
@@ -1526,7 +1470,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 86000,
@@ -1545,7 +1488,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 88000,
@@ -1564,7 +1506,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 90000,
@@ -1583,7 +1524,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 88000,
@@ -1602,7 +1542,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 90000,
@@ -1621,7 +1560,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 92000,
@@ -1640,7 +1578,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 94000,
@@ -1659,7 +1596,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 96000,
@@ -1678,7 +1614,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 98000,
@@ -1697,7 +1632,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 100000,
@@ -1716,7 +1650,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 102000,
@@ -1735,7 +1668,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Curso",
     status: "publicado",
-    isProtected: false,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 104000,
@@ -1754,7 +1686,6 @@ const defaultProducts = () => [
     childId: "",
     type: "Servicio",
     status: "publicado",
-    isProtected: true,
     startDate: "",
     endDate: "",
     createdAt: Date.now() - 94000,
@@ -1827,7 +1758,6 @@ const normalizeItem = (item) => {
     price: item.price ?? item.priceMXN ?? null,
     priceMXN: item.priceMXN ?? item.price ?? null,
     descriptionHtml: item.descriptionHtml || item.description || "",
-    isProtected: Boolean(item.isProtected ?? item.isPrivate),
     status: statusValue,
     startDate: item.startDate || "",
     endDate: item.endDate || "",
@@ -2040,7 +1970,7 @@ const loadNotifications = () => {
 const saveNotifications = () => {
   saveToStorage(NOTIFICATION_LOG_KEY, storedNotifications);
   renderNotifications();
-  renderNotificationBubble();
+  showNotifWidgetIfNeeded();
 };
 
 const addNotification = ({ type, message, itemId }) => {
@@ -2115,24 +2045,32 @@ const renderNotifications = () => {
   });
 };
 
-const renderNotificationBubble = () => {
-  if (!notificationBubble || !notificationBubbleText) return;
-  if (sessionStorage.getItem(NOTIFICATION_BUBBLE_DISMISSED_KEY) === "1") {
-    notificationBubble.hidden = true;
-    return;
+const getUnreadCount = () => storedNotifications.filter((item) => !item.read).length;
+
+const hideNotifWidget = () => {
+  const widget = document.getElementById("notifWidget");
+  if (widget) widget.classList.add("is-hidden");
+  sessionStorage.setItem(NOTIF_WIDGET_HIDDEN_KEY, "1");
+};
+
+const showNotifWidgetIfNeeded = () => {
+  const widget = document.getElementById("notifWidget");
+  if (!widget) return;
+  const hidden = sessionStorage.getItem(NOTIF_WIDGET_HIDDEN_KEY) === "1";
+  const unread = getUnreadCount();
+  if (unread > 0) {
+    widget.classList.remove("is-hidden");
+  } else {
+    widget.classList.add("is-hidden");
   }
-  if (!storedNotifications.length) {
-    notificationBubble.hidden = true;
-    return;
+  if (hidden && unread === 0) widget.classList.add("is-hidden");
+  const textEl = widget.querySelector("[data-notif-text]");
+  if (textEl) {
+    textEl.textContent =
+      unread === 1
+        ? "Tienes 1 notificación nueva."
+        : `Tienes ${unread} notificaciones nuevas.`;
   }
-  const unreadCount = storedNotifications.filter((item) => !item.read).length;
-  const latest = storedNotifications[0];
-  notificationBubbleText.textContent = unreadCount
-    ? `Tienes ${unreadCount} notificación${unreadCount === 1 ? "" : "es"} nueva${
-        unreadCount === 1 ? "" : "s"
-      }.`
-    : `Última: ${latest?.message || "Sin novedades"}`;
-  notificationBubble.hidden = false;
 };
 
 const buildCarousel = (images, title) => {
@@ -2238,7 +2176,7 @@ const buildCommissionNote = () => {
   const note = document.createElement("p");
   note.className = "muted small";
   note.textContent =
-    "La plataforma no recibe el 80%: el acuerdo y pago restante se hacen directamente con el proveedor. Comisión 20% al confirmarse por WhatsApp.";
+    "La plataforma no recibe el pago al proveedor: el acuerdo restante se hace directamente. Comisión estándar 10% (mínimo $50 MXN, tope $500 MXN); inmuebles y vehículos 5% (tope $1,500 MXN).";
   return note;
 };
 
@@ -2361,8 +2299,9 @@ const buildContactSection = (product) => {
   button.className = "btn btn-whatsapp";
   button.type = "button";
   button.textContent = "Contactar por WhatsApp";
-  const commissionMessage = `Para compartir el contacto del proveedor, primero se confirma el interés por WhatsApp y se cubre la comisión del 20%. Comisión por Spin by OXXO: CLABE 72 8969 0001 2096 8953.`;
-  const whatsappMessage = `Hola, me interesa ${product.title}. Confirmo mi interés para continuar con el proceso de comisión (20%).`;
+  const commissionMessage =
+    "Para compartir el contacto del proveedor, primero se confirma el interés por WhatsApp y se cubre la comisión. Comisión estándar 10% (mínimo $50 MXN, tope $500 MXN); inmuebles y vehículos 5% (tope $1,500 MXN). Pago por Spin by OXXO: CLABE 728969000120968953.";
+  const whatsappMessage = `Hola, me interesa ${product.title}. Confirmo mi interés para continuar con el proceso de comisión.`;
   const whatsappUrl = createWhatsAppUrl(whatsappMessage);
   button.addEventListener("click", () => {
     openCommissionModal(commissionMessage, whatsappUrl);
@@ -2473,7 +2412,6 @@ const renderProducts = () => {
   let filtered = approvedProducts.filter((product) => {
     const text = `${product.title} ${product.description}`.toLowerCase();
     if (product.status === "expirado" || isExpired(product)) return false;
-    if (product.isProtected) return false;
     const matchesCategory =
       selectedCategory === "all" || product.categoryId === selectedCategory;
     const matchesSubcategory =
@@ -2634,14 +2572,13 @@ const updateAdminList = () => {
     const meta = document.createElement("p");
     meta.className = "muted";
     const dates = [product.startDate, product.endDate].filter(Boolean).join(" · ");
-    const protectedLabel = product.isProtected ? " · Especiales" : "";
     const categoryLabel = getCategoryLabel(product);
     const subcategoryLabel = getSubcategoryLabel(product);
     const childLabel = getChildLabel(product);
     const operationLabel = formatOperation(product.operation);
     meta.textContent = `${formatPriceLabel(product.price)} · ${product.type || "Producto"} · ${operationLabel} · ${categoryLabel}${
       subcategoryLabel ? ` · ${subcategoryLabel}` : ""
-    }${childLabel ? ` · ${childLabel}` : ""}${protectedLabel} · ${formatCondition(
+    }${childLabel ? ` · ${childLabel}` : ""} · ${formatCondition(
       product.condition
     )} · ${formatDelivery(
       product.deliveryZone
@@ -2705,7 +2642,6 @@ const updatePendingList = () => {
     const meta = document.createElement("p");
     meta.className = "muted";
     const dates = [proposal.startDate, proposal.endDate].filter(Boolean).join(" · ");
-    const protectedLabel = proposal.isProtected ? " · Especiales" : "";
     const statusLabel =
       proposal.status === "details_requested" ? " · Solicita detalles" : "";
     const categoryLabel = getCategoryLabel(proposal);
@@ -2714,7 +2650,7 @@ const updatePendingList = () => {
     const operationLabel = formatOperation(proposal.operation);
     meta.textContent = `${formatPriceLabel(proposal.price)} · ${proposal.type || "Producto"} · ${operationLabel} · ${categoryLabel}${
       subcategoryLabel ? ` · ${subcategoryLabel}` : ""
-    }${childLabel ? ` · ${childLabel}` : ""}${protectedLabel}${statusLabel} · ${formatCondition(
+    }${childLabel ? ` · ${childLabel}` : ""}${statusLabel} · ${formatCondition(
       proposal.condition
     )} · ${formatDelivery(
       proposal.deliveryZone
@@ -3246,7 +3182,6 @@ const openEditForm = (item, mode) => {
   productEndDate.value = item.endDate || "";
   productSchedule.checked = Boolean(item.startDate || item.endDate);
   productDates.hidden = !productSchedule.checked;
-  productPrivate.checked = Boolean(item.isProtected);
   if (productContactPhone) productContactPhone.value = item.contact?.phone || "";
   if (productContactEmail) productContactEmail.value = item.contact?.email || "";
   if (productAddress) productAddress.value = item.addressText || item.location || "";
@@ -3377,7 +3312,6 @@ const persistApproved = () => {
   }
   adminStorageStatus.textContent = "";
   renderProducts();
-  renderProtectedCatalog();
   updateAdminList();
   updateExpiredList();
 };
@@ -3669,7 +3603,6 @@ const syncCatalogWithTaxonomy = () => {
   saveToStorage(APPROVED_KEY, approvedProducts);
   saveToStorage(PENDING_KEY, pendingProposals);
   renderProducts();
-  renderProtectedCatalog();
   updateAdminList();
   updatePendingList();
 };
@@ -4140,14 +4073,6 @@ const showNotification = () => {
 const setupNotification = () => {
   const handleDismiss = (event) => {
     if (!(event.target instanceof Element)) return;
-    const bubbleClose = event.target.closest("#dismissNotifications");
-    if (bubbleClose) {
-      event.preventDefault();
-      event.stopPropagation();
-      sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
-      if (notificationBubble) notificationBubble.hidden = true;
-      return;
-    }
     const target = event.target.closest("[data-toast-close]");
     if (!target) return;
     const toast = target.closest("[data-toast]") || document.querySelector("[data-toast]");
@@ -4168,13 +4093,6 @@ const setupNotification = () => {
     (event) => {
       if (event.key !== "Enter" && event.key !== " ") return;
       if (!(event.target instanceof Element)) return;
-      const bubbleClose = event.target.closest("#dismissNotifications");
-      if (bubbleClose) {
-        event.preventDefault();
-        sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
-        if (notificationBubble) notificationBubble.hidden = true;
-        return;
-      }
       const target = event.target.closest("[data-toast-close]");
       if (!target) return;
       event.preventDefault();
@@ -4189,25 +4107,27 @@ const setupNotification = () => {
   showNotification();
 };
 
-const setupNotificationBubble = () => {
-  if (openNotifications) {
-    const openHandler = () => {
-      openAdminModal();
-      const button = document.getElementById("admin-notifications-btn");
-      button?.click();
-    };
-    openNotifications.addEventListener("click", openHandler);
-    openNotifications.addEventListener("touchstart", openHandler, { passive: true });
-    openNotifications.addEventListener("pointerdown", openHandler);
-  }
-  if (dismissNotifications) {
-    dismissNotifications.addEventListener("click", (event) => {
+const openNotifPanel = () => {
+  openAdminModal();
+  const button = document.getElementById("admin-notifications-btn");
+  button?.click();
+};
+
+const setupNotificationWidget = () => {
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const btn = event.target.closest("[data-notif-action]");
+    if (!btn) return;
+    const action = btn.dataset.notifAction;
+    if (action === "close") {
       event.preventDefault();
-      event.stopPropagation();
-      sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
-      if (notificationBubble) notificationBubble.hidden = true;
-    });
-  }
+      hideNotifWidget();
+    }
+    if (action === "open") {
+      event.preventDefault();
+      openNotifPanel();
+    }
+  });
 };
 
 const setAdminSession = () => {
@@ -4292,7 +4212,6 @@ const handleProductSubmit = (event) => {
   const images = getPreviewImages(productPreview);
   const startDate = productSchedule.checked ? productStartDate.value : "";
   const endDate = productSchedule.checked ? productEndDate.value : "";
-  const isProtected = productPrivate.checked;
   const contactPhone = productContactPhone?.value.trim() || "";
   const contactEmail = productContactEmail?.value.trim() || "";
   const location = productAddress?.value.trim() || "";
@@ -4387,7 +4306,6 @@ const handleProductSubmit = (event) => {
             images,
             startDate,
             endDate,
-            isProtected,
             childId,
             location,
             addressText: location,
@@ -4434,7 +4352,6 @@ const handleProductSubmit = (event) => {
           images,
           startDate,
           endDate,
-          isProtected,
           childId,
           location,
           addressText: location,
@@ -4481,7 +4398,6 @@ const handleProductSubmit = (event) => {
       images,
       startDate,
       endDate,
-      isProtected,
       location,
       addressText: location,
       locationMode: mapState.locationMode,
@@ -4563,7 +4479,6 @@ const handleImport = (event) => {
         approvedProducts = data.approved.map(sanitizeApprovedProduct);
         saveToStorage(APPROVED_KEY, approvedProducts);
         renderProducts();
-        renderProtectedCatalog();
         updateAdminList();
       }
       if (Array.isArray(data.pending)) {
@@ -4785,7 +4700,6 @@ const handleProposalSubmit = (event) => {
   const images = getPreviewImages(proposalPreview);
   const startDate = proposalSchedule.checked ? proposalStartDate.value : "";
   const endDate = proposalSchedule.checked ? proposalEndDate.value : "";
-  const isProtected = proposalPrivate.checked;
 
   if (
     !type ||
@@ -4835,7 +4749,6 @@ const handleProposalSubmit = (event) => {
     images,
     startDate,
     endDate,
-    isProtected,
     location,
     addressText: location,
     locationMode: mapState.locationMode,
@@ -5127,137 +5040,6 @@ const setupMapManagers = () => {
   });
 };
 
-const openProtectedModal = () => {
-  if (!protectedModal) return;
-  protectedModal.classList.add("show");
-  protectedModal.setAttribute("aria-hidden", "false");
-  if (protectedAccessStatus) protectedAccessStatus.textContent = "";
-  if (protectedPassword) protectedPassword.value = "";
-};
-
-const closeProtectedModalHandler = () => {
-  if (!protectedModal) return;
-  protectedModal.classList.remove("show");
-  protectedModal.setAttribute("aria-hidden", "true");
-};
-
-const renderProtectedCatalog = () => {
-  if (!protectedGrid || !protectedCatalog) return;
-  const unlocked = hasProtectedAccess();
-  protectedCatalog.hidden = !unlocked;
-  protectedGrid.innerHTML = "";
-  if (!unlocked) return;
-  const protectedItems = approvedProducts.filter(
-    (product) => product.isProtected && product.status !== "expirado" && !isExpired(product)
-  );
-  if (!protectedItems.length) {
-    const empty = document.createElement("p");
-    empty.className = "muted";
-    empty.textContent = "No hay productos especiales disponibles.";
-    protectedGrid.appendChild(empty);
-    return;
-  }
-  protectedItems.forEach((product) => {
-    const card = document.createElement("article");
-    card.className = "card product-card protected-card-item";
-    const carousel = buildCarousel(product.images, product.title);
-
-    const title = document.createElement("h3");
-    title.textContent = safeText(product.title);
-
-    const meta = document.createElement("div");
-    meta.className = "tag-row";
-    const typeTag = document.createElement("span");
-    typeTag.className = "tag";
-    typeTag.textContent = product.type || "Producto";
-    const operationTag = document.createElement("span");
-    operationTag.className = "tag tag-highlight";
-    operationTag.textContent = formatOperation(product.operation);
-    const categoryTag = document.createElement("span");
-    categoryTag.className = "tag tag-alt";
-    categoryTag.textContent = getCategoryLabel(product);
-    meta.append(typeTag, operationTag, categoryTag);
-    const subcategoryLabel = getSubcategoryLabel(product);
-    if (subcategoryLabel) {
-      const subTag = document.createElement("span");
-      subTag.className = "tag";
-      subTag.textContent = subcategoryLabel;
-      meta.append(subTag);
-    }
-
-    const details = document.createElement("p");
-    details.className = "muted small";
-    details.textContent = isCourseItem(product)
-      ? "Sesiones en línea"
-      : `${formatCondition(product.condition)} · ${formatDelivery(product.deliveryZone)}`;
-
-    const desc = document.createElement("div");
-    desc.className = "muted";
-    desc.innerHTML = sanitizeRichText(product.descriptionHtml || product.description);
-
-    const priceBlock = isCourseItem(product) ? buildCoursePricing() : document.createElement("p");
-    if (!isCourseItem(product)) {
-      priceBlock.className = "price";
-      priceBlock.textContent = formatPriceLabel(product.price);
-    }
-
-    const mapBlock = buildMapBlock(product);
-    const contactSection = buildContactSection(product);
-    const commissionNote = buildCommissionNote();
-
-    card.append(carousel, meta, title, details, desc, priceBlock);
-    if (mapBlock) card.append(mapBlock);
-    card.append(commissionNote, contactSection);
-    protectedGrid.appendChild(card);
-  });
-  initMapEmbeds(protectedGrid);
-  registerReveals(protectedGrid);
-};
-
-const setupProtectedAccess = () => {
-  if (openProtectedCatalog) {
-    openProtectedCatalog.addEventListener("click", () => {
-      if (hasProtectedAccess()) {
-        renderProtectedCatalog();
-        protectedCatalog?.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-      openProtectedModal();
-    });
-  }
-  if (closeProtectedModal) {
-    closeProtectedModal.addEventListener("click", closeProtectedModalHandler);
-  }
-  if (protectedModal) {
-    protectedModal.addEventListener("click", (event) => {
-      if (event.target === protectedModal) closeProtectedModalHandler();
-    });
-  }
-  if (protectedAccessForm) {
-    protectedAccessForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const value = protectedPassword.value.trim();
-      const hash = await hashText(value);
-      if (hash && hash === PROTECTED_CATALOG_HASH) {
-        setProtectedAccess();
-        if (protectedAccessStatus) {
-          protectedAccessStatus.textContent = "Acceso concedido.";
-        }
-        closeProtectedModalHandler();
-        renderProtectedCatalog();
-      } else if (protectedAccessStatus) {
-        protectedAccessStatus.textContent = "Contraseña incorrecta.";
-      }
-    });
-  }
-  if (closeProtectedCatalog) {
-    closeProtectedCatalog.addEventListener("click", () => {
-      clearProtectedAccess();
-      renderProtectedCatalog();
-    });
-  }
-};
-
 const setupCommissionModal = () => {
   if (continueWhatsApp) {
     continueWhatsApp.addEventListener("click", () => {
@@ -5280,19 +5062,23 @@ const setupCommissionModal = () => {
 };
 
 const openLightbox = (src, alt) => {
-  if (!imageLightbox || !lightboxImage) return;
-  lightboxImage.src = src;
-  lightboxImage.alt = alt || "Vista ampliada";
-  imageLightbox.classList.add("show");
-  imageLightbox.setAttribute("aria-hidden", "false");
+  if (!lightbox || !lightboxZoom) return;
+  lightboxZoom.style.backgroundImage = `url(${src})`;
+  lightboxZoom.setAttribute("aria-label", alt || "Imagen ampliada");
+  lightboxZoom.style.backgroundSize = "contain";
+  lightboxZoom.style.backgroundPosition = "50% 50%";
+  lightbox.classList.remove("is-hidden");
+  lightbox.setAttribute("aria-hidden", "false");
   document.body.classList.add("no-scroll");
 };
 
 const closeLightboxHandler = () => {
-  if (!imageLightbox || !lightboxImage) return;
-  imageLightbox.classList.remove("show");
-  imageLightbox.setAttribute("aria-hidden", "true");
-  lightboxImage.src = "";
+  if (!lightbox || !lightboxZoom) return;
+  lightbox.classList.add("is-hidden");
+  lightbox.setAttribute("aria-hidden", "true");
+  lightboxZoom.style.backgroundImage = "";
+  lightboxZoom.style.backgroundSize = "contain";
+  lightboxZoom.style.backgroundPosition = "50% 50%";
   document.body.classList.remove("no-scroll");
 };
 
@@ -5305,14 +5091,27 @@ const setupLightbox = () => {
     openLightbox(target.src, target.alt);
   });
   closeLightbox?.addEventListener("click", closeLightboxHandler);
-  imageLightbox?.addEventListener("click", (event) => {
-    if (event.target === imageLightbox) closeLightboxHandler();
+  lightbox?.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeLightboxHandler();
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && imageLightbox?.classList.contains("show")) {
+    if (event.key === "Escape" && lightbox && !lightbox.classList.contains("is-hidden")) {
       closeLightboxHandler();
     }
   });
+  if (lightboxZoom) {
+    lightboxZoom.addEventListener("mousemove", (event) => {
+      const rect = lightboxZoom.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      lightboxZoom.style.backgroundSize = "240%";
+      lightboxZoom.style.backgroundPosition = `${x}% ${y}%`;
+    });
+    lightboxZoom.addEventListener("mouseleave", () => {
+      lightboxZoom.style.backgroundSize = "contain";
+      lightboxZoom.style.backgroundPosition = "50% 50%";
+    });
+  }
 };
 
 const setupZoomLens = () => {
@@ -5367,56 +5166,29 @@ const setupZoomLens = () => {
 };
 
 const setupHolidayMusic = () => {
-  if (!holidayAudio || !toggleMusic) return;
-
-  holidayAudio.loop = false;
-  holidayAudio.preload = "auto";
-  holidayAudio.currentTime = 0;
-
+  if (!bgMusic || !musicBtn) return;
+  const icon = musicBtn.querySelector(".icon");
+  const label = musicBtn.querySelector(".label");
   const setToggleState = (playing) => {
-    toggleMusic.hidden = false;
-    toggleMusic.disabled = false;
-    toggleMusic.textContent = playing ? "Silenciar música" : "Reproducir música";
-    toggleMusic.setAttribute("aria-pressed", playing ? "true" : "false");
-  };
-
-  const safePlay = () =>
-    holidayAudio
-      .play()
-      .then(() => setToggleState(true))
-      .catch(() => setToggleState(false));
-
-  const stop = () => {
-    holidayAudio.pause();
-    setToggleState(false);
+    musicBtn.setAttribute("aria-pressed", playing ? "true" : "false");
+    if (icon) icon.textContent = playing ? "⏸︎" : "▶︎";
+    if (label) label.textContent = playing ? "Pausar música" : "Música";
   };
 
   setToggleState(false);
 
-  const firstGestureStart = () => {
-    if (!holidayAudio.paused) return;
-    safePlay();
-  };
-  document.addEventListener("pointerdown", firstGestureStart, { once: true });
-  document.addEventListener("touchstart", firstGestureStart, {
-    once: true,
-    passive: true,
-  });
-
-  toggleMusic.addEventListener("click", () => {
-    if (holidayAudio.paused) safePlay();
-    else stop();
-  });
-
-  holidayAudio.addEventListener("ended", () => {
-    setToggleState(false);
-  });
-
-  holidayAudio.addEventListener("error", () => {
-    toggleMusic.hidden = false;
-    toggleMusic.textContent = "Música no disponible";
-    toggleMusic.setAttribute("aria-pressed", "false");
-    toggleMusic.disabled = true;
+  musicBtn.addEventListener("click", async () => {
+    try {
+      if (bgMusic.paused) {
+        await bgMusic.play();
+        setToggleState(true);
+      } else {
+        bgMusic.pause();
+        setToggleState(false);
+      }
+    } catch (error) {
+      console.warn("Audio bloqueado por el navegador:", error);
+    }
   });
 };
 
@@ -5447,6 +5219,7 @@ const initializeNotificationForm = () => {
 
 const init = () => {
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  window.addEventListener("load", () => sessionStorage.removeItem(ADMIN_SESSION_KEY));
   window.addEventListener("pagehide", () => sessionStorage.removeItem(ADMIN_SESSION_KEY));
   window.addEventListener("beforeunload", () => sessionStorage.removeItem(ADMIN_SESSION_KEY));
   loadTaxonomy();
@@ -5468,12 +5241,11 @@ const init = () => {
   setupTabs();
   setupAdminTabs();
   setupNotification();
-  setupNotificationBubble();
+  setupNotificationWidget();
   setupAdminEvents();
   setupAdminActionDelegation();
   setupProposalEvents();
   setupMapManagers();
-  setupProtectedAccess();
   setupCommissionModal();
   setupLightbox();
   setupZoomLens();
@@ -5526,8 +5298,7 @@ const init = () => {
   renderTaxonomyAdmin();
   syncCatalogWithTaxonomy();
   updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
-  renderProtectedCatalog();
-  renderNotificationBubble();
+  showNotifWidgetIfNeeded();
 
   if (hasAdminSession()) {
     if (adminLogin) adminLogin.hidden = true;
