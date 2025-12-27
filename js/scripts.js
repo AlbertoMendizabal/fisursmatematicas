@@ -148,6 +148,10 @@ const proposalDelivery = document.getElementById("proposalDelivery");
 const proposalContactPhone = document.getElementById("proposalContactPhone");
 const proposalContactEmail = document.getElementById("proposalContactEmail");
 const proposalAddress = document.getElementById("proposalAddress");
+const proposalMapSearch = document.getElementById("proposalMapSearch");
+const proposalMapManual = document.getElementById("proposalMapManual");
+const proposalMap = document.getElementById("proposalMap");
+const proposalMapStatus = document.getElementById("proposalMapStatus");
 const proposalMapRequest = document.getElementById("proposalMapRequest");
 const proposalCategory = document.getElementById("proposalCategory");
 const proposalSubcategory = document.getElementById("proposalSubcategory");
@@ -204,16 +208,27 @@ const productAddress = document.getElementById("productAddress");
 const productShowPhone = document.getElementById("productShowPhone");
 const productShowEmail = document.getElementById("productShowEmail");
 const productShowMap = document.getElementById("productShowMap");
+const productShowAddress = document.getElementById("productShowAddress");
 const productPrivate = document.getElementById("productPrivate");
 const productSchedule = document.getElementById("productSchedule");
 const productDates = document.getElementById("productDates");
 const productStartDate = document.getElementById("productStartDate");
 const productEndDate = document.getElementById("productEndDate");
+const productMapSearch = document.getElementById("productMapSearch");
+const productMapManual = document.getElementById("productMapManual");
+const productMap = document.getElementById("productMap");
+const productMapStatus = document.getElementById("productMapStatus");
+const productExpiration = document.getElementById("productExpiration");
+const productExpirationDateField = document.getElementById("productExpirationDateField");
+const productExpirationDate = document.getElementById("productExpirationDate");
+const productExpirationHelp = document.getElementById("productExpirationHelp");
 const descCount = document.getElementById("descCount");
 const cancelProduct = document.getElementById("cancelProduct");
+const reactivateProduct = document.getElementById("reactivateProduct");
 const productFormStatus = document.getElementById("productFormStatus");
 const adminStorageStatus = document.getElementById("adminStorageStatus");
 const adminMessagesList = document.getElementById("adminMessagesList");
+const adminExpiredList = document.getElementById("adminExpiredList");
 
 const notificationForm = document.getElementById("notificationForm");
 const notificationInput = document.getElementById("notificationInput");
@@ -258,6 +273,9 @@ const closeProtectedModal = document.getElementById("closeProtectedModal");
 const protectedAccessForm = document.getElementById("protectedAccessForm");
 const protectedPassword = document.getElementById("protectedPassword");
 const protectedAccessStatus = document.getElementById("protectedAccessStatus");
+
+const holidayAudio = document.getElementById("holidayAudio");
+const toggleMusic = document.getElementById("toggleMusic");
 const protectedCatalog = document.getElementById("protectedCatalog");
 const protectedGrid = document.getElementById("protectedGrid");
 const closeProtectedCatalog = document.getElementById("closeProtectedCatalog");
@@ -305,6 +323,13 @@ let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
 let editingDraft = null;
+let adminActionsBound = false;
+let proposalMapManager = null;
+let productMapManager = null;
+
+const MAP_DEFAULT_CENTER = [19.4326, -99.1332];
+const MAP_DEFAULT_ZOOM = 5;
+const ZOOM_LEVEL = 4;
 let storedMessages = [];
 let storedNotifications = [];
 let revealObserver = null;
@@ -1781,6 +1806,25 @@ const normalizeItem = (item) => {
     if (safeText(item.childId).startsWith("renta-")) return "renta";
     return "venta";
   })();
+  const addressText = safeText(item.addressText || item.location || item.address || "");
+  const latValue = Number.isFinite(Number(item.lat)) ? Number(item.lat) : null;
+  const lngValue = Number.isFinite(Number(item.lng)) ? Number(item.lng) : null;
+  const locationMode =
+    item.locationMode ||
+    (latValue !== null && lngValue !== null ? "exact" : addressText ? "approx" : "none");
+  const showMapPublic = Boolean(
+    item.showMapPublic ?? item.mapApproved ?? item.visibility?.showMap ?? item.showMap
+  );
+  const showAddressPublic = Boolean(
+    item.showAddressPublic ?? item.visibility?.showAddress ?? item.showAddress
+  );
+  const expiresAtValue = Number.isFinite(Number(item.expiresAt))
+    ? Number(item.expiresAt)
+    : null;
+  const statusValue = item.status === "publicado" ? "activo" : item.status || "activo";
+  const pinnedForeverValue = Boolean(
+    item.pinnedForever ?? (expiresAtValue === null && statusValue !== "expirado")
+  );
   const normalized = {
     ...item,
     images: item.images || (item.imageDataUrl ? [item.imageDataUrl] : []),
@@ -1796,10 +1840,19 @@ const normalizeItem = (item) => {
     priceMXN: item.priceMXN ?? item.price ?? null,
     descriptionHtml: item.descriptionHtml || item.description || "",
     isProtected: Boolean(item.isProtected ?? item.isPrivate),
-    status: item.status || "publicado",
+    status: statusValue,
     startDate: item.startDate || "",
     endDate: item.endDate || "",
-    location: item.location || item.address || "",
+    location: addressText,
+    addressText,
+    lat: latValue,
+    lng: lngValue,
+    locationMode,
+    showMapPublic,
+    showAddressPublic,
+    expiresAt: expiresAtValue,
+    pinnedForever: pinnedForeverValue,
+    durationPreset: item.durationPreset || (expiresAtValue ? "date" : "forever"),
     mapRequested: Boolean(item.mapRequested),
     mapApproved: Boolean(item.mapApproved),
     contact: {
@@ -1809,7 +1862,8 @@ const normalizeItem = (item) => {
     visibility: {
       showPhone: Boolean(item.visibility?.showPhone ?? item.showPhone),
       showEmail: Boolean(item.visibility?.showEmail ?? item.showEmail),
-      showMap: Boolean(item.visibility?.showMap ?? item.showMap),
+      showMap: showMapPublic,
+      showAddress: showAddressPublic,
     },
   };
   const ensured = ensureCategoryData(normalized);
@@ -1869,6 +1923,44 @@ const loadPending = () => {
 const loadRejected = () => {
   const stored = loadFromStorage(REJECTED_KEY, []);
   rejectedProposals = Array.isArray(stored) ? stored.map(normalizeProposal) : [];
+};
+
+const isExpired = (item, now = Date.now()) =>
+  !item.pinnedForever && item.expiresAt && item.expiresAt <= now;
+
+const maintainExpirationStatus = () => {
+  let changed = false;
+  const now = Date.now();
+  approvedProducts = approvedProducts.map((product) => {
+    const createdAt = product.createdAt || now;
+    let status = product.status || "activo";
+    let expiresAt = product.expiresAt ?? null;
+    const pinnedForever = Boolean(product.pinnedForever);
+    if (pinnedForever) {
+      expiresAt = null;
+      if (status === "expirado") status = "activo";
+    } else if (expiresAt && expiresAt <= now) {
+      status = "expirado";
+    }
+    if (
+      createdAt !== product.createdAt ||
+      status !== product.status ||
+      expiresAt !== product.expiresAt
+    ) {
+      changed = true;
+      return {
+        ...product,
+        createdAt,
+        status,
+        expiresAt,
+        pinnedForever,
+      };
+    }
+    return product;
+  });
+  if (changed) {
+    saveToStorage(APPROVED_KEY, approvedProducts);
+  }
 };
 
 const loadMessages = () => {
@@ -2068,6 +2160,7 @@ const buildCarousel = (images, title) => {
   img.src = list[0];
   img.alt = safeText(title);
   img.dataset.lightbox = "1";
+  img.dataset.zoom = "1";
 
   const prev = document.createElement("button");
   prev.type = "button";
@@ -2161,23 +2254,60 @@ const buildCommissionNote = () => {
   return note;
 };
 
+const initMapEmbed = (container) => {
+  if (!container || container.dataset.mapReady === "1") return;
+  if (!window.L) return;
+  const lat = Number(container.dataset.lat);
+  const lng = Number(container.dataset.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+  const map = L.map(container, {
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    tap: false,
+  }).setView([lat, lng], 14);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+  }).addTo(map);
+  L.marker([lat, lng]).addTo(map);
+  container.dataset.mapReady = "1";
+};
+
+const initMapEmbeds = (root = document) => {
+  root.querySelectorAll(".map-embed").forEach((container) => {
+    initMapEmbed(container);
+  });
+};
+
 const buildMapBlock = (product) => {
-  const location = safeText(product.location).trim();
-  if (!location) return null;
-  if (!product.mapApproved || !product.visibility?.showMap) return null;
+  const location = safeText(product.addressText || product.location).trim();
+  const showMapPublic = Boolean(product.showMapPublic ?? product.visibility?.showMap);
+  const showAddressPublic = Boolean(
+    product.showAddressPublic ?? product.visibility?.showAddress
+  );
+  const hasCoords =
+    Number.isFinite(Number(product.lat)) && Number.isFinite(Number(product.lng));
+  if (!showMapPublic && !showAddressPublic) return null;
+  if (showMapPublic && !hasCoords) return null;
   const block = document.createElement("div");
   block.className = "map-block";
-  const link = document.createElement("a");
-  link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    location
-  )}`;
-  link.target = "_blank";
-  link.rel = "noopener";
-  link.textContent = "Ver ubicación en mapa";
-  const note = document.createElement("p");
-  note.className = "muted small";
-  note.textContent = location;
-  block.append(link, note);
+  if (showMapPublic && hasCoords) {
+    const map = document.createElement("div");
+    map.className = "map-embed";
+    map.dataset.lat = product.lat;
+    map.dataset.lng = product.lng;
+    block.appendChild(map);
+  }
+  if (showAddressPublic && location) {
+    const note = document.createElement("p");
+    note.className = "muted small";
+    note.textContent = location;
+    block.appendChild(note);
+  }
   return block;
 };
 
@@ -2340,6 +2470,7 @@ const renderProducts = () => {
 
   let filtered = approvedProducts.filter((product) => {
     const text = `${product.title} ${product.description}`.toLowerCase();
+    if (product.status === "expirado" || isExpired(product)) return false;
     if (product.isProtected) return false;
     const matchesCategory =
       selectedCategory === "all" || product.categoryId === selectedCategory;
@@ -2466,13 +2597,17 @@ const renderProducts = () => {
     productGrid.appendChild(card);
   });
 
+  initMapEmbeds(productGrid);
   registerReveals(productGrid);
 };
 
 const updateAdminList = () => {
   if (!adminProductList) return;
   adminProductList.innerHTML = "";
-  if (!approvedProducts.length) {
+  const activeProducts = approvedProducts.filter(
+    (product) => product.status !== "expirado" && !isExpired(product)
+  );
+  if (!activeProducts.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
     empty.textContent = "No hay productos aprobados aún.";
@@ -2480,7 +2615,7 @@ const updateAdminList = () => {
     return;
   }
 
-  approvedProducts.forEach((product) => {
+  activeProducts.forEach((product) => {
     const item = document.createElement("div");
     item.className = "admin-item";
 
@@ -2488,6 +2623,8 @@ const updateAdminList = () => {
     img.src = product.images?.[0] || demoImage("Producto");
     img.alt = safeText(product.title);
     img.dataset.lightbox = "1";
+    img.dataset.zoom = "1";
+    img.dataset.zoom = "1";
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
@@ -2510,19 +2647,30 @@ const updateAdminList = () => {
     info.append(title, meta);
 
     const actions = document.createElement("div");
+    const viewBtn = document.createElement("button");
+    viewBtn.className = "btn btn-ghost";
+    viewBtn.type = "button";
+    viewBtn.textContent = "Ver";
+    viewBtn.dataset.action = "view";
+    viewBtn.dataset.id = product.id;
+    viewBtn.dataset.mode = "approved";
     const editBtn = document.createElement("button");
     editBtn.className = "btn btn-ghost";
     editBtn.type = "button";
     editBtn.textContent = "Editar";
-    editBtn.addEventListener("click", () => openEditForm(product, "approved"));
+    editBtn.dataset.action = "edit";
+    editBtn.dataset.id = product.id;
+    editBtn.dataset.mode = "approved";
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "btn btn-ghost";
     deleteBtn.type = "button";
     deleteBtn.textContent = "Borrar";
-    deleteBtn.addEventListener("click", () => deleteProduct(product.id));
+    deleteBtn.dataset.action = "delete";
+    deleteBtn.dataset.id = product.id;
+    deleteBtn.dataset.mode = "approved";
 
-    actions.append(editBtn, deleteBtn);
+    actions.append(viewBtn, editBtn, deleteBtn);
     item.append(img, info, actions);
     adminProductList.appendChild(item);
   });
@@ -2547,6 +2695,7 @@ const updatePendingList = () => {
     img.src = proposal.images?.[0] || demoImage("Producto");
     img.alt = safeText(proposal.title);
     img.dataset.lightbox = "1";
+    img.dataset.zoom = "1";
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
@@ -2575,13 +2724,25 @@ const updatePendingList = () => {
     approveBtn.className = "btn btn-primary";
     approveBtn.type = "button";
     approveBtn.textContent = "Aprobar";
-    approveBtn.addEventListener("click", () => approveProposal(proposal.id));
+    approveBtn.dataset.action = "approve";
+    approveBtn.dataset.id = proposal.id;
+    approveBtn.dataset.mode = "pending";
+
+    const viewBtn = document.createElement("button");
+    viewBtn.className = "btn btn-ghost";
+    viewBtn.type = "button";
+    viewBtn.textContent = "Ver";
+    viewBtn.dataset.action = "view";
+    viewBtn.dataset.id = proposal.id;
+    viewBtn.dataset.mode = "pending";
 
     const editBtn = document.createElement("button");
     editBtn.className = "btn btn-ghost";
     editBtn.type = "button";
     editBtn.textContent = "Editar antes de aprobar";
-    editBtn.addEventListener("click", () => openEditForm(proposal, "pending"));
+    editBtn.dataset.action = "edit";
+    editBtn.dataset.id = proposal.id;
+    editBtn.dataset.mode = "pending";
 
     const detailsBtn = document.createElement("button");
     detailsBtn.className = "btn btn-ghost";
@@ -2592,15 +2753,19 @@ const updatePendingList = () => {
     requestBtn.className = "btn btn-ghost";
     requestBtn.type = "button";
     requestBtn.textContent = "Pedir detalles";
-    requestBtn.addEventListener("click", () => requestProposalDetails(proposal.id));
+    requestBtn.dataset.action = "request-details";
+    requestBtn.dataset.id = proposal.id;
+    requestBtn.dataset.mode = "pending";
 
     const rejectBtn = document.createElement("button");
     rejectBtn.className = "btn btn-ghost";
     rejectBtn.type = "button";
     rejectBtn.textContent = "Rechazar";
-    rejectBtn.addEventListener("click", () => rejectProposal(proposal.id));
+    rejectBtn.dataset.action = "reject";
+    rejectBtn.dataset.id = proposal.id;
+    rejectBtn.dataset.mode = "pending";
 
-    actions.append(approveBtn, editBtn, detailsBtn, requestBtn, rejectBtn);
+    actions.append(approveBtn, viewBtn, editBtn, detailsBtn, requestBtn, rejectBtn);
 
     const details = document.createElement("div");
     details.className = "admin-details";
@@ -2643,6 +2808,134 @@ const updatePendingList = () => {
   });
 };
 
+const updateExpiredList = () => {
+  if (!adminExpiredList) return;
+  adminExpiredList.innerHTML = "";
+  const expiredItems = approvedProducts.filter(
+    (product) => product.status === "expirado" || isExpired(product)
+  );
+  if (!expiredItems.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No hay anuncios expirados.";
+    adminExpiredList.appendChild(empty);
+    return;
+  }
+
+  expiredItems.forEach((product) => {
+    const item = document.createElement("div");
+    item.className = "admin-item";
+
+    const img = document.createElement("img");
+    img.src = product.images?.[0] || demoImage("Producto");
+    img.alt = safeText(product.title);
+    img.dataset.lightbox = "1";
+
+    const info = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = safeText(product.title);
+    const meta = document.createElement("p");
+    meta.className = "muted";
+    const expiresLabel = product.expiresAt
+      ? `Expiró: ${new Date(product.expiresAt).toLocaleDateString("es-MX")}`
+      : "Sin fecha";
+    meta.textContent = `${formatPriceLabel(product.price)} · ${expiresLabel}`;
+    info.append(title, meta);
+
+    const actions = document.createElement("div");
+    const viewBtn = document.createElement("button");
+    viewBtn.className = "btn btn-ghost";
+    viewBtn.type = "button";
+    viewBtn.textContent = "Ver";
+    viewBtn.dataset.action = "view";
+    viewBtn.dataset.id = product.id;
+    viewBtn.dataset.mode = "approved";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn btn-ghost";
+    editBtn.type = "button";
+    editBtn.textContent = "Editar";
+    editBtn.dataset.action = "edit";
+    editBtn.dataset.id = product.id;
+    editBtn.dataset.mode = "approved";
+
+    const reactivateBtn = document.createElement("button");
+    reactivateBtn.className = "btn btn-primary";
+    reactivateBtn.type = "button";
+    reactivateBtn.textContent = "Reactivar";
+    reactivateBtn.dataset.action = "reactivate";
+    reactivateBtn.dataset.id = product.id;
+    reactivateBtn.dataset.mode = "approved";
+
+    actions.append(viewBtn, editBtn, reactivateBtn);
+    item.append(img, info, actions);
+    adminExpiredList.appendChild(item);
+  });
+};
+
+const setupAdminActionDelegation = () => {
+  if (adminActionsBound || !adminPanel) return;
+  adminActionsBound = true;
+  adminPanel.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const actionBtn = event.target.closest("button[data-action]");
+    if (!actionBtn) return;
+    const action = actionBtn.dataset.action;
+    const id = actionBtn.dataset.id;
+    const mode = actionBtn.dataset.mode || "approved";
+    if (!id) return;
+    if (action === "edit") {
+      const source =
+        mode === "pending"
+          ? pendingProposals.find((proposal) => proposal.id === id)
+          : approvedProducts.find((product) => product.id === id);
+      if (source) openEditForm(source, mode);
+      return;
+    }
+    if (action === "delete") {
+      deleteProduct(id);
+      return;
+    }
+    if (action === "approve") {
+      approveProposal(id);
+      return;
+    }
+    if (action === "request-details") {
+      requestProposalDetails(id);
+      return;
+    }
+    if (action === "reject") {
+      rejectProposal(id);
+      return;
+    }
+    if (action === "view") {
+      const source =
+        mode === "pending"
+          ? pendingProposals.find((proposal) => proposal.id === id)
+          : approvedProducts.find((product) => product.id === id);
+      const image = source?.images?.[0];
+      if (image) openLightbox(image, source?.title || "Vista ampliada");
+      return;
+    }
+    if (action === "reactivate") {
+      approvedProducts = approvedProducts.map((product) =>
+        product.id === id
+          ? {
+              ...product,
+              status: "activo",
+              expiresAt: null,
+              pinnedForever: true,
+              durationPreset: "forever",
+              updatedAt: Date.now(),
+            }
+          : product
+      );
+      persistApproved();
+      updateExpiredList();
+    }
+  });
+};
+
 const resetProductForm = () => {
   productForm.reset();
   productPreview.hidden = true;
@@ -2656,11 +2949,259 @@ const resetProductForm = () => {
   productFormStatus.textContent = "";
   descCount.textContent = "220 caracteres restantes";
   productDates.hidden = true;
+  if (productExpiration) productExpiration.value = "forever";
+  if (productExpirationDateField) productExpirationDateField.hidden = true;
+  if (productExpirationDate) productExpirationDate.value = "";
+  updateExpirationHelp("forever", "", productExpirationHelp);
+  if (reactivateProduct) reactivateProduct.hidden = true;
   if (productCategory) productCategory.value = "";
   populateSubcategorySelect(productSubcategory, "");
   populateChildcategorySelect(productChildcategory, "", "");
   setEditorContent(productDescriptionEditor, "");
   syncEditorValue(productDescriptionEditor, productDescription, descCount, 220);
+  productMapManager?.setState({ lat: null, lng: null });
+};
+
+const addDays = (date, days) => {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+};
+
+const addMonths = (date, months) => {
+  const next = new Date(date);
+  next.setMonth(next.getMonth() + months);
+  return next;
+};
+
+const toDateInputValue = (timestamp) => {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toISOString().split("T")[0];
+};
+
+const resolveExpiration = (preset, dateValue) => {
+  const now = new Date();
+  if (preset === "forever") {
+    return { expiresAt: null, pinnedForever: true };
+  }
+  if (preset === "7d") {
+    return { expiresAt: addDays(now, 7).getTime(), pinnedForever: false };
+  }
+  if (preset === "30d") {
+    return { expiresAt: addDays(now, 30).getTime(), pinnedForever: false };
+  }
+  if (preset === "3m") {
+    return { expiresAt: addMonths(now, 3).getTime(), pinnedForever: false };
+  }
+  if (preset === "6m") {
+    return { expiresAt: addMonths(now, 6).getTime(), pinnedForever: false };
+  }
+  if (preset === "date" && dateValue) {
+    const expiresDate = new Date(`${dateValue}T23:59:59`);
+    return { expiresAt: expiresDate.getTime(), pinnedForever: false };
+  }
+  return { expiresAt: null, pinnedForever: true };
+};
+
+const updateExpirationHelp = (preset, dateValue, helpEl) => {
+  if (!helpEl) return;
+  if (preset === "forever") {
+    helpEl.textContent = "El anuncio permanecerá activo hasta que se desactive.";
+    return;
+  }
+  if (preset === "date" && !dateValue) {
+    helpEl.textContent = "Selecciona una fecha específica de caducidad.";
+    return;
+  }
+  const { expiresAt } = resolveExpiration(preset, dateValue);
+  helpEl.textContent = expiresAt
+    ? `Caduca el ${new Date(expiresAt).toLocaleDateString("es-MX")}.`
+    : "";
+};
+
+const createMapManager = ({
+  mapEl,
+  searchBtn,
+  manualToggle,
+  addressInput,
+  statusEl,
+}) => {
+  if (!mapEl) return null;
+  let map = null;
+  let marker = null;
+  let manualMode = false;
+  let locationMode = "none";
+  let lat = null;
+  let lng = null;
+
+  const updateStatus = (message) => {
+    if (!statusEl) return;
+    if (message) {
+      statusEl.textContent = message;
+      return;
+    }
+    if (lat && lng) {
+      statusEl.textContent =
+        locationMode === "exact"
+          ? "Ubicación exacta encontrada."
+          : "Pin aproximado listo.";
+      return;
+    }
+    statusEl.textContent = manualMode
+      ? "Haz clic en el mapa para colocar el pin."
+      : "Busca una dirección o coloca un pin manual.";
+  };
+
+  const ensureMap = () => {
+    if (map) return;
+    if (!window.L) {
+      updateStatus("Mapa no disponible en este momento.");
+      return;
+    }
+    map = L.map(mapEl).setView(MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap",
+    }).addTo(map);
+    map.on("click", (event) => {
+      if (!manualMode) return;
+      const { lat: clickLat, lng: clickLng } = event.latlng;
+      setMarker({ lat: clickLat, lng: clickLng }, "approx");
+    });
+  };
+
+  const setMarker = (coords, mode) => {
+    ensureMap();
+    if (!map || !coords) return;
+    lat = Number(coords.lat);
+    lng = Number(coords.lng);
+    locationMode = mode;
+    const position = [lat, lng];
+    if (!marker) {
+      marker = L.marker(position, { draggable: true }).addTo(map);
+      marker.on("dragend", (event) => {
+        const target = event.target;
+        const next = target.getLatLng();
+        lat = next.lat;
+        lng = next.lng;
+        locationMode = manualMode ? "approx" : locationMode;
+        updateStatus();
+      });
+    } else {
+      marker.setLatLng(position);
+    }
+    if (marker.dragging) {
+      if (manualMode) {
+        marker.dragging.enable();
+      } else {
+        marker.dragging.disable();
+      }
+    }
+    map.setView(position, 15);
+    updateStatus();
+  };
+
+  const clearMarker = () => {
+    if (marker && map) {
+      map.removeLayer(marker);
+    }
+    marker = null;
+    lat = null;
+    lng = null;
+    locationMode = addressInput?.value.trim() ? "approx" : "none";
+    updateStatus();
+  };
+
+  if (searchBtn) {
+    searchBtn.addEventListener("click", async () => {
+      const query = addressInput?.value.trim() || "";
+      if (!query) {
+        updateStatus("Escribe una dirección para buscar.");
+        return;
+      }
+      ensureMap();
+      if (!map) return;
+      updateStatus("Buscando en el mapa...");
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+            query
+          )}`
+        );
+        if (!response.ok) throw new Error("Nominatim error");
+        const data = await response.json();
+        if (data && data[0]) {
+          setMarker({ lat: data[0].lat, lng: data[0].lon }, "exact");
+        } else {
+          updateStatus("No se encontró la dirección. Usa el pin manual.");
+        }
+      } catch (error) {
+        updateStatus("No se pudo buscar. Usa el pin manual.");
+      }
+    });
+  }
+
+  if (manualToggle) {
+    manualToggle.addEventListener("change", () => {
+      manualMode = manualToggle.checked;
+      ensureMap();
+      if (marker?.dragging) {
+        if (manualMode) {
+          marker.dragging.enable();
+        } else {
+          marker.dragging.disable();
+        }
+      }
+      updateStatus();
+    });
+  }
+
+  if (addressInput) {
+    addressInput.addEventListener("input", () => {
+      if (!addressInput.value.trim() && !manualMode) {
+        clearMarker();
+      }
+      updateStatus();
+    });
+  }
+
+  updateStatus();
+
+  return {
+    setState: (data) => {
+      if (!data) return;
+      if (data.lat && data.lng) {
+        setMarker({ lat: data.lat, lng: data.lng }, data.locationMode || "approx");
+      } else {
+        clearMarker();
+      }
+    },
+    getState: () => ({
+      lat,
+      lng,
+      locationMode:
+        lat && lng ? locationMode : addressInput?.value.trim() ? "approx" : "none",
+    }),
+    invalidate: () => {
+      if (map) map.invalidateSize();
+    },
+  };
+};
+
+const getMapState = (manager, addressText) => {
+  const address = safeText(addressText).trim();
+  if (!manager) {
+    return {
+      lat: null,
+      lng: null,
+      locationMode: address ? "approx" : "none",
+    };
+  }
+  return {
+    ...manager.getState(),
+    addressText: address,
+  };
 };
 
 const openEditForm = (item, mode) => {
@@ -2700,14 +3241,42 @@ const openEditForm = (item, mode) => {
   productPrivate.checked = Boolean(item.isProtected);
   if (productContactPhone) productContactPhone.value = item.contact?.phone || "";
   if (productContactEmail) productContactEmail.value = item.contact?.email || "";
-  if (productAddress) productAddress.value = item.location || "";
+  if (productAddress) productAddress.value = item.addressText || item.location || "";
   if (productShowPhone) productShowPhone.checked = Boolean(item.visibility?.showPhone);
   if (productShowEmail) productShowEmail.checked = Boolean(item.visibility?.showEmail);
-  if (productShowMap) productShowMap.checked = Boolean(item.mapApproved);
+  if (productShowMap) {
+    productShowMap.checked = Boolean(item.showMapPublic ?? item.mapApproved);
+  }
+  if (productShowAddress) {
+    productShowAddress.checked = Boolean(item.showAddressPublic);
+  }
+  if (productExpiration) {
+    const preset = item.durationPreset || (item.expiresAt ? "date" : "forever");
+    productExpiration.value = preset;
+    if (productExpirationDate) {
+      productExpirationDate.value = toDateInputValue(item.expiresAt);
+    }
+    if (productExpirationDateField) {
+      productExpirationDateField.hidden = preset !== "date";
+    }
+    updateExpirationHelp(preset, productExpirationDate?.value || "", productExpirationHelp);
+  }
+  if (reactivateProduct) {
+    reactivateProduct.hidden = item.status !== "expirado";
+  }
   renderPreviewGrid(productPreview, item.images || []);
 
   const adminProductsTab = document.getElementById("admin-products-btn");
   if (adminProductsTab) adminProductsTab.click();
+
+  if (productMapManager) {
+    productMapManager.setState({
+      lat: item.lat,
+      lng: item.lng,
+      locationMode: item.locationMode,
+    });
+    requestAnimationFrame(() => productMapManager.invalidate());
+  }
 };
 
 const deleteProduct = (id) => {
@@ -2732,7 +3301,14 @@ const approveProposal = (id) => {
       showPhone: Boolean(proposal.visibility?.showPhone),
       showEmail: Boolean(proposal.visibility?.showEmail),
       showMap: Boolean(proposal.visibility?.showMap),
+      showAddress: Boolean(proposal.visibility?.showAddress),
     },
+    showMapPublic: Boolean(proposal.showMapPublic),
+    showAddressPublic: Boolean(proposal.showAddressPublic),
+    expiresAt: null,
+    pinnedForever: true,
+    durationPreset: "forever",
+    status: "activo",
     updatedAt: Date.now(),
   });
   persistPending();
@@ -2783,6 +3359,7 @@ const persistApproved = () => {
   renderProducts();
   renderProtectedCatalog();
   updateAdminList();
+  updateExpiredList();
 };
 
 const persistPending = () => {
@@ -2792,6 +3369,7 @@ const persistPending = () => {
       "No se pudo guardar pendientes. Reduce el tamaño de las imágenes.";
   }
   updatePendingList();
+  updateExpiredList();
 };
 
 const persistRejected = () => {
@@ -3618,6 +4196,9 @@ const openAdminModal = () => {
     adminLogin.hidden = false;
     adminPanel.hidden = true;
   }
+  requestAnimationFrame(() => {
+    productMapManager?.invalidate();
+  });
 };
 
 const closeAdminModal = () => {
@@ -3675,9 +4256,17 @@ const handleProductSubmit = (event) => {
   const contactPhone = productContactPhone?.value.trim() || "";
   const contactEmail = productContactEmail?.value.trim() || "";
   const location = productAddress?.value.trim() || "";
+  const mapState = getMapState(productMapManager, location);
   const showPhone = Boolean(productShowPhone?.checked);
   const showEmail = Boolean(productShowEmail?.checked);
   const showMap = Boolean(productShowMap?.checked);
+  const showAddress = Boolean(productShowAddress?.checked);
+  const expirationPreset = productExpiration?.value || "forever";
+  const expirationDateValue = productExpirationDate?.value || "";
+  const { expiresAt, pinnedForever } = resolveExpiration(
+    expirationPreset,
+    expirationDateValue
+  );
 
   if (
     !type ||
@@ -3703,8 +4292,18 @@ const handleProductSubmit = (event) => {
     return;
   }
 
-  if (showMap && !location) {
-    productFormStatus.textContent = "Agrega una dirección para mostrar el mapa.";
+  if (showMap && (!mapState.lat || !mapState.lng)) {
+    productFormStatus.textContent = "Ubica el pin en el mapa para mostrarlo.";
+    return;
+  }
+
+  if (showAddress && !location) {
+    productFormStatus.textContent = "Agrega una dirección para mostrar la ubicación.";
+    return;
+  }
+
+  if (expirationPreset === "date" && !expirationDateValue) {
+    productFormStatus.textContent = "Selecciona una fecha de caducidad válida.";
     return;
   }
 
@@ -3719,6 +4318,14 @@ const handleProductSubmit = (event) => {
   }
 
   const now = Date.now();
+  let status = editingDraft?.status || "activo";
+  if (pinnedForever) {
+    status = status === "expirado" ? "activo" : status;
+  } else if (expiresAt && expiresAt <= now) {
+    status = "expirado";
+  } else if (status === "expirado") {
+    status = "activo";
+  }
   if (editingMode === "pending" && editingPendingId) {
     pendingProposals = pendingProposals.map((proposal) =>
       proposal.id === editingPendingId
@@ -3742,9 +4349,19 @@ const handleProductSubmit = (event) => {
             isProtected,
             childId,
             location,
+            addressText: location,
+            locationMode: mapState.locationMode,
+            lat: mapState.lat,
+            lng: mapState.lng,
+            showMapPublic: showMap,
+            showAddressPublic: showAddress,
+            expiresAt,
+            pinnedForever,
+            durationPreset: expirationPreset,
+            status,
             mapApproved: showMap,
             contact: { phone: contactPhone, email: contactEmail },
-            visibility: { showPhone, showEmail, showMap },
+            visibility: { showPhone, showEmail, showMap, showAddress },
             updatedAt: now,
           }
         : proposal
@@ -3779,9 +4396,19 @@ const handleProductSubmit = (event) => {
           isProtected,
           childId,
           location,
+          addressText: location,
+          locationMode: mapState.locationMode,
+          lat: mapState.lat,
+          lng: mapState.lng,
+          showMapPublic: showMap,
+          showAddressPublic: showAddress,
+          expiresAt,
+          pinnedForever,
+          durationPreset: expirationPreset,
+          status,
           mapApproved: showMap,
           contact: { phone: contactPhone, email: contactEmail },
-          visibility: { showPhone, showEmail, showMap },
+          visibility: { showPhone, showEmail, showMap, showAddress },
           updatedAt: now,
         }
       : product
@@ -3815,10 +4442,19 @@ const handleProductSubmit = (event) => {
       endDate,
       isProtected,
       location,
+      addressText: location,
+      locationMode: mapState.locationMode,
+      lat: mapState.lat,
+      lng: mapState.lng,
+      showMapPublic: showMap,
+      showAddressPublic: showAddress,
+      expiresAt,
+      pinnedForever,
+      durationPreset: expirationPreset,
+      status,
       mapApproved: showMap,
       contact: { phone: contactPhone, email: contactEmail },
-      visibility: { showPhone, showEmail, showMap },
-      status: "publicado",
+      visibility: { showPhone, showEmail, showMap, showAddress },
       createdAt: now,
       updatedAt: now,
     });
@@ -4154,7 +4790,10 @@ const handleProposalSubmit = (event) => {
   const contactPhone = proposalContactPhone.value.trim();
   const contactEmail = proposalContactEmail.value.trim();
   const location = proposalAddress?.value.trim() || "";
-  const mapRequested = Boolean(proposalMapRequest?.checked && location);
+  const mapState = getMapState(proposalMapManager, location);
+  const mapRequested = Boolean(
+    proposalMapRequest?.checked && (mapState.lat || mapState.lng || location)
+  );
   const categoryId = proposalCategory.value;
   const subcategoryId = proposalSubcategory.value;
   const childId = proposalChildcategory?.value || "";
@@ -4219,9 +4858,15 @@ const handleProposalSubmit = (event) => {
     endDate,
     isProtected,
     location,
+    addressText: location,
+    locationMode: mapState.locationMode,
+    lat: mapState.lat,
+    lng: mapState.lng,
+    showMapPublic: false,
+    showAddressPublic: false,
     mapRequested,
     mapApproved: false,
-    visibility: { showPhone: false, showEmail: false, showMap: false },
+    visibility: { showPhone: false, showEmail: false, showMap: false, showAddress: false },
     status: "pendiente",
     detailsRequest: "",
     contact: {
@@ -4249,6 +4894,7 @@ const handleProposalSubmit = (event) => {
   proposalDates.hidden = true;
   setEditorContent(proposalDescriptionEditor, "");
   syncEditorValue(proposalDescriptionEditor, proposalDescription, proposalDescCount, 220);
+  proposalMapManager?.setState({ lat: null, lng: null });
   if (proposalCategory) proposalCategory.value = "";
   populateSubcategorySelect(proposalSubcategory, "");
   populateChildcategorySelect(proposalChildcategory, "", "");
@@ -4340,6 +4986,23 @@ const setupAdminEvents = () => {
   productSchedule.addEventListener("change", () => {
     productDates.hidden = !productSchedule.checked;
   });
+  productExpiration?.addEventListener("change", () => {
+    if (productExpirationDateField) {
+      productExpirationDateField.hidden = productExpiration.value !== "date";
+    }
+    updateExpirationHelp(
+      productExpiration.value,
+      productExpirationDate?.value || "",
+      productExpirationHelp
+    );
+  });
+  productExpirationDate?.addEventListener("change", () => {
+    updateExpirationHelp(
+      productExpiration?.value || "forever",
+      productExpirationDate.value,
+      productExpirationHelp
+    );
+  });
   productCategory.addEventListener("change", () => {
     populateSubcategorySelect(productSubcategory, productCategory.value);
     populateChildcategorySelect(productChildcategory, productCategory.value, "");
@@ -4352,8 +5015,21 @@ const setupAdminEvents = () => {
     );
   });
   productAddress?.addEventListener("input", () => {
-    if (productShowMap && !productAddress.value.trim()) {
+    const mapState = productMapManager?.getState();
+    if (
+      productShowMap &&
+      !productAddress.value.trim() &&
+      !(mapState?.lat && mapState?.lng)
+    ) {
       productShowMap.checked = false;
+    }
+  });
+  reactivateProduct?.addEventListener("click", () => {
+    if (!editingDraft) return;
+    editingDraft.status = "activo";
+    if (reactivateProduct) reactivateProduct.hidden = true;
+    if (productFormStatus) {
+      productFormStatus.textContent = "Producto reactivado. Guarda para aplicar.";
     }
   });
   productForm.addEventListener("submit", handleProductSubmit);
@@ -4444,9 +5120,31 @@ const setupProposalEvents = () => {
   });
   proposalForm.addEventListener("submit", handleProposalSubmit);
   proposalAddress?.addEventListener("input", () => {
-    if (proposalMapRequest && !proposalAddress.value.trim()) {
+    const mapState = proposalMapManager?.getState();
+    if (
+      proposalMapRequest &&
+      !proposalAddress.value.trim() &&
+      !(mapState?.lat && mapState?.lng)
+    ) {
       proposalMapRequest.checked = false;
     }
+  });
+};
+
+const setupMapManagers = () => {
+  proposalMapManager = createMapManager({
+    mapEl: proposalMap,
+    searchBtn: proposalMapSearch,
+    manualToggle: proposalMapManual,
+    addressInput: proposalAddress,
+    statusEl: proposalMapStatus,
+  });
+  productMapManager = createMapManager({
+    mapEl: productMap,
+    searchBtn: productMapSearch,
+    manualToggle: productMapManual,
+    addressInput: productAddress,
+    statusEl: productMapStatus,
   });
 };
 
@@ -4470,7 +5168,9 @@ const renderProtectedCatalog = () => {
   protectedCatalog.hidden = !unlocked;
   protectedGrid.innerHTML = "";
   if (!unlocked) return;
-  const protectedItems = approvedProducts.filter((product) => product.isProtected);
+  const protectedItems = approvedProducts.filter(
+    (product) => product.isProtected && product.status !== "expirado" && !isExpired(product)
+  );
   if (!protectedItems.length) {
     const empty = document.createElement("p");
     empty.className = "muted";
@@ -4531,6 +5231,7 @@ const renderProtectedCatalog = () => {
     card.append(commissionNote, contactSection);
     protectedGrid.appendChild(card);
   });
+  initMapEmbeds(protectedGrid);
   registerReveals(protectedGrid);
 };
 
@@ -4626,6 +5327,95 @@ const setupLightbox = () => {
   imageLightbox?.addEventListener("click", (event) => {
     if (event.target === imageLightbox) closeLightboxHandler();
   });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && imageLightbox?.classList.contains("show")) {
+      closeLightboxHandler();
+    }
+  });
+};
+
+const setupZoomLens = () => {
+  const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (!supportsHover) return;
+  const lens = document.createElement("div");
+  lens.className = "zoom-lens";
+  document.body.appendChild(lens);
+  let activeTarget = null;
+  let lastEvent = null;
+  let rafId = null;
+
+  const updateLens = () => {
+    if (!activeTarget || !lastEvent) return;
+    const rect = activeTarget.getBoundingClientRect();
+    const x = Math.min(Math.max((lastEvent.clientX - rect.left) / rect.width, 0), 1);
+    const y = Math.min(Math.max((lastEvent.clientY - rect.top) / rect.height, 0), 1);
+    lens.style.left = `${lastEvent.clientX}px`;
+    lens.style.top = `${lastEvent.clientY}px`;
+    lens.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
+    rafId = null;
+  };
+
+  const scheduleUpdate = (event) => {
+    lastEvent = event;
+    if (rafId) return;
+    rafId = requestAnimationFrame(updateLens);
+  };
+
+  document.addEventListener("mousemove", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const target = event.target.closest("img[data-zoom]");
+    if (!target) {
+      if (activeTarget) {
+        activeTarget = null;
+        lens.classList.remove("is-active");
+      }
+      return;
+    }
+    if (activeTarget !== target) {
+      activeTarget = target;
+      lens.style.backgroundImage = `url("${target.src}")`;
+      lens.style.backgroundSize = `${ZOOM_LEVEL * 100}%`;
+      lens.classList.add("is-active");
+    }
+    scheduleUpdate(event);
+  });
+
+  document.addEventListener("mouseleave", () => {
+    activeTarget = null;
+    lens.classList.remove("is-active");
+  });
+};
+
+const setupHolidayMusic = () => {
+  if (!holidayAudio || !toggleMusic) return;
+  holidayAudio.loop = false;
+  const setToggleState = (playing) => {
+    toggleMusic.hidden = false;
+    toggleMusic.textContent = playing ? "Silenciar música" : "Reproducir música";
+    toggleMusic.setAttribute("aria-pressed", playing ? "true" : "false");
+  };
+
+  const attemptPlay = () => {
+    holidayAudio
+      .play()
+      .then(() => setToggleState(true))
+      .catch(() => setToggleState(false));
+  };
+
+  toggleMusic.addEventListener("click", () => {
+    if (holidayAudio.paused) {
+      holidayAudio.play().then(() => setToggleState(true));
+    } else {
+      holidayAudio.pause();
+      setToggleState(false);
+    }
+  });
+
+  holidayAudio.addEventListener("ended", () => {
+    setToggleState(false);
+  });
+
+  attemptPlay();
 };
 
 const setupAboutForm = () => {
@@ -4657,6 +5447,7 @@ const init = () => {
   loadTaxonomy();
   ensureDefaultTaxonomy();
   loadApproved();
+  maintainExpirationStatus();
   loadPending();
   loadRejected();
   loadMessages();
@@ -4665,6 +5456,7 @@ const init = () => {
   setupReveal();
   updateAdminList();
   updatePendingList();
+  updateExpiredList();
   renderMessages();
   renderNotifications();
   setupCourseButtons();
@@ -4673,10 +5465,14 @@ const init = () => {
   setupNotification();
   setupNotificationBubble();
   setupAdminEvents();
+  setupAdminActionDelegation();
   setupProposalEvents();
+  setupMapManagers();
   setupProtectedAccess();
   setupCommissionModal();
   setupLightbox();
+  setupZoomLens();
+  setupHolidayMusic();
   setupAboutForm();
   setupRichTextEditors();
   initCoursesPage();

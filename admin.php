@@ -31,7 +31,7 @@ if(isset($_SESSION['auth'])){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mensajes</title>
 <!-- build-id: GOLD_RENT_KEEPUI_20251226_0530 -->
-<link rel="stylesheet" href="css/styles.css?v=20251226-1601">
+<link rel="stylesheet" href="css/styles.css?v=20250214-1530">
 </head>
 <body data-build="GOLD_RENT_KEEPUI_20251226_0530">
 <header class="sticky">
