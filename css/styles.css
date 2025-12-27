@@ -213,6 +213,8 @@ a:focus-visible {
   border: none;
   cursor: pointer;
   font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   transition: transform var(--transition), box-shadow var(--transition),
     background var(--transition), color var(--transition), border var(--transition);
 }
@@ -489,6 +491,7 @@ a:focus-visible {
   object-fit: cover;
   border-radius: 14px;
   margin-bottom: 1rem;
+  transition: transform var(--transition);
 }
 
 .steps-grid,
@@ -822,6 +825,10 @@ a:focus-visible {
   gap: 0.75rem;
 }
 
+.contact-panel .btn {
+  width: 100%;
+}
+
 .contact-section {
   margin-top: 1rem;
   display: grid;
@@ -850,6 +857,18 @@ a:focus-visible {
 
 .carousel {
   position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.carousel-image {
+  cursor: zoom-in;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carousel:hover .carousel-image {
+    transform: scale(1.08);
+  }
 }
 
 .carousel-control {
@@ -989,7 +1008,7 @@ a:focus-visible {
 .admin-item {
   display: grid;
   gap: 1rem;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: 96px 1fr auto;
   align-items: center;
   background: var(--bg-alt);
   padding: 1rem;
@@ -1018,10 +1037,11 @@ a:focus-visible {
 }
 
 .admin-item img {
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   border-radius: 12px;
   object-fit: cover;
+  cursor: zoom-in;
 }
 
 .admin-actions {
@@ -1075,6 +1095,7 @@ a:focus-visible {
   gap: 1rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+  align-items: center;
 }
 
 .modal-content-sm {
@@ -1094,6 +1115,164 @@ a:focus-visible {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
+}
+
+.richtext-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.richtext-toolbar .btn {
+  padding: 0.4rem 0.9rem;
+}
+
+.color-group {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding-left: 0.25rem;
+}
+
+.color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: #fff;
+}
+
+.color-swatch[data-color="#0b0b0b"] {
+  background: #0b0b0b;
+}
+
+.color-swatch[data-color="#5a5a5a"] {
+  background: #5a5a5a;
+}
+
+.color-swatch[data-color="#b88900"] {
+  background: #b88900;
+}
+
+.color-swatch[data-color="#1f2937"] {
+  background: #1f2937;
+}
+
+.color-swatch[data-color="#b45309"] {
+  background: #b45309;
+}
+
+.richtext-editor {
+  min-height: 110px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  background: #fff;
+}
+
+.richtext-editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+}
+
+.notification-bubble {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1rem 1.2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 320px;
+  z-index: 1000;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.notification-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 500;
+}
+
+.lightbox.show {
+  display: flex;
+}
+
+.lightbox-content {
+  position: relative;
+  background: #ffffff;
+  border-radius: var(--radius);
+  padding: 1rem;
+  max-width: min(920px, 95vw);
+  max-height: 90vh;
+  display: grid;
+  place-items: center;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 12px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  border: none;
+  background: var(--bg-alt);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.map-block {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: var(--bg-alt);
+}
+
+.map-block a {
+  color: var(--gold-4);
+  font-weight: 700;
+}
+
+.math-game {
+  display: grid;
+  gap: 1rem;
+}
+
+.math-problem {
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.math-form {
+  display: grid;
+  gap: 0.75rem;
 }
 
 .note-card {
@@ -1256,6 +1435,13 @@ a:focus-visible {
 
   .toast .btn {
     width: 100%;
+  }
+
+  .notification-bubble {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(92vw, 360px);
   }
 }
 

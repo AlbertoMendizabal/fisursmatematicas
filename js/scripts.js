@@ -8,6 +8,7 @@ const NOTIFICATION_TEXT_KEY = "LTA_NOTIFICATION_TEXT_V1";
 const NOTIFICATION_ENABLED_KEY = "LTA_NOTIFICATION_ENABLED_V1";
 const NOTIFICATION_LOG_KEY = "LTA_NOTIFICATIONS_V1";
 const WELCOME_DISMISSED_KEY = "toastDismissed";
+const NOTIFICATION_BUBBLE_DISMISSED_KEY = "notificationBubbleDismissed";
 const ADMIN_SESSION_KEY = "LTA_ADMIN_SESSION_V1";
 const MESSAGE_KEY = "LTA_MESSAGES_V1";
 const PROTECTED_CATALOG_KEY = "protectedCatalogUnlocked";
@@ -31,10 +32,14 @@ const DEFAULT_CATEGORIES = [
     subcategories: [
       { id: "casa", name: "Casa" },
       { id: "departamento", name: "Departamento" },
+      { id: "cuarto-habitacion", name: "Cuarto / Habitación" },
       { id: "terreno", name: "Terreno" },
       { id: "oficina", name: "Oficina" },
       { id: "local", name: "Local" },
       { id: "bodega", name: "Bodega" },
+      { id: "consultorio", name: "Consultorio" },
+      { id: "estudio", name: "Estudio" },
+      { id: "cochera-estacionamiento", name: "Cochera / Estacionamiento" },
       { id: "otros", name: "Otros" },
     ],
   },
@@ -42,13 +47,13 @@ const DEFAULT_CATEGORIES = [
     id: "vehiculos",
     name: "Vehículos",
     subcategories: [
-      { id: "coches", name: "Coches" },
-      { id: "motos", name: "Motos" },
-      { id: "camionetas", name: "Camionetas" },
-      { id: "electricos", name: "Eléctricos" },
-      { id: "bicicletas-electricas", name: "Bicicletas eléctricas" },
-      { id: "scooters-electricos", name: "Scooters eléctricos" },
-      { id: "refacciones", name: "Refacciones" },
+      { id: "coches", name: "Coche" },
+      { id: "motos", name: "Moto" },
+      { id: "camionetas", name: "Camioneta" },
+      { id: "bicicletas", name: "Bicicleta" },
+      { id: "bicicletas-electricas", name: "Bicicleta eléctrica" },
+      { id: "scooters-electricos", name: "Scooter eléctrico" },
+      { id: "refacciones", name: "Refacciones / Accesorios" },
       { id: "otros", name: "Otros" },
     ],
   },
@@ -56,10 +61,11 @@ const DEFAULT_CATEGORIES = [
     id: "electronica",
     name: "Electrónica",
     subcategories: [
-      { id: "celulares", name: "Celulares" },
-      { id: "tablets", name: "Tablets" },
-      { id: "laptops", name: "Laptops" },
-      { id: "computo", name: "Cómputo" },
+      { id: "celulares", name: "Celular" },
+      { id: "laptops", name: "Laptop" },
+      { id: "tablets", name: "Tablet" },
+      { id: "computo", name: "PC" },
+      { id: "monitores", name: "Monitor" },
       { id: "audio", name: "Audio" },
       { id: "accesorios", name: "Accesorios" },
       { id: "otros", name: "Otros" },
@@ -72,7 +78,6 @@ const DEFAULT_CATEGORIES = [
       { id: "muebles", name: "Muebles" },
       { id: "electrodomesticos", name: "Electrodomésticos" },
       { id: "cocina", name: "Cocina" },
-      { id: "decoracion", name: "Decoración" },
       { id: "jardin", name: "Jardín" },
       { id: "herramientas", name: "Herramientas" },
       { id: "otros", name: "Otros" },
@@ -105,9 +110,10 @@ const DEFAULT_CATEGORIES = [
     id: "servicios",
     name: "Servicios",
     subcategories: [
-      { id: "eventos", name: "Eventos" },
       { id: "asesorias", name: "Asesorías" },
+      { id: "eventos", name: "Eventos" },
       { id: "reparaciones", name: "Reparaciones" },
+      { id: "clases", name: "Clases" },
       { id: "otros", name: "Otros" },
     ],
   },
@@ -117,6 +123,8 @@ const DEFAULT_CATEGORIES = [
     subcategories: [
       { id: "matematicas", name: "Matemáticas" },
       { id: "tecnologia", name: "Tecnología" },
+      { id: "lectura", name: "Lectura" },
+      { id: "ajedrez", name: "Ajedrez" },
       { id: "otros", name: "Otros" },
     ],
   },
@@ -139,11 +147,14 @@ const proposalCondition = document.getElementById("proposalCondition");
 const proposalDelivery = document.getElementById("proposalDelivery");
 const proposalContactPhone = document.getElementById("proposalContactPhone");
 const proposalContactEmail = document.getElementById("proposalContactEmail");
+const proposalAddress = document.getElementById("proposalAddress");
+const proposalMapRequest = document.getElementById("proposalMapRequest");
 const proposalCategory = document.getElementById("proposalCategory");
 const proposalSubcategory = document.getElementById("proposalSubcategory");
 const proposalChildcategory = document.getElementById("proposalChildcategory");
 const proposalTitle = document.getElementById("proposalTitle");
 const proposalDescription = document.getElementById("proposalDescription");
+const proposalDescriptionEditor = document.getElementById("proposalDescriptionEditor");
 const proposalDescCount = document.getElementById("proposalDescCount");
 const proposalPrice = document.getElementById("proposalPrice");
 const proposalCommission = document.getElementById("proposalCommission");
@@ -185,7 +196,14 @@ const productSubcategory = document.getElementById("productSubcategory");
 const productChildcategory = document.getElementById("productChildcategory");
 const productTitle = document.getElementById("productTitle");
 const productDescription = document.getElementById("productDescription");
+const productDescriptionEditor = document.getElementById("productDescriptionEditor");
 const productPrice = document.getElementById("productPrice");
+const productContactPhone = document.getElementById("productContactPhone");
+const productContactEmail = document.getElementById("productContactEmail");
+const productAddress = document.getElementById("productAddress");
+const productShowPhone = document.getElementById("productShowPhone");
+const productShowEmail = document.getElementById("productShowEmail");
+const productShowMap = document.getElementById("productShowMap");
 const productPrivate = document.getElementById("productPrivate");
 const productSchedule = document.getElementById("productSchedule");
 const productDates = document.getElementById("productDates");
@@ -202,6 +220,12 @@ const notificationInput = document.getElementById("notificationInput");
 const notificationEnabled = document.getElementById("notificationEnabled");
 const notificationStatus = document.getElementById("notificationStatus");
 const adminNotificationList = document.getElementById("adminNotificationList");
+const clearNotificationsBtn = document.getElementById("clearNotifications");
+
+const notificationBubble = document.getElementById("notificationBubble");
+const notificationBubbleText = document.getElementById("notificationBubbleText");
+const openNotifications = document.getElementById("openNotifications");
+const dismissNotifications = document.getElementById("dismissNotifications");
 
 const exportDataBtn = document.getElementById("exportData");
 const importDataBtn = document.getElementById("importDataBtn");
@@ -242,6 +266,9 @@ const commissionModalMessage = document.getElementById("commissionModalMessage")
 const continueWhatsApp = document.getElementById("continueWhatsApp");
 const cancelWhatsApp = document.getElementById("cancelWhatsApp");
 const closeCommissionModal = document.getElementById("closeCommissionModal");
+const imageLightbox = document.getElementById("imageLightbox");
+const lightboxImage = document.getElementById("lightboxImage");
+const closeLightbox = document.getElementById("closeLightbox");
 const aboutContent = document.getElementById("aboutContent");
 const aboutForm = document.getElementById("aboutForm");
 const aboutInput = document.getElementById("aboutInput");
@@ -258,6 +285,18 @@ const taxonomyChildName = document.getElementById("taxonomyChildName");
 const taxonomyChildList = document.getElementById("taxonomyChildList");
 const taxonomySelectedCategory = document.getElementById("taxonomySelectedCategory");
 const taxonomySelectedSubcategory = document.getElementById("taxonomySelectedSubcategory");
+const mathGameForm = document.getElementById("mathGameForm");
+const mathA = document.getElementById("mathA");
+const mathB = document.getElementById("mathB");
+const mathAnswer = document.getElementById("mathAnswer");
+const mathStatus = document.getElementById("mathStatus");
+const studentLoginForm = document.getElementById("studentLoginForm");
+const studentPassword = document.getElementById("studentPassword");
+const studentLoginStatus = document.getElementById("studentLoginStatus");
+const studentLoginCard = document.getElementById("studentLoginCard");
+const studentEditCard = document.getElementById("studentEditCard");
+const studentQuickForm = document.getElementById("studentQuickForm");
+const studentQuickStatus = document.getElementById("studentQuickStatus");
 
 let approvedProducts = [];
 let pendingProposals = [];
@@ -265,6 +304,7 @@ let rejectedProposals = [];
 let editingApprovedId = null;
 let editingPendingId = null;
 let editingMode = "approved";
+let editingDraft = null;
 let storedMessages = [];
 let storedNotifications = [];
 let revealObserver = null;
@@ -293,6 +333,119 @@ const parsePrice = (value) => {
 const formatPrice = (value) => currencyFormatter.format(value ?? 0);
 
 const safeText = (value) => (value ?? "").toString();
+
+const ALLOWED_RICH_TAGS = new Set(["B", "STRONG", "U", "BR", "P", "DIV", "SPAN"]);
+const ALLOWED_ALIGN = new Set(["left", "center"]);
+const ALLOWED_COLORS = ["#0b0b0b", "#5a5a5a", "#b88900", "#1f2937", "#b45309"];
+
+const hexToRgb = (hex) => {
+  const raw = hex.replace("#", "");
+  if (raw.length !== 6) return "";
+  const r = Number.parseInt(raw.slice(0, 2), 16);
+  const g = Number.parseInt(raw.slice(2, 4), 16);
+  const b = Number.parseInt(raw.slice(4, 6), 16);
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
+const ALLOWED_COLOR_VALUES = new Set([
+  ...ALLOWED_COLORS,
+  ...ALLOWED_COLORS.map((color) => hexToRgb(color)),
+]);
+
+const sanitizeRichText = (rawHtml) => {
+  if (!rawHtml) return "";
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<div>${rawHtml}</div>`, "text/html");
+  const walk = (node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType === Node.COMMENT_NODE) {
+        child.remove();
+        return;
+      }
+      if (child.nodeType !== Node.ELEMENT_NODE) return;
+      const element = child;
+      if (!ALLOWED_RICH_TAGS.has(element.tagName)) {
+        const textNode = document.createTextNode(element.textContent || "");
+        element.replaceWith(textNode);
+        return;
+      }
+      const styleValue = element.getAttribute("style") || "";
+      const sanitizedStyles = [];
+      styleValue.split(";").forEach((rule) => {
+        const [prop, val] = rule.split(":");
+        if (!prop || !val) return;
+        const key = prop.trim().toLowerCase();
+        const value = val.trim().toLowerCase();
+        if (key === "color" && ALLOWED_COLOR_VALUES.has(value)) {
+          sanitizedStyles.push(`color:${value}`);
+        }
+        if (key === "text-align" && ALLOWED_ALIGN.has(value)) {
+          sanitizedStyles.push(`text-align:${value}`);
+        }
+      });
+      element.getAttributeNames().forEach((attr) => {
+        if (attr !== "style") element.removeAttribute(attr);
+      });
+      if (sanitizedStyles.length) {
+        element.setAttribute("style", sanitizedStyles.join(";"));
+      } else {
+        element.removeAttribute("style");
+      }
+      walk(element);
+    });
+  };
+  walk(doc.body);
+  return doc.body.innerHTML;
+};
+
+const setEditorContent = (editor, html) => {
+  if (!editor) return;
+  editor.innerHTML = sanitizeRichText(html || "");
+};
+
+const getEditorText = (editor) => safeText(editor?.textContent).trim();
+
+const syncEditorValue = (editor, hiddenInput, countEl, max = 220) => {
+  if (!editor) return;
+  const text = safeText(editor.textContent);
+  if (max && text.length > max) {
+    editor.textContent = text.slice(0, max);
+  }
+  const remaining = max ? Math.max(max - safeText(editor.textContent).length, 0) : 0;
+  if (countEl) {
+    countEl.textContent = max ? `${remaining} caracteres restantes` : "";
+  }
+  if (hiddenInput) {
+    hiddenInput.value = sanitizeRichText(editor.innerHTML);
+  }
+};
+
+const setupRichTextToolbar = (toolbar) => {
+  if (!toolbar) return;
+  const editorId = toolbar.dataset.editor;
+  const editor = document.getElementById(editorId);
+  if (!editor) return;
+  toolbar.addEventListener("click", (event) => {
+    const target = event.target.closest("button");
+    if (!target) return;
+    const format = target.dataset.format;
+    const color = target.dataset.color;
+    editor.focus();
+    if (format === "bold") document.execCommand("bold");
+    if (format === "underline") document.execCommand("underline");
+    if (format === "align-left") document.execCommand("justifyLeft");
+    if (format === "align-center") document.execCommand("justifyCenter");
+    if (color) document.execCommand("foreColor", false, color);
+  });
+};
+
+const setupRichTextEditors = () => {
+  document.querySelectorAll(".richtext-toolbar").forEach((toolbar) => {
+    setupRichTextToolbar(toolbar);
+  });
+  syncEditorValue(productDescriptionEditor, productDescription, descCount, 220);
+  syncEditorValue(proposalDescriptionEditor, proposalDescription, proposalDescCount, 220);
+};
 
 const slugify = (value) =>
   safeText(value)
@@ -346,6 +499,26 @@ const loadTaxonomy = () => {
   }
   categories = sortTaxonomy(JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)));
   saveToStorage(TAXONOMY_KEY, categories);
+};
+
+const ensureDefaultTaxonomy = () => {
+  const defaults = normalizeTaxonomy(DEFAULT_CATEGORIES);
+  let updated = false;
+  defaults.forEach((defaultCategory) => {
+    const existingCategory = categories.find((cat) => cat.id === defaultCategory.id);
+    if (!existingCategory) {
+      categories.push(defaultCategory);
+      updated = true;
+      return;
+    }
+    defaultCategory.subcategories.forEach((defaultSub) => {
+      if (!existingCategory.subcategories.some((sub) => sub.id === defaultSub.id)) {
+        existingCategory.subcategories.push(defaultSub);
+        updated = true;
+      }
+    });
+  });
+  if (updated) saveTaxonomy();
 };
 
 const saveTaxonomy = () => {
@@ -685,10 +858,11 @@ const mapLegacySubcategory = (categoryId, subcategoryId, childId = "") => {
       "venta-motos": "motos",
       "renta-motos": "motos",
       "venta-camionetas": "camionetas",
-      "electricos-coches": "electricos",
-      "electricos-motos": "electricos",
+      "electricos-coches": "coches",
+      "electricos-motos": "motos",
       "electricos-bicicletas": "bicicletas-electricas",
       "electricos-scooters": "scooters-electricos",
+      electricos: "bicicletas-electricas",
       llantas: "refacciones",
       "cascos-equipo": "refacciones",
       refacciones: "refacciones",
@@ -696,7 +870,7 @@ const mapLegacySubcategory = (categoryId, subcategoryId, childId = "") => {
     electronica: {
       computo: "computo",
       accesorios: "accesorios",
-      monitores: "computo",
+      monitores: "monitores",
       consolas: "computo",
       audio: "audio",
     },
@@ -1620,10 +1794,23 @@ const normalizeItem = (item) => {
     category: item.category || "",
     price: item.price ?? item.priceMXN ?? null,
     priceMXN: item.priceMXN ?? item.price ?? null,
+    descriptionHtml: item.descriptionHtml || item.description || "",
     isProtected: Boolean(item.isProtected ?? item.isPrivate),
     status: item.status || "publicado",
     startDate: item.startDate || "",
     endDate: item.endDate || "",
+    location: item.location || item.address || "",
+    mapRequested: Boolean(item.mapRequested),
+    mapApproved: Boolean(item.mapApproved),
+    contact: {
+      phone: item.contact?.phone || item.contactPhone || "",
+      email: item.contact?.email || item.contactEmail || "",
+    },
+    visibility: {
+      showPhone: Boolean(item.visibility?.showPhone ?? item.showPhone),
+      showEmail: Boolean(item.visibility?.showEmail ?? item.showEmail),
+      showMap: Boolean(item.visibility?.showMap ?? item.showMap),
+    },
   };
   const ensured = ensureCategoryData(normalized);
   if (!ensured.category && ensured.categoryId) {
@@ -1635,7 +1822,7 @@ const normalizeItem = (item) => {
 
 const sanitizeApprovedProduct = (item) => {
   const normalized = normalizeItem(item);
-  const { contact, detailsRequest, ...rest } = normalized;
+  const { detailsRequest, ...rest } = normalized;
   return rest;
 };
 
@@ -1762,12 +1949,18 @@ const renderMessages = () => {
 
 const loadNotifications = () => {
   const stored = loadFromStorage(NOTIFICATION_LOG_KEY, []);
-  storedNotifications = Array.isArray(stored) ? stored : [];
+  storedNotifications = Array.isArray(stored)
+    ? stored.map((item) => ({
+        ...item,
+        read: Boolean(item.read),
+      }))
+    : [];
 };
 
 const saveNotifications = () => {
   saveToStorage(NOTIFICATION_LOG_KEY, storedNotifications);
   renderNotifications();
+  renderNotificationBubble();
 };
 
 const addNotification = ({ type, message, itemId }) => {
@@ -1777,6 +1970,7 @@ const addNotification = ({ type, message, itemId }) => {
     message,
     itemId: itemId || "",
     createdAt: Date.now(),
+    read: false,
   };
   storedNotifications.unshift(payload);
   saveNotifications();
@@ -1800,6 +1994,14 @@ const renderNotifications = () => {
     const info = document.createElement("div");
     const title = document.createElement("strong");
     title.textContent = notification.type || "Notificación";
+    if (!notification.read) {
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.style.display = "inline-block";
+      badge.textContent = "Nuevo";
+      title.appendChild(document.createTextNode(" "));
+      title.appendChild(badge);
+    }
     const meta = document.createElement("p");
     meta.className = "muted";
     const dateText = new Date(notification.createdAt).toLocaleString("es-MX");
@@ -1809,6 +2011,15 @@ const renderNotifications = () => {
     info.append(title, meta, message);
 
     const actions = document.createElement("div");
+    const readBtn = document.createElement("button");
+    readBtn.className = "btn btn-ghost";
+    readBtn.type = "button";
+    readBtn.textContent = notification.read ? "Visto" : "Marcar visto";
+    readBtn.disabled = notification.read;
+    readBtn.addEventListener("click", () => {
+      notification.read = true;
+      saveNotifications();
+    });
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "btn btn-ghost";
     deleteBtn.type = "button";
@@ -1817,11 +2028,31 @@ const renderNotifications = () => {
       storedNotifications = storedNotifications.filter((item) => item.id !== notification.id);
       saveNotifications();
     });
-    actions.append(deleteBtn);
+    actions.append(readBtn, deleteBtn);
 
     item.append(info, actions);
     adminNotificationList.appendChild(item);
   });
+};
+
+const renderNotificationBubble = () => {
+  if (!notificationBubble || !notificationBubbleText) return;
+  if (sessionStorage.getItem(NOTIFICATION_BUBBLE_DISMISSED_KEY) === "1") {
+    notificationBubble.hidden = true;
+    return;
+  }
+  if (!storedNotifications.length) {
+    notificationBubble.hidden = true;
+    return;
+  }
+  const unreadCount = storedNotifications.filter((item) => !item.read).length;
+  const latest = storedNotifications[0];
+  notificationBubbleText.textContent = unreadCount
+    ? `Tienes ${unreadCount} notificación${unreadCount === 1 ? "" : "es"} nueva${
+        unreadCount === 1 ? "" : "s"
+      }.`
+    : `Última: ${latest?.message || "Sin novedades"}`;
+  notificationBubble.hidden = false;
 };
 
 const buildCarousel = (images, title) => {
@@ -1836,6 +2067,7 @@ const buildCarousel = (images, title) => {
   img.loading = "lazy";
   img.src = list[0];
   img.alt = safeText(title);
+  img.dataset.lightbox = "1";
 
   const prev = document.createElement("button");
   prev.type = "button";
@@ -1929,6 +2161,26 @@ const buildCommissionNote = () => {
   return note;
 };
 
+const buildMapBlock = (product) => {
+  const location = safeText(product.location).trim();
+  if (!location) return null;
+  if (!product.mapApproved || !product.visibility?.showMap) return null;
+  const block = document.createElement("div");
+  block.className = "map-block";
+  const link = document.createElement("a");
+  link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    location
+  )}`;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "Ver ubicación en mapa";
+  const note = document.createElement("p");
+  note.className = "muted small";
+  note.textContent = location;
+  block.append(link, note);
+  return block;
+};
+
 const openCommissionModal = (message, url) => {
   if (!commissionModal || !commissionModalMessage) return;
   pendingWhatsAppUrl = url;
@@ -1960,6 +2212,18 @@ const buildContactSection = (product) => {
   panel.className = "contact-panel";
   panel.id = panelId;
   panel.hidden = true;
+
+  const contactDetails = document.createElement("div");
+  const showPhone = product.visibility?.showPhone && product.contact?.phone;
+  const showEmail = product.visibility?.showEmail && product.contact?.email;
+  if (showPhone || showEmail) {
+    contactDetails.className = "muted small";
+    const lines = [];
+    if (showPhone) lines.push(`Teléfono: ${product.contact.phone}`);
+    if (showEmail) lines.push(`Correo: ${product.contact.email}`);
+    contactDetails.textContent = lines.join(" · ");
+    panel.append(contactDetails);
+  }
 
   const button = document.createElement("button");
   button.className = "btn btn-whatsapp";
@@ -2174,8 +2438,8 @@ const renderProducts = () => {
       ? "Sesiones en línea"
       : `${formatCondition(product.condition)} · ${formatDelivery(product.deliveryZone)}`;
 
-    const desc = document.createElement("p");
-    desc.textContent = safeText(product.description);
+    const desc = document.createElement("div");
+    desc.innerHTML = sanitizeRichText(product.descriptionHtml || product.description);
 
     const priceBlock = isCourseItem(product) ? buildCoursePricing() : document.createElement("p");
     if (!isCourseItem(product)) {
@@ -2191,11 +2455,13 @@ const renderProducts = () => {
       schedule.textContent = [start, end].filter(Boolean).join(" · ");
     }
 
+    const mapBlock = buildMapBlock(product);
     const contactSection = buildContactSection(product);
     const commissionNote = buildCommissionNote();
 
     card.append(carousel, meta, title, details, desc, priceBlock);
     if (schedule.textContent) card.append(schedule);
+    if (mapBlock) card.append(mapBlock);
     card.append(commissionNote, contactSection);
     productGrid.appendChild(card);
   });
@@ -2221,6 +2487,7 @@ const updateAdminList = () => {
     const img = document.createElement("img");
     img.src = product.images?.[0] || demoImage("Producto");
     img.alt = safeText(product.title);
+    img.dataset.lightbox = "1";
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
@@ -2279,6 +2546,7 @@ const updatePendingList = () => {
     const img = document.createElement("img");
     img.src = proposal.images?.[0] || demoImage("Producto");
     img.alt = safeText(proposal.title);
+    img.dataset.lightbox = "1";
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
@@ -2343,7 +2611,7 @@ const updatePendingList = () => {
     contactLabel.textContent = "Contacto: ";
     const contactValue = document.createElement("span");
     const phone = proposal.contact?.phone || "Sin teléfono";
-    const contactAlt = proposal.contact?.email || "Sin contacto alterno";
+    const contactAlt = proposal.contact?.email || "Sin correo";
     contactValue.textContent = `${phone} · ${contactAlt}`;
     contact.append(contactLabel, contactValue);
 
@@ -2359,6 +2627,7 @@ const updatePendingList = () => {
       const thumb = document.createElement("img");
       thumb.src = image;
       thumb.alt = `Imagen de ${proposal.title}`;
+      thumb.dataset.lightbox = "1";
       detailGallery.appendChild(thumb);
     });
 
@@ -2382,18 +2651,22 @@ const resetProductForm = () => {
   editingApprovedId = null;
   editingPendingId = null;
   editingMode = "approved";
+  editingDraft = null;
   productFormTitle.textContent = "Nuevo producto";
   productFormStatus.textContent = "";
-  descCount.textContent = "0/220";
+  descCount.textContent = "220 caracteres restantes";
   productDates.hidden = true;
   if (productCategory) productCategory.value = "";
   populateSubcategorySelect(productSubcategory, "");
   populateChildcategorySelect(productChildcategory, "", "");
+  setEditorContent(productDescriptionEditor, "");
+  syncEditorValue(productDescriptionEditor, productDescription, descCount, 220);
 };
 
 const openEditForm = (item, mode) => {
   productForm.hidden = false;
   editingMode = mode;
+  editingDraft = JSON.parse(JSON.stringify(item || {}));
   if (mode === "approved") {
     productFormTitle.textContent = "Editar producto";
     editingApprovedId = item.id;
@@ -2417,14 +2690,20 @@ const openEditForm = (item, mode) => {
     item.category || ""
   );
   productTitle.value = item.title;
-  productDescription.value = item.description;
+  setEditorContent(productDescriptionEditor, item.descriptionHtml || item.description);
+  syncEditorValue(productDescriptionEditor, productDescription, descCount, 220);
   productPrice.value = item.price ?? "";
-  descCount.textContent = `${item.description.length}/220`;
   productStartDate.value = item.startDate || "";
   productEndDate.value = item.endDate || "";
   productSchedule.checked = Boolean(item.startDate || item.endDate);
   productDates.hidden = !productSchedule.checked;
   productPrivate.checked = Boolean(item.isProtected);
+  if (productContactPhone) productContactPhone.value = item.contact?.phone || "";
+  if (productContactEmail) productContactEmail.value = item.contact?.email || "";
+  if (productAddress) productAddress.value = item.location || "";
+  if (productShowPhone) productShowPhone.checked = Boolean(item.visibility?.showPhone);
+  if (productShowEmail) productShowEmail.checked = Boolean(item.visibility?.showEmail);
+  if (productShowMap) productShowMap.checked = Boolean(item.mapApproved);
   renderPreviewGrid(productPreview, item.images || []);
 
   const adminProductsTab = document.getElementById("admin-products-btn");
@@ -2446,13 +2725,24 @@ const approveProposal = (id) => {
   );
   if (!confirmed) return;
   pendingProposals = pendingProposals.filter((item) => item.id !== id);
-  const { contact, detailsRequest, status, ...rest } = proposal;
+  const { detailsRequest, status, ...rest } = proposal;
   approvedProducts.unshift({
     ...rest,
+    visibility: {
+      showPhone: Boolean(proposal.visibility?.showPhone),
+      showEmail: Boolean(proposal.visibility?.showEmail),
+      showMap: Boolean(proposal.visibility?.showMap),
+    },
     updatedAt: Date.now(),
   });
   persistPending();
   persistApproved();
+
+  addNotification({
+    type: "Recientemente autorizado",
+    message: `Se autorizó y publicó: ${proposal.title}.`,
+    itemId: proposal.id,
+  });
 };
 
 const requestProposalDetails = (id) => {
@@ -2809,6 +3099,32 @@ const refreshTaxonomyUI = () => {
   renderCatalogMenu();
 };
 
+const isCategoryInUse = (categoryId) =>
+  approvedProducts.some((product) => product.categoryId === categoryId) ||
+  pendingProposals.some((proposal) => proposal.categoryId === categoryId);
+
+const isSubcategoryInUse = (categoryId, subcategoryId) =>
+  approvedProducts.some(
+    (product) => product.categoryId === categoryId && product.subcategoryId === subcategoryId
+  ) ||
+  pendingProposals.some(
+    (proposal) => proposal.categoryId === categoryId && proposal.subcategoryId === subcategoryId
+  );
+
+const isChildInUse = (categoryId, subcategoryId, childId) =>
+  approvedProducts.some(
+    (product) =>
+      product.categoryId === categoryId &&
+      product.subcategoryId === subcategoryId &&
+      product.childId === childId
+  ) ||
+  pendingProposals.some(
+    (proposal) =>
+      proposal.categoryId === categoryId &&
+      proposal.subcategoryId === subcategoryId &&
+      proposal.childId === childId
+  );
+
 const renderTaxonomyAdmin = () => {
   if (!taxonomyCategoryList || !taxonomySubcategoryList || !taxonomyChildList) return;
   const query = safeText(taxonomySearch?.value).toLowerCase();
@@ -2868,6 +3184,12 @@ const renderTaxonomyAdmin = () => {
     deleteBtn.className = "btn btn-ghost";
     deleteBtn.textContent = "Eliminar";
     deleteBtn.addEventListener("click", () => {
+      if (isCategoryInUse(category.id)) {
+        window.alert(
+          "No puedes eliminar esta categoría porque hay productos asociados. Reasigna primero."
+        );
+        return;
+      }
       const confirmed = window.confirm(
         `¿Eliminar la categoría "${category.name}"?`
       );
@@ -2941,6 +3263,12 @@ const renderTaxonomyAdmin = () => {
     deleteBtn.className = "btn btn-ghost";
     deleteBtn.textContent = "Eliminar";
     deleteBtn.addEventListener("click", () => {
+      if (isSubcategoryInUse(activeCategory.id, subcategory.id)) {
+        window.alert(
+          "No puedes eliminar esta subcategoría porque hay productos asociados. Reasigna primero."
+        );
+        return;
+      }
       const confirmed = window.confirm(
         `¿Eliminar la subcategoría "${subcategory.name}"?`
       );
@@ -3007,6 +3335,12 @@ const renderTaxonomyAdmin = () => {
     deleteBtn.className = "btn btn-ghost";
     deleteBtn.textContent = "Eliminar";
     deleteBtn.addEventListener("click", () => {
+      if (isChildInUse(activeCategory.id, activeSubcategory.id, child.id)) {
+        window.alert(
+          "No puedes eliminar este detalle porque hay productos asociados. Reasigna primero."
+        );
+        return;
+      }
       const confirmed = window.confirm(`¿Eliminar el detalle "${child.name}"?`);
       if (!confirmed) return;
       activeSubcategory.children = activeSubcategory.children.filter(
@@ -3242,6 +3576,22 @@ const setupNotification = () => {
   showNotification();
 };
 
+const setupNotificationBubble = () => {
+  if (openNotifications) {
+    openNotifications.addEventListener("click", () => {
+      openAdminModal();
+      const button = document.getElementById("admin-notifications-btn");
+      button?.click();
+    });
+  }
+  if (dismissNotifications) {
+    dismissNotifications.addEventListener("click", () => {
+      sessionStorage.setItem(NOTIFICATION_BUBBLE_DISMISSED_KEY, "1");
+      if (notificationBubble) notificationBubble.hidden = true;
+    });
+  }
+};
+
 const setAdminSession = () => {
   const expiresAt = Date.now() + 2 * 60 * 60 * 1000;
   sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ expiresAt }));
@@ -3275,6 +3625,10 @@ const closeAdminModal = () => {
   adminModal.setAttribute("aria-hidden", "true");
   adminLoginStatus.textContent = "";
   adminPassword.value = "";
+  if (productForm) {
+    productForm.hidden = true;
+    resetProductForm();
+  }
 };
 
 const handleAdminLogin = async (event) => {
@@ -3310,13 +3664,20 @@ const handleProductSubmit = (event) => {
   const childId = productChildcategory?.value || "";
   const categoryName = getCategoryById(categoryId)?.name || "";
   const title = productTitle.value.trim();
-  const description = productDescription.value.trim();
+  const description = getEditorText(productDescriptionEditor);
+  const descriptionHtml = sanitizeRichText(productDescriptionEditor?.innerHTML || "");
   const rawPrice = productPrice.value.trim();
   const priceValue = parsePrice(rawPrice);
   const images = getPreviewImages(productPreview);
   const startDate = productSchedule.checked ? productStartDate.value : "";
   const endDate = productSchedule.checked ? productEndDate.value : "";
   const isProtected = productPrivate.checked;
+  const contactPhone = productContactPhone?.value.trim() || "";
+  const contactEmail = productContactEmail?.value.trim() || "";
+  const location = productAddress?.value.trim() || "";
+  const showPhone = Boolean(productShowPhone?.checked);
+  const showEmail = Boolean(productShowEmail?.checked);
+  const showMap = Boolean(productShowMap?.checked);
 
   if (
     !type ||
@@ -3329,6 +3690,21 @@ const handleProductSubmit = (event) => {
     !description
   ) {
     productFormStatus.textContent = "Completa todos los campos con datos válidos.";
+    return;
+  }
+
+  if (showPhone && !contactPhone) {
+    productFormStatus.textContent = "Ingresa el teléfono o desactiva su visibilidad.";
+    return;
+  }
+
+  if (showEmail && !contactEmail) {
+    productFormStatus.textContent = "Ingresa el correo o desactiva su visibilidad.";
+    return;
+  }
+
+  if (showMap && !location) {
+    productFormStatus.textContent = "Agrega una dirección para mostrar el mapa.";
     return;
   }
 
@@ -3357,6 +3733,7 @@ const handleProductSubmit = (event) => {
             subcategoryId,
             title,
             description,
+            descriptionHtml,
             price: priceValue,
             priceMXN: priceValue,
             images,
@@ -3364,6 +3741,10 @@ const handleProductSubmit = (event) => {
             endDate,
             isProtected,
             childId,
+            location,
+            mapApproved: showMap,
+            contact: { phone: contactPhone, email: contactEmail },
+            visibility: { showPhone, showEmail, showMap },
             updatedAt: now,
           }
         : proposal
@@ -3389,6 +3770,7 @@ const handleProductSubmit = (event) => {
           subcategoryId,
           title,
           description,
+          descriptionHtml,
           price: priceValue,
           priceMXN: priceValue,
           images,
@@ -3396,6 +3778,10 @@ const handleProductSubmit = (event) => {
           endDate,
           isProtected,
           childId,
+          location,
+          mapApproved: showMap,
+          contact: { phone: contactPhone, email: contactEmail },
+          visibility: { showPhone, showEmail, showMap },
           updatedAt: now,
         }
       : product
@@ -3421,12 +3807,17 @@ const handleProductSubmit = (event) => {
       childId,
       title,
       description,
+      descriptionHtml,
       price: priceValue,
       priceMXN: priceValue,
       images,
       startDate,
       endDate,
       isProtected,
+      location,
+      mapApproved: showMap,
+      contact: { phone: contactPhone, email: contactEmail },
+      visibility: { showPhone, showEmail, showMap },
       status: "publicado",
       createdAt: now,
       updatedAt: now,
@@ -3533,6 +3924,69 @@ const setupContactForm = () => {
     contactStatus.textContent = "Mensaje enviado. Se responderá por WhatsApp.";
     contactForm.reset();
   });
+};
+
+const setupMathGame = () => {
+  if (!mathGameForm || !mathA || !mathB || !mathAnswer || !mathStatus) return;
+  const generateProblem = () => {
+    mathA.textContent = Math.floor(Math.random() * 20 + 1).toString();
+    mathB.textContent = Math.floor(Math.random() * 20 + 1).toString();
+    mathAnswer.value = "";
+  };
+  const checkAnswer = () => {
+    const a = Number.parseInt(mathA.textContent, 10);
+    const b = Number.parseInt(mathB.textContent, 10);
+    const answer = Number.parseInt(mathAnswer.value, 10);
+    if (Number.isNaN(answer)) return;
+    mathStatus.textContent = answer === a + b ? "¡Correcto!" : "Intenta de nuevo.";
+  };
+  mathGameForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    checkAnswer();
+    setTimeout(generateProblem, 700);
+  });
+  generateProblem();
+  setInterval(generateProblem, 15000);
+};
+
+const setupStudentAccess = () => {
+  if (!studentLoginForm || !studentPassword || !studentLoginStatus) return;
+  const unlock = () => {
+    if (studentLoginCard) studentLoginCard.hidden = true;
+    if (studentEditCard) studentEditCard.hidden = false;
+  };
+  if (sessionStorage.getItem("studentAccess") === "1") {
+    unlock();
+  }
+  studentLoginForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = studentPassword.value.trim();
+    if (value === "2025" || value === "1991") {
+      sessionStorage.setItem("studentAccess", "1");
+      studentLoginStatus.textContent = "Acceso concedido.";
+      unlock();
+    } else {
+      studentLoginStatus.textContent = "Clave incorrecta.";
+    }
+  });
+  if (studentQuickForm) {
+    const stored = loadFromStorage("studentQuickData", {});
+    if (stored?.content) document.getElementById("studentContent").value = stored.content;
+    if (stored?.date) document.getElementById("studentDate").value = stored.date;
+    if (stored?.number) document.getElementById("studentNumber").value = stored.number;
+    studentQuickForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const payload = {
+        content: document.getElementById("studentContent").value.trim(),
+        date: document.getElementById("studentDate").value,
+        number: document.getElementById("studentNumber").value,
+      };
+      saveToStorage("studentQuickData", payload);
+      if (studentQuickStatus) {
+        studentQuickStatus.textContent = "Datos guardados.";
+      }
+    });
+  }
 };
 
 const initCoursesPage = () => {
@@ -3699,12 +4153,15 @@ const handleProposalSubmit = (event) => {
   const deliveryZone = proposalDelivery.value.trim();
   const contactPhone = proposalContactPhone.value.trim();
   const contactEmail = proposalContactEmail.value.trim();
+  const location = proposalAddress?.value.trim() || "";
+  const mapRequested = Boolean(proposalMapRequest?.checked && location);
   const categoryId = proposalCategory.value;
   const subcategoryId = proposalSubcategory.value;
   const childId = proposalChildcategory?.value || "";
   const categoryName = getCategoryById(categoryId)?.name || "";
   const title = proposalTitle.value.trim();
-  const description = proposalDescription.value.trim();
+  const description = getEditorText(proposalDescriptionEditor);
+  const descriptionHtml = sanitizeRichText(proposalDescriptionEditor?.innerHTML || "");
   const rawPrice = proposalPrice.value.trim();
   const priceValue = parsePrice(rawPrice);
   const images = getPreviewImages(proposalPreview);
@@ -3718,7 +4175,6 @@ const handleProposalSubmit = (event) => {
     !condition ||
     !deliveryZone ||
     !contactPhone ||
-    !contactEmail ||
     !categoryId ||
     !subcategoryId ||
     !title ||
@@ -3755,12 +4211,17 @@ const handleProposalSubmit = (event) => {
     childId,
     title,
     description,
+    descriptionHtml,
     price: priceValue,
     priceMXN: priceValue,
     images,
     startDate,
     endDate,
     isProtected,
+    location,
+    mapRequested,
+    mapApproved: false,
+    visibility: { showPhone: false, showEmail: false, showMap: false },
     status: "pendiente",
     detailsRequest: "",
     contact: {
@@ -3786,12 +4247,11 @@ const handleProposalSubmit = (event) => {
   proposalPreview.innerHTML = "";
   proposalPreview.dataset.images = "";
   proposalDates.hidden = true;
+  setEditorContent(proposalDescriptionEditor, "");
+  syncEditorValue(proposalDescriptionEditor, proposalDescription, proposalDescCount, 220);
   if (proposalCategory) proposalCategory.value = "";
   populateSubcategorySelect(proposalSubcategory, "");
   populateChildcategorySelect(proposalChildcategory, "", "");
-  if (proposalDescCount) {
-    proposalDescCount.textContent = "220 caracteres restantes";
-  }
   if (proposalPrice) {
     updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
   }
@@ -3821,6 +4281,7 @@ const setupAdminEvents = () => {
     !productImage ||
     !adminDropzone ||
     !productDescription ||
+    !productDescriptionEditor ||
     !productSchedule ||
     !productOperation ||
     !productCategory ||
@@ -3873,8 +4334,8 @@ const setupAdminEvents = () => {
     const files = event.dataTransfer?.files;
     handleImageDrop({ files, previewEl: productPreview, statusEl: productFormStatus });
   });
-  productDescription.addEventListener("input", () => {
-    descCount.textContent = `${productDescription.value.length}/220`;
+  productDescriptionEditor.addEventListener("input", () => {
+    syncEditorValue(productDescriptionEditor, productDescription, descCount, 220);
   });
   productSchedule.addEventListener("change", () => {
     productDates.hidden = !productSchedule.checked;
@@ -3890,6 +4351,11 @@ const setupAdminEvents = () => {
       productSubcategory.value
     );
   });
+  productAddress?.addEventListener("input", () => {
+    if (productShowMap && !productAddress.value.trim()) {
+      productShowMap.checked = false;
+    }
+  });
   productForm.addEventListener("submit", handleProductSubmit);
   adminWhatsApp.addEventListener("click", () => {
     const title = productTitle.value.trim() || "Sin título";
@@ -3899,6 +4365,12 @@ const setupAdminEvents = () => {
     window.open(createWhatsAppUrl(message), "_blank", "noopener");
   });
   notificationForm.addEventListener("submit", handleNotificationSave);
+  clearNotificationsBtn?.addEventListener("click", () => {
+    const confirmed = window.confirm("¿Eliminar todas las notificaciones?");
+    if (!confirmed) return;
+    storedNotifications = [];
+    saveNotifications();
+  });
   exportDataBtn.addEventListener("click", handleExport);
   importDataBtn.addEventListener("click", () => importDataInput.click());
   importDataInput.addEventListener("change", handleImport);
@@ -3915,6 +4387,7 @@ const setupProposalEvents = () => {
     !proposalCategory ||
     !proposalSubcategory ||
     !proposalDescription ||
+    !proposalDescriptionEditor ||
     !proposalPrice
   ) {
     return;
@@ -3962,15 +4435,19 @@ const setupProposalEvents = () => {
       proposalSubcategory.value
     );
   });
-  proposalDescription.addEventListener("input", () => {
-    const remaining = 220 - proposalDescription.value.length;
-    proposalDescCount.textContent = `${Math.max(remaining, 0)} caracteres restantes`;
+  proposalDescriptionEditor.addEventListener("input", () => {
+    syncEditorValue(proposalDescriptionEditor, proposalDescription, proposalDescCount, 220);
   });
   proposalPrice.addEventListener("input", () => {
     const priceValue = parsePrice(proposalPrice.value);
     updatePriceBreakdown(priceValue, proposalCommission, proposalPayout);
   });
   proposalForm.addEventListener("submit", handleProposalSubmit);
+  proposalAddress?.addEventListener("input", () => {
+    if (proposalMapRequest && !proposalAddress.value.trim()) {
+      proposalMapRequest.checked = false;
+    }
+  });
 };
 
 const openProtectedModal = () => {
@@ -4035,9 +4512,9 @@ const renderProtectedCatalog = () => {
       ? "Sesiones en línea"
       : `${formatCondition(product.condition)} · ${formatDelivery(product.deliveryZone)}`;
 
-    const desc = document.createElement("p");
+    const desc = document.createElement("div");
     desc.className = "muted";
-    desc.textContent = safeText(product.description);
+    desc.innerHTML = sanitizeRichText(product.descriptionHtml || product.description);
 
     const priceBlock = isCourseItem(product) ? buildCoursePricing() : document.createElement("p");
     if (!isCourseItem(product)) {
@@ -4045,10 +4522,13 @@ const renderProtectedCatalog = () => {
       priceBlock.textContent = formatPriceLabel(product.price);
     }
 
+    const mapBlock = buildMapBlock(product);
     const contactSection = buildContactSection(product);
     const commissionNote = buildCommissionNote();
 
-    card.append(carousel, meta, title, details, desc, priceBlock, commissionNote, contactSection);
+    card.append(carousel, meta, title, details, desc, priceBlock);
+    if (mapBlock) card.append(mapBlock);
+    card.append(commissionNote, contactSection);
     protectedGrid.appendChild(card);
   });
   registerReveals(protectedGrid);
@@ -4119,6 +4599,35 @@ const setupCommissionModal = () => {
   }
 };
 
+const openLightbox = (src, alt) => {
+  if (!imageLightbox || !lightboxImage) return;
+  lightboxImage.src = src;
+  lightboxImage.alt = alt || "Vista ampliada";
+  imageLightbox.classList.add("show");
+  imageLightbox.setAttribute("aria-hidden", "false");
+};
+
+const closeLightboxHandler = () => {
+  if (!imageLightbox || !lightboxImage) return;
+  imageLightbox.classList.remove("show");
+  imageLightbox.setAttribute("aria-hidden", "true");
+  lightboxImage.src = "";
+};
+
+const setupLightbox = () => {
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const target = event.target.closest("img[data-lightbox]");
+    if (!target) return;
+    event.preventDefault();
+    openLightbox(target.src, target.alt);
+  });
+  closeLightbox?.addEventListener("click", closeLightboxHandler);
+  imageLightbox?.addEventListener("click", (event) => {
+    if (event.target === imageLightbox) closeLightboxHandler();
+  });
+};
+
 const setupAboutForm = () => {
   if (!aboutForm || !aboutInput) return;
   aboutInput.value = loadAbout();
@@ -4146,6 +4655,7 @@ const initializeNotificationForm = () => {
 
 const init = () => {
   loadTaxonomy();
+  ensureDefaultTaxonomy();
   loadApproved();
   loadPending();
   loadRejected();
@@ -4161,11 +4671,14 @@ const init = () => {
   setupTabs();
   setupAdminTabs();
   setupNotification();
+  setupNotificationBubble();
   setupAdminEvents();
   setupProposalEvents();
   setupProtectedAccess();
   setupCommissionModal();
+  setupLightbox();
   setupAboutForm();
+  setupRichTextEditors();
   initCoursesPage();
   initializeNotificationForm();
   setupPreviewReorder(productPreview);
@@ -4207,15 +4720,15 @@ const init = () => {
     renderProducts();
   });
   setupContactForm();
+  setupMathGame();
+  setupStudentAccess();
   setupTaxonomyAdmin();
   refreshTaxonomyUI();
   renderTaxonomyAdmin();
   syncCatalogWithTaxonomy();
-  if (proposalDescCount) {
-    proposalDescCount.textContent = "220 caracteres restantes";
-  }
   updatePriceBreakdown(parsePrice(proposalPrice.value), proposalCommission, proposalPayout);
   renderProtectedCatalog();
+  renderNotificationBubble();
 
   if (hasAdminSession()) {
     if (adminLogin) adminLogin.hidden = true;
